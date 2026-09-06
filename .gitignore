@@ -1,0 +1,30 @@
+# ══ research data — do not commit ═══════════════════════════════════════
+# Human-subjects records from the wristband study: participant alcohol use,
+# stress reports and continuous physiological recordings. Participant codes
+# in these files are pseudonyms, not anonymisation. This data almost
+# certainly sits under an IRB protocol and a data use agreement, so it stays
+# local. The scripts that read it are committed; the data is not.
+Alcohol Use Data/
+Sensor Data/
+Final Phone Survey Stress Events.xlsm
+tlfb-transcribed.csv
+
+# ══ binaries and build leftovers ════════════════════════════════════════
+# The APK is a 4.6 MB debug-signed build. If you want to distribute it,
+# attach it to a GitHub Release rather than committing it to the tree.
+CraveCast.apk
+*.bak
+
+# ══ local scratch ═══════════════════════════════════════════════════════
+.claude/settings.local.json
+_*.py
+_*.png
+_*.js
+_tlfb/
+__pycache__/
+*.pyc
+
+# ══ OS / editor ═════════════════════════════════════════════════════════
+Thumbs.db
+desktop.ini
+.DS_Store

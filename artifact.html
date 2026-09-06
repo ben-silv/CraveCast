@@ -1,0 +1,3161 @@
+<title>CraveCast</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400..800;1,400&display=swap">
+<style>
+/* ── tokens — a warm paper-and-garden palette ───────────────────────── */
+:root{
+  --bg:#FBF4E3; --surface:#FFFCF5; --surface-2:#F6EEDC; --raised:#FFFFFF;
+  --ink:#33291D; --ink-2:#6B5B45; --ink-3:#9C8B76;
+  --line:#EADFC6; --line-2:#DCCCAC;
+  --accent:#3F8F52; --accent-ink:#2E6C3D; --accent-soft:#DEF0DE; --on-accent:#FFFFFF;
+  --good:#3F8F52; --watch:#CE8A1C; --high:#D4553F;
+  --good-soft:#E1F1E1; --watch-soft:#FBEBCC; --high-soft:#FBE1D8;
+  --r0:#F3EBD6; --r1:#F8DFAE; --r2:#F6C77E; --r3:#F0A45D; --r4:#E27649; --r5:#C64F36;
+  --soil:#EFE3C9; --sky:#E8F1F7;
+  --grid:rgba(51,41,29,.08);
+  --shadow:0 2px 0 rgba(51,41,29,.04), 0 16px 32px -22px rgba(51,41,29,.5);
+  --focus:#2F7DD1;
+  --sans:"Nunito",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --disp:"Baloo 2","Nunito",-apple-system,"Segoe UI",Helvetica,sans-serif;
+  --mono:"Nunito",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+  --bg:#161A13; --surface:#1E241B; --surface-2:#252C21; --raised:#2A3226;
+  --ink:#F1EBDA; --ink-2:#BDB5A0; --ink-3:#8B8472;
+  --line:#333B2E; --line-2:#46503D;
+  --accent:#7CC86A; --accent-ink:#98DA88; --accent-soft:#25331F; --on-accent:#11200D;
+  --good:#7CC86A; --watch:#E3B15C; --high:#E97B5E;
+  --good-soft:#22301D; --watch-soft:#332818; --high-soft:#35211A;
+  --r0:#2A3125; --r1:#3F3A24; --r2:#6B5527; --r3:#9C7434; --r4:#CE9A45; --r5:#F2C46E;
+  --soil:#2B331F; --sky:#1B2530;
+  --grid:rgba(241,235,218,.09);
+  --shadow:0 2px 0 rgba(0,0,0,.25), 0 18px 36px -22px rgba(0,0,0,.95);
+  --focus:#7FB6F0;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#161A13; --surface:#1E241B; --surface-2:#252C21; --raised:#2A3226;
+  --ink:#F1EBDA; --ink-2:#BDB5A0; --ink-3:#8B8472;
+  --line:#333B2E; --line-2:#46503D;
+  --accent:#7CC86A; --accent-ink:#98DA88; --accent-soft:#25331F; --on-accent:#11200D;
+  --good:#7CC86A; --watch:#E3B15C; --high:#E97B5E;
+  --good-soft:#22301D; --watch-soft:#332818; --high-soft:#35211A;
+  --r0:#2A3125; --r1:#3F3A24; --r2:#6B5527; --r3:#9C7434; --r4:#CE9A45; --r5:#F2C46E;
+  --soil:#2B331F; --sky:#1B2530;
+  --grid:rgba(241,235,218,.09);
+  --shadow:0 2px 0 rgba(0,0,0,.25), 0 18px 36px -22px rgba(0,0,0,.95);
+  --focus:#7FB6F0;
+}
+
+/* ── base ───────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box}
+/* .btn and friends set display, which outranks the UA rule for [hidden] */
+[hidden]{display:none !important}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; color:var(--ink);
+  background:var(--bg);
+  background-image:
+    radial-gradient(1100px 520px at 12% -8%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 70%),
+    radial-gradient(900px 460px at 92% 2%, color-mix(in srgb, var(--watch) 12%, transparent), transparent 68%);
+  background-attachment:fixed;
+  font-family:var(--sans); font-size:15.5px; line-height:1.58;
+  font-variant-numeric:tabular-nums;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{margin:0; font-family:var(--disp); text-wrap:balance; letter-spacing:-.005em; font-weight:700}
+p{margin:0}
+button,input,select,textarea{font:inherit; color:inherit}
+:focus-visible{outline:2.5px solid var(--focus); outline-offset:2px; border-radius:8px}
+::selection{background:var(--accent-soft); color:var(--ink)}
+
+.wrap{max-width:1080px; margin:0 auto; padding:0 20px 72px}
+/* inside the Android shell the page runs under the status and nav bars */
+.native .masthead{padding-top:calc(26px + env(safe-area-inset-top, 0px))}
+.native .wrap{padding-bottom:calc(72px + env(safe-area-inset-bottom, 0px))}
+.native #notifRow{display:none}
+
+/* ── masthead ───────────────────────────────────────────────────────── */
+.masthead{
+  display:flex; flex-wrap:wrap; align-items:flex-end; gap:16px;
+  padding:26px 0 18px; border-bottom:2px dashed var(--line-2);
+}
+.brand{display:flex; flex-direction:column; gap:2px; margin-right:auto}
+.wordmark{
+  font-family:var(--disp); font-size:31px; font-weight:800;
+  letter-spacing:-.015em; line-height:1.05;
+}
+.wordmark .leaf{
+  font-size:27px; transform:rotate(-8deg); display:inline-block;
+  margin-right:7px; vertical-align:-2px;
+}
+.wordmark span{color:var(--accent)}
+.tagline{font-size:13.5px; color:var(--ink-2)}
+.mast-tools{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+
+/* ── controls ───────────────────────────────────────────────────────── */
+.btn{
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--surface); color:var(--ink); border:1px solid var(--line-2);
+  border-radius:100px; padding:8px 16px; font-size:14px; font-weight:700;
+  cursor:pointer; transition:background .13s, border-color .13s, transform .13s, box-shadow .13s;
+}
+.btn:hover{background:var(--surface-2); border-color:var(--ink-3)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{
+  background:var(--accent); border-color:var(--accent); color:var(--on-accent);
+  font-weight:800; box-shadow:0 3px 0 color-mix(in srgb, var(--accent) 62%, #000);
+}
+.btn.primary:active{box-shadow:0 1px 0 color-mix(in srgb, var(--accent) 62%, #000)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.ghost{background:transparent; border-color:transparent; color:var(--ink-2)}
+.btn.ghost:hover{background:var(--surface-2); color:var(--ink)}
+.btn.sm{padding:5px 12px; font-size:12.5px}
+.btn[aria-pressed="true"]{background:var(--accent-soft); border-color:var(--accent); color:var(--accent-ink)}
+.btn:disabled{opacity:.45; cursor:not-allowed}
+
+select,input[type=text],input[type=number],input[type=datetime-local],textarea{
+  background:var(--raised); border:1.5px solid var(--line-2); border-radius:13px;
+  padding:9px 12px; font-size:14.5px; width:100%;
+}
+textarea{resize:vertical; min-height:60px; font-family:inherit}
+select{cursor:pointer}
+
+/* ── card ───────────────────────────────────────────────────────────── */
+.card{
+  background:var(--surface); border:1.5px solid var(--line); border-radius:22px;
+  box-shadow:var(--shadow); overflow:hidden;
+}
+.card-hd{
+  display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+  padding:17px 20px 0;
+}
+.card-hd h2{font-size:19px; font-weight:700; color:var(--ink)}
+.card-hd .sub{font-size:13px; color:var(--ink-3); margin-left:auto}
+.card-bd{padding:14px 20px 20px}
+
+.stack{display:flex; flex-direction:column; gap:18px; padding-top:18px}
+.grid-2{display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:start}
+@media (max-width:820px){.grid-2{grid-template-columns:1fr}}
+
+/* ── alert rail ─────────────────────────────────────────────────────── */
+#alertRail{display:flex; flex-direction:column; gap:10px}
+#alertRail:not(:empty){padding-top:18px}
+.alarm{
+  display:flex; gap:13px; align-items:flex-start;
+  border:2px solid var(--high); background:var(--high-soft);
+  border-radius:18px; padding:14px 16px; box-shadow:var(--shadow);
+  animation:rise .35s cubic-bezier(.2,.7,.3,1) both;
+}
+.alarm.watch{border-color:var(--watch); background:var(--watch-soft)}
+.alarm.info{border-color:var(--line-2); background:var(--surface)}
+.alarm.grow{border-color:var(--good); background:var(--good-soft)}
+.alarm.grow .alarm-ico{color:var(--good); border-color:var(--good)}
+.alarm-ico{
+  flex:none; width:40px; height:40px; border-radius:50%; border:2px solid currentColor;
+  display:grid; place-items:center; font-size:20px; font-weight:700;
+  background:var(--surface); color:var(--high); font-family:var(--disp);
+}
+.alarm.watch .alarm-ico{color:var(--watch)}
+.alarm.info .alarm-ico{color:var(--ink-3); border-color:var(--line-2)}
+.alarm-bd{flex:1; min-width:0}
+.alarm-ttl{font-family:var(--disp); font-weight:700; font-size:17px}
+.alarm-msg{font-size:13.5px; color:var(--ink-2); margin-top:2px}
+.alarm-acts{display:flex; gap:7px; margin-top:10px; flex-wrap:wrap}
+@keyframes rise{from{opacity:0; transform:translateY(-7px)}to{opacity:1; transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important; transition-duration:.01ms !important}}
+
+/* ── forecast ───────────────────────────────────────────────────────── */
+.fc{display:grid; grid-template-columns:246px 1fr; gap:0}
+@media (max-width:820px){.fc{grid-template-columns:1fr}}
+.fc-read{
+  padding:18px; border-right:1px solid var(--line);
+  display:flex; flex-direction:column; gap:14px;
+}
+@media (max-width:820px){.fc-read{border-right:0; border-bottom:1px solid var(--line)}}
+.gauge{display:flex; align-items:flex-start; gap:12px}
+.gauge-num{
+  font-family:var(--disp); font-size:60px; font-weight:800;
+  line-height:.86; letter-spacing:-.035em;
+}
+.gauge-meta{display:flex; flex-direction:column; gap:5px; padding-top:4px}
+.eyebrow{font-family:var(--disp); font-size:13.5px; font-weight:600; color:var(--ink-3)}
+.pill{
+  display:inline-flex; align-items:center; gap:5px; align-self:flex-start;
+  border-radius:100px; padding:3px 12px 4px; font-size:13px; font-weight:700;
+  font-family:var(--disp); border:1.5px solid currentColor;
+}
+.pill .dot{width:6px; height:6px; border-radius:50%; background:currentColor}
+.pill.calm{color:var(--good); background:var(--good-soft)}
+.pill.watch{color:var(--watch); background:var(--watch-soft)}
+.pill.high{color:var(--high); background:var(--high-soft)}
+
+.next-win{
+  border-top:1px dashed var(--line-2); padding-top:13px;
+  display:flex; flex-direction:column; gap:3px;
+}
+.next-when{font-family:var(--mono); font-size:20px; font-weight:600; letter-spacing:-.02em}
+.next-in{font-size:12.5px; color:var(--ink-3)}
+.next-why{font-size:12.5px; color:var(--ink-2); margin-top:4px; line-height:1.45}
+
+.armbar{margin-top:auto; display:flex; flex-direction:column; gap:8px}
+.armstate{
+  display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink-3);
+}
+.armstate .led{
+  width:8px; height:8px; border-radius:50%; background:var(--ink-3); flex:none;
+}
+.armstate.on .led{background:var(--good); box-shadow:0 0 0 3px var(--good-soft)}
+.armstate.on{color:var(--good)}
+
+.fc-chart{padding:16px 18px 12px; min-width:0; display:flex; flex-direction:column}
+/* the plot owns the leftover height; the svg is taken out of flow so it can't
+   feed its own height back into the flex row */
+.fc-chart .plot{flex:1; min-height:180px; display:flex}
+.fc-chart .plot .empty{margin:auto; width:100%}
+.fc-chart .plot svg{position:absolute; inset:0; height:100%; overflow:hidden}
+.chart-cap{
+  display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:8px;
+}
+.chart-cap h3{font-size:16px; font-weight:700}
+.chart-cap .note{font-size:12px; color:var(--ink-3); margin-left:auto; font-family:var(--mono)}
+.plot{position:relative; width:100%}
+.plot svg{display:block; width:100%; overflow:visible}
+.axlab{font-family:var(--mono); font-size:10px; fill:var(--ink-3)}
+/* knock a halo out of the surface so a label stays legible over gridlines */
+.axlab.halo{paint-order:stroke; stroke:var(--surface); stroke-width:3px; stroke-linejoin:round}
+
+/* ── tooltip ────────────────────────────────────────────────────────── */
+#tip{
+  position:fixed; z-index:80; pointer-events:none; opacity:0;
+  background:var(--raised); border:1px solid var(--line-2); border-radius:8px;
+  padding:8px 11px; box-shadow:var(--shadow); font-size:12.5px; max-width:230px;
+  transition:opacity .1s;
+}
+#tip.on{opacity:1}
+#tip .t-h{font-family:var(--mono); font-size:11px; color:var(--ink-3); letter-spacing:.02em}
+#tip .t-v{font-family:var(--disp); font-weight:700; font-size:15px; margin-top:1px}
+#tip .t-d{color:var(--ink-2); margin-top:3px; line-height:1.4}
+
+/* ── log form ───────────────────────────────────────────────────────── */
+.field{display:flex; flex-direction:column; gap:6px}
+.field > label, .flabel{font-family:var(--disp); font-size:14.5px; font-weight:600; color:var(--ink-2)}
+.form-grid{display:grid; grid-template-columns:1fr 1fr; gap:15px}
+@media (max-width:640px){.form-grid{grid-template-columns:1fr}}
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chip{
+  border:1.5px solid var(--line-2); background:var(--raised); color:var(--ink-2);
+  border-radius:100px; padding:6px 14px; font-size:13.5px; font-weight:600; cursor:pointer;
+  transition:background .12s, border-color .12s, color .12s;
+}
+.chip:hover{border-color:var(--ink-3); color:var(--ink)}
+.chip[aria-pressed="true"]{
+  background:var(--accent); border-color:var(--accent); color:var(--on-accent); font-weight:500;
+}
+.chip.add{border-style:dashed; color:var(--ink-3)}
+
+.seg{display:inline-flex; align-self:flex-start; border:1.5px solid var(--line-2); border-radius:100px; overflow:hidden}
+.seg button{
+  background:var(--raised); border:0; padding:8px 18px; font-size:14px; font-weight:600; cursor:pointer;
+  color:var(--ink-2); border-right:1.5px solid var(--line-2);
+}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent); color:var(--on-accent); font-weight:600}
+
+.range-row{display:flex; align-items:center; gap:12px}
+input[type=range]{flex:1; accent-color:var(--accent); height:22px}
+.range-val{
+  font-family:var(--mono); font-size:13px; min-width:96px; color:var(--ink-2);
+}
+
+/* ── heatmap ────────────────────────────────────────────────────────── */
+.hm-legend{
+  display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--ink-3);
+  font-family:var(--mono);
+}
+.hm-legend .sw{display:flex; gap:2px}
+.hm-legend .sw i{width:17px; height:9px; border-radius:2px; display:block}
+
+/* ── bars ───────────────────────────────────────────────────────────── */
+.barlist{display:flex; flex-direction:column; gap:11px}
+.bar-row{display:grid; grid-template-columns:1fr; gap:4px}
+.bar-top{display:flex; align-items:baseline; gap:8px; font-size:13.5px}
+.bar-top .nm{font-weight:500}
+.bar-top .vl{margin-left:auto; font-family:var(--mono); font-size:12px; color:var(--ink-2)}
+.bar-track{height:12px; background:var(--surface-2); border:1px solid var(--line); border-radius:100px; overflow:hidden}
+.bar-fill{height:100%; border-radius:100px; transition:width .4s cubic-bezier(.2,.7,.3,1)}
+
+/* ── stat tiles ─────────────────────────────────────────────────────── */
+.tiles{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; padding:16px}
+@media (max-width:700px){.tiles{grid-template-columns:repeat(2,1fr)}}
+.tile{
+  background:var(--surface-2); border:1.5px solid var(--line); border-radius:16px;
+  padding:14px 16px; display:flex; flex-direction:column; gap:2px;
+}
+.tile .v{font-family:var(--disp); font-size:30px; font-weight:800; line-height:1.05; letter-spacing:-.02em}
+.tile .k{font-size:12.5px; color:var(--ink-3); line-height:1.35}
+
+/* ── history ────────────────────────────────────────────────────────── */
+.log-list{display:flex; flex-direction:column}
+.log-row{
+  display:grid; grid-template-columns:64px 1fr auto; gap:12px; align-items:start;
+  padding:11px 0; border-top:1px solid var(--line);
+}
+.log-row:first-child{border-top:0}
+.log-time{font-family:var(--mono); font-size:12px; color:var(--ink-3); line-height:1.35}
+.log-time b{display:block; color:var(--ink-2); font-weight:600; font-size:13px}
+.log-main{min-width:0}
+.log-ttl{display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:14px}
+.log-tags{display:flex; flex-wrap:wrap; gap:5px; margin-top:5px}
+.tag{
+  font-size:12.5px; color:var(--ink-2); background:var(--surface-2);
+  border:1px solid var(--line); border-radius:100px; padding:1px 10px;
+}
+.log-note{font-size:13px; color:var(--ink-2); margin-top:5px; font-style:italic}
+.outcome{
+  font-family:var(--disp); font-size:12.5px; font-weight:700;
+  padding:1px 10px 2px; border-radius:100px; border:1.5px solid currentColor;
+}
+.outcome.held{color:var(--good); background:var(--good-soft)}
+.outcome.slip{color:var(--high); background:var(--high-soft)}
+.intensity{display:inline-flex; gap:2px; align-items:center}
+.intensity i{width:5px; height:12px; border-radius:1.5px; background:var(--line-2); display:block}
+
+/* ── misc ───────────────────────────────────────────────────────────── */
+.empty{
+  text-align:center; padding:28px 20px; color:var(--ink-3); font-size:14px;
+  border:2px dashed var(--line-2); border-radius:18px; background:var(--surface-2);
+}
+.empty b{display:block; color:var(--ink-2); font-family:var(--disp); font-size:17px; margin-bottom:4px}
+details.tablefold{margin-top:14px; border-top:1px solid var(--line); padding-top:10px}
+details.tablefold summary{
+  cursor:pointer; font-size:14px; color:var(--ink-3); font-family:var(--disp); font-weight:600;
+}
+.tablescroll{overflow-x:auto; margin-top:10px}
+table{border-collapse:collapse; width:100%; font-size:12.5px; font-family:var(--mono)}
+th,td{text-align:left; padding:5px 10px 5px 0; border-bottom:1px solid var(--line); white-space:nowrap}
+th{color:var(--ink-3); font-weight:700; font-size:12px}
+
+dialog{
+  border:2px solid var(--line-2); border-radius:24px; background:var(--surface);
+  color:var(--ink); padding:0; max-width:560px; width:calc(100% - 34px); box-shadow:var(--shadow);
+}
+dialog::backdrop{background:rgba(10,14,18,.5); backdrop-filter:blur(2px)}
+.dlg-hd{
+  display:flex; align-items:center; gap:10px; padding:16px 18px;
+  border-bottom:1px solid var(--line);
+}
+.dlg-hd h2{font-size:21px; font-weight:700; margin-right:auto}
+.dlg-bd{padding:18px; display:flex; flex-direction:column; gap:17px; max-height:66vh; overflow-y:auto}
+.dlg-ft{padding:13px 18px; border-top:1px solid var(--line); display:flex; gap:8px; justify-content:flex-end}
+.hint{font-size:12.5px; color:var(--ink-3); line-height:1.5}
+.row-between{display:flex; align-items:center; gap:12px}
+.row-between .grow{flex:1}
+.sw-toggle{position:relative; width:40px; height:23px; flex:none}
+.sw-toggle input{position:absolute; inset:0; opacity:0; margin:0; cursor:pointer; width:100%; height:100%; z-index:2}
+.sw-toggle span{
+  position:absolute; inset:0; background:var(--line-2); border-radius:100px; transition:background .16s;
+}
+.sw-toggle span::after{
+  content:""; position:absolute; top:3px; left:3px; width:17px; height:17px;
+  background:var(--raised); border-radius:50%; transition:transform .16s; box-shadow:0 1px 3px rgba(0,0,0,.3);
+}
+.sw-toggle input:checked + span{background:var(--good)}
+.sw-toggle input:checked + span::after{transform:translateX(17px)}
+.sw-toggle input:focus-visible + span{outline:2px solid var(--focus); outline-offset:2px}
+
+footer{
+  margin-top:32px; padding-top:16px; border-top:2px dashed var(--line-2);
+  font-size:12px; color:var(--ink-3); display:flex; gap:14px; flex-wrap:wrap; align-items:center;
+}
+footer .grow{flex:1}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+/* ── the garden ─────────────────────────────────────────────────────── */
+.wordmark .leaf{font-style:normal}
+.garden{display:grid; grid-template-columns:296px 1fr; gap:0}
+@media (max-width:820px){.garden{grid-template-columns:1fr}}
+
+.garden-grow{
+  padding:16px 20px 20px; border-right:2px dashed var(--line-2);
+  display:flex; flex-direction:column; gap:11px;
+}
+@media (max-width:820px){.garden-grow{border-right:0; border-bottom:2px dashed var(--line-2)}}
+
+.sprout{
+  display:grid; place-items:center; width:106px; height:106px; margin:0 auto;
+  font-size:54px; line-height:1; border-radius:50%;
+  background:radial-gradient(circle at 50% 64%, var(--good-soft), var(--surface-2) 74%);
+  border:2px solid var(--line);
+}
+.sprout em{font-style:normal; display:block; animation:sway 5s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+.sprout.ready{border-color:var(--good); box-shadow:0 0 0 6px var(--good-soft)}
+
+.grow-name{font-family:var(--disp); font-size:21px; font-weight:700; text-align:center; line-height:1.2}
+.grow-when{font-size:13.5px; color:var(--ink-3); text-align:center; margin-top:-8px}
+.growbar{
+  height:14px; background:var(--surface-2); border:1.5px solid var(--line);
+  border-radius:100px; overflow:hidden;
+}
+.growbar i{
+  display:block; height:100%; border-radius:100px; min-width:3px;
+  background:linear-gradient(90deg, var(--watch), var(--good));
+  transition:width .8s cubic-bezier(.2,.7,.3,1);
+}
+.grow-note{font-size:13px; color:var(--ink-2); text-align:center; line-height:1.45}
+
+.garden-plot{padding:16px 20px 20px; display:flex; flex-direction:column; gap:11px; min-width:0}
+.gplot{
+  display:flex; flex-wrap:wrap; gap:9px; align-content:flex-start;
+  background:var(--soil); border:2px dashed var(--line-2); border-radius:18px;
+  padding:14px; min-height:136px;
+}
+.grown{
+  position:relative; width:52px; height:52px; display:grid; place-items:center;
+  font-size:27px; line-height:1; border-radius:16px;
+  background:var(--surface); border:1.5px solid var(--line);
+}
+.grown b{
+  position:absolute; right:-5px; bottom:-5px; min-width:21px; height:21px; padding:0 5px;
+  display:grid; place-items:center; border-radius:100px;
+  background:var(--accent); color:var(--on-accent);
+  font-family:var(--disp); font-size:11.5px; font-weight:800; line-height:1;
+}
+.plot-foot{
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  font-size:13px; color:var(--ink-3);
+}
+.plot-foot b{color:var(--ink-2)}
+/* the plot already draws the dashed bed, so its empty state should not */
+.gplot .empty{border:0; background:transparent; align-self:center}
+
+.seedgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(124px,1fr)); gap:10px}
+.seed{
+  display:flex; flex-direction:column; align-items:center; gap:1px;
+  padding:13px 8px 11px; border-radius:18px; cursor:pointer; text-align:center;
+  background:var(--surface-2); border:1.5px solid var(--line); color:inherit;
+  transition:transform .13s, border-color .13s, background .13s;
+}
+.seed:hover:not(:disabled){transform:translateY(-3px); border-color:var(--accent); background:var(--accent-soft)}
+.seed:disabled{cursor:not-allowed; opacity:.55}
+.seed:disabled .seed-emo{filter:grayscale(1)}
+.seed-emo{font-size:31px; line-height:1.2}
+.seed-nm{font-family:var(--disp); font-weight:700; font-size:14.5px; line-height:1.2}
+.seed-sub{font-size:12px; color:var(--ink-3)}
+/* ── accounts ───────────────────────────────────────────────────────── */
+.acct-msg{
+  font-size:13.5px; line-height:1.5; border-radius:14px; padding:11px 14px;
+  border:1.5px solid var(--line-2); background:var(--surface-2); color:var(--ink-2);
+}
+.acct-msg.ok{border-color:var(--good); background:var(--good-soft); color:var(--ink)}
+.acct-msg.bad{border-color:var(--high); background:var(--high-soft); color:var(--ink)}
+.acct-msg:empty{display:none}
+
+.acct-who{
+  display:flex; align-items:center; gap:11px; padding:13px 15px;
+  border:1.5px solid var(--line); border-radius:16px; background:var(--surface-2);
+}
+.acct-who .avatar{
+  flex:none; width:42px; height:42px; border-radius:50%; display:grid;
+  place-items:center; font-size:21px; background:var(--accent-soft);
+}
+.acct-who .mail{font-family:var(--disp); font-weight:700; font-size:15.5px; word-break:break-all; line-height:1.25}
+.acct-who .sub{font-size:12.5px; color:var(--ink-3)}
+.acct-danger{border-top:2px dashed var(--line-2); padding-top:15px}
+.acct-danger .btn{border-color:var(--high); color:var(--high)}
+.acct-danger .btn:hover{background:var(--high-soft); border-color:var(--high)}
+/* ── tabs ───────────────────────────────────────────────────────────── */
+.tabs{
+  display:flex; gap:6px; flex-wrap:wrap; padding-top:16px;
+  border-bottom:2px dashed var(--line-2); margin-bottom:2px;
+}
+.tabs button{
+  border:1.5px solid transparent; border-bottom:0; background:transparent;
+  color:var(--ink-3); font-family:var(--disp); font-size:15.5px; font-weight:600;
+  padding:9px 17px 8px; border-radius:14px 14px 0 0; cursor:pointer;
+  display:flex; align-items:center; gap:7px;
+  transition:background .13s, color .13s;
+}
+.tabs button:hover{color:var(--ink); background:var(--surface-2)}
+.tabs button[aria-selected="true"]{
+  background:var(--surface); border-color:var(--line); color:var(--ink);
+  margin-bottom:-2px; padding-bottom:10px;
+}
+.tabs .badge{
+  font-size:12px; font-weight:800; min-width:20px; height:20px; padding:0 6px;
+  border-radius:100px; display:grid; place-items:center;
+  background:var(--accent-soft); color:var(--accent-ink);
+}
+.tabpanel{display:flex; flex-direction:column; gap:18px}
+
+/* ── the study behind the baseline ──────────────────────────────────── */
+.prior-bars{display:flex; align-items:flex-end; gap:2px; height:96px; margin-top:4px}
+.prior-bars i{
+  flex:1; border-radius:3px 3px 0 0; background:var(--accent); display:block;
+  min-height:2px; position:relative;
+}
+.prior-bars i.gap{background:repeating-linear-gradient(45deg,var(--line-2) 0 3px,transparent 3px 6px)}
+.prior-ax{display:flex; gap:2px; margin-top:5px; font-size:10.5px; color:var(--ink-3)}
+.prior-ax span{flex:1; text-align:center}
+.prior-reasons{display:flex; flex-direction:column; gap:7px; margin-top:4px}
+.prior-reasons .r{display:flex; align-items:center; gap:9px; font-size:13.5px}
+.prior-reasons .r .n{
+  font-family:var(--disp); font-weight:700; min-width:38px; color:var(--ink-2);
+}
+.prior-reasons .r .t{flex:1; height:9px; border-radius:100px; background:var(--surface-2);
+  border:1px solid var(--line); overflow:hidden}
+.prior-reasons .r .t i{display:block; height:100%; background:var(--accent); border-radius:100px}
+/* ── one question at a time ─────────────────────────────────────────── */
+.flow-dots{display:flex; gap:6px; align-items:center; margin-bottom:18px}
+.flow-dots i{
+  height:6px; flex:1; border-radius:100px; background:var(--surface-2);
+  border:1px solid var(--line); display:block; transition:background .25s;
+}
+.flow-dots i.on{background:var(--accent); border-color:var(--accent)}
+.flow-dots i.at{background:var(--accent); border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+
+.flow-q{
+  font-family:var(--disp); font-size:26px; font-weight:700; line-height:1.2;
+  text-wrap:balance; margin-bottom:5px;
+}
+.flow-hint{font-size:14px; color:var(--ink-3); margin-bottom:17px; line-height:1.5}
+.flow-body{animation:flowin .22s cubic-bezier(.2,.7,.3,1) both}
+@keyframes flowin{from{opacity:0; transform:translateX(10px)}to{opacity:1; transform:none}}
+
+.opts{display:flex; flex-wrap:wrap; gap:9px}
+.opts.two{display:grid; grid-template-columns:1fr 1fr; gap:11px}
+@media (max-width:560px){.opts.two{grid-template-columns:1fr}}
+.opt{
+  display:flex; align-items:center; gap:11px; text-align:left;
+  background:var(--raised); border:2px solid var(--line-2); border-radius:18px;
+  padding:15px 17px; font-size:16px; font-weight:600; cursor:pointer; color:var(--ink);
+  transition:transform .12s, border-color .12s, background .12s;
+}
+.opt:hover{transform:translateY(-2px); border-color:var(--accent); background:var(--accent-soft)}
+.opt .emo{font-size:26px; line-height:1}
+.opt[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+.opt.pill{padding:11px 16px; font-size:15px; border-radius:100px; font-weight:600}
+
+.scale{display:grid; grid-template-columns:repeat(5,1fr); gap:9px}
+@media (max-width:560px){.scale{grid-template-columns:repeat(3,1fr)}}
+.scale button{
+  display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer;
+  background:var(--raised); border:2px solid var(--line-2); border-radius:18px;
+  padding:14px 8px; color:var(--ink); transition:transform .12s, border-color .12s, background .12s;
+}
+.scale button:hover{transform:translateY(-2px); border-color:var(--accent); background:var(--accent-soft)}
+.scale button b{font-family:var(--disp); font-size:24px; font-weight:800; line-height:1}
+.scale button span{font-size:12.5px; color:var(--ink-3); text-align:center; line-height:1.25}
+
+.flow-ft{
+  display:flex; align-items:center; gap:9px; flex-wrap:wrap;
+  margin-top:20px; padding-top:15px; border-top:2px dashed var(--line-2);
+}
+.flow-ft .spacer{flex:1}
+
+.flow-done{text-align:center; padding:6px 0 2px}
+.flow-done .tick{
+  width:66px; height:66px; margin:0 auto 13px; border-radius:50%;
+  display:grid; place-items:center; font-size:32px;
+  background:var(--good-soft); border:2px solid var(--good);
+  animation:pop .45s cubic-bezier(.2,1.5,.4,1) both;
+}
+@keyframes pop{0%{transform:scale(.5)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+.flow-done h3{font-family:var(--disp); font-size:23px; font-weight:700}
+.flow-done .recap{
+  display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin:13px 0 19px;
+}
+.flow-done .acts{display:flex; gap:9px; flex-wrap:wrap; justify-content:center}
+
+.log-row .rowacts{display:flex; gap:6px; align-items:flex-start}
+/* ── the garden, as the thing you came for ──────────────────────────── */
+.hero{overflow:hidden; position:relative}
+.hero-top{
+  display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+  padding:14px 18px; border-bottom:1.5px solid var(--line); background:var(--surface-2);
+}
+.chip-stat{
+  display:inline-flex; align-items:center; gap:6px; border-radius:100px;
+  padding:5px 13px 6px; font-family:var(--disp); font-weight:700; font-size:14px;
+  background:var(--raised); border:1.5px solid var(--line-2);
+}
+.chip-stat .n{font-size:16px}
+.chip-stat.rank{background:var(--accent-soft); border-color:var(--accent); color:var(--accent-ink)}
+.chip-stat.fire{background:var(--watch-soft); border-color:var(--watch); color:var(--ink)}
+
+.scene{
+  position:relative; min-height:326px; display:grid; place-items:center;
+  background:
+    linear-gradient(180deg,
+      var(--sky) 0%,
+      color-mix(in srgb, var(--sky) 45%, var(--surface)) 58%,
+      var(--soil) 58%, var(--soil) 100%);
+}
+.scene .sun{
+  position:absolute; top:26px; right:38px; width:46px; height:46px; border-radius:50%;
+  background:#FFD34D;
+  box-shadow:0 0 0 10px rgba(255,211,77,.22), 0 0 0 22px rgba(255,211,77,.12);
+}
+:root[data-theme="dark"] .scene .sun,
+:root:not([data-theme="light"]) .scene .sun{background:#F2C46E}
+.scene .cloud{
+  position:absolute; height:16px; border-radius:100px; background:var(--surface);
+  opacity:.85;
+}
+.scene .cloud::before, .scene .cloud::after{
+  content:""; position:absolute; background:inherit; border-radius:50%;
+}
+.scene .cloud::before{width:22px; height:22px; left:12px; top:-9px}
+.scene .cloud::after{width:15px; height:15px; left:34px; top:-6px}
+.scene .c1{width:64px; top:52px; left:12%}
+.scene .c2{width:48px; top:30px; left:56%; opacity:.6}
+.scene .hill{
+  position:absolute; left:-8%; right:-8%; top:44%; height:34%; border-radius:50% 50% 0 0;
+  background:color-mix(in srgb, var(--good) 24%, var(--soil));
+}
+.stage{position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:12px}
+.ringwrap{position:relative; width:190px; height:190px; display:grid; place-items:center}
+.ringwrap svg{position:absolute; inset:0; width:100%; height:100%; transform:rotate(-90deg)}
+.ringwrap .bg{fill:none; stroke:color-mix(in srgb,var(--ink) 12%, transparent); stroke-width:9}
+.ringwrap .fg{
+  fill:none; stroke:var(--good); stroke-width:9; stroke-linecap:round;
+  transition:stroke-dashoffset .9s cubic-bezier(.2,.7,.3,1);
+}
+.ringwrap .disc{
+  width:150px; height:150px; border-radius:50%; display:grid; place-items:center;
+  background:var(--raised); box-shadow:0 8px 22px -12px rgba(0,0,0,.45);
+}
+.ringwrap .disc em{font-style:normal; font-size:74px; line-height:1; display:block;
+  animation:sway 5s ease-in-out infinite}
+.ringwrap.ready .fg{stroke:var(--accent)}
+.ringwrap .pct{
+  position:absolute; bottom:-4px; left:50%; transform:translateX(-50%);
+  background:var(--raised); border:1.5px solid var(--line-2); border-radius:100px;
+  padding:2px 12px 3px; font-family:var(--disp); font-weight:800; font-size:14px;
+}
+.stage h3{font-family:var(--disp); font-size:27px; font-weight:800; text-align:center}
+.stage .when{font-size:15px; color:var(--ink-2); text-align:center; margin-top:-6px}
+.stage .btn{font-size:16px; padding:12px 26px}
+
+.quest{padding:15px 18px; border-top:1.5px solid var(--line); background:var(--surface)}
+.quest-row{display:flex; align-items:center; gap:10px; font-size:14.5px; flex-wrap:wrap}
+.quest-row .goal{font-family:var(--disp); font-weight:700}
+.quest-row .left{margin-left:auto; color:var(--ink-3); font-size:13.5px}
+.quest-bar{
+  height:12px; margin-top:9px; border-radius:100px; background:var(--surface-2);
+  border:1.5px solid var(--line); overflow:hidden;
+}
+.quest-bar i{display:block; height:100%; border-radius:100px;
+  background:linear-gradient(90deg, var(--watch), var(--good)); transition:width .8s cubic-bezier(.2,.7,.3,1)}
+
+/* ── the collection ─────────────────────────────────────────────────── */
+.coll{display:grid; grid-template-columns:repeat(auto-fill,minmax(72px,1fr)); gap:10px}
+.slot{
+  position:relative; aspect-ratio:1; border-radius:18px; display:grid; place-items:center;
+  font-size:31px; background:var(--surface-2); border:1.5px solid var(--line);
+}
+.slot.have{background:var(--good-soft); border-color:var(--good)}
+.slot.locked{opacity:.42; font-size:22px}
+.slot.locked .lk{filter:grayscale(1)}
+.slot b{
+  position:absolute; right:-4px; bottom:-4px; min-width:22px; height:22px; padding:0 6px;
+  display:grid; place-items:center; border-radius:100px; background:var(--accent);
+  color:var(--on-accent); font-family:var(--disp); font-size:12px; font-weight:800; line-height:1;
+}
+.slot .need{
+  position:absolute; bottom:5px; left:0; right:0; text-align:center;
+  font-size:10.5px; color:var(--ink-3); font-family:var(--disp); font-weight:700;
+}
+
+/* ── craving weather ────────────────────────────────────────────────── */
+.wx-now{display:flex; align-items:center; gap:15px; margin-bottom:15px}
+.wx-now .big{
+  width:76px; height:76px; flex:none; border-radius:22px; display:grid; place-items:center;
+  font-size:40px; background:var(--surface-2); border:1.5px solid var(--line);
+}
+.wx-now .word{font-family:var(--disp); font-size:25px; font-weight:800; line-height:1.15}
+.wx-now .sub{font-size:14px; color:var(--ink-2); margin-top:2px; line-height:1.45}
+.wx{display:flex; gap:7px; overflow-x:auto; padding-bottom:4px}
+.wx-h{
+  flex:1 0 58px; display:flex; flex-direction:column; align-items:center; gap:6px;
+  border-radius:16px; padding:11px 4px 9px; background:var(--surface-2);
+  border:1.5px solid var(--line);
+}
+.wx-h .ico{font-size:21px; line-height:1}
+.wx-h .hr{font-size:11.5px; color:var(--ink-3); font-family:var(--disp); font-weight:700}
+.wx-h .lvl{height:6px; width:64%; border-radius:100px}
+.wx-h.now{border-color:var(--accent); border-width:2.5px; background:var(--accent-soft)}
+.wx-h.peak{border-color:var(--high)}
+
+/* ── a little celebration ───────────────────────────────────────────── */
+.confetti{position:fixed; inset:0; pointer-events:none; z-index:90; overflow:hidden}
+.confetti i{
+  position:absolute; top:-24px; font-size:20px; font-style:normal;
+  animation:fall linear forwards;
+}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg); opacity:0}}
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="brand">
+      <div class="wordmark"><i class="leaf">🌱</i>Crave<span>Cast</span></div>
+      <div class="tagline">See the urge coming — and grow something for every day you ride it out.</div>
+    </div>
+    <div class="mast-tools">
+      <label class="sr" for="habitSel">Tracked habit</label>
+      <select id="habitSel" style="width:auto; min-width:150px"></select>
+      <button class="btn sm" id="manageBtn" title="Add or remove tracked habits">Habits</button>
+      <button class="btn sm" id="setBtn" title="Alert settings">Settings</button>
+      <button class="btn sm" id="acctBtn" title="Account and sync" hidden>Account</button>
+      <button class="btn sm ghost" id="themeBtn" title="Switch light / dark" aria-label="Switch theme">◐</button>
+    </div>
+  </header>
+
+  <div id="alertRail" aria-live="assertive" aria-atomic="false"></div>
+
+  <nav class="tabs" id="tabBar" role="tablist" aria-label="Sections">
+    <button role="tab" data-tab="today" aria-selected="true" aria-controls="tab-today">Today</button>
+    <button role="tab" data-tab="log" aria-selected="false" aria-controls="tab-log">Log an urge</button>
+    <button role="tab" data-tab="patterns" aria-selected="false" aria-controls="tab-patterns">Patterns</button>
+    <button role="tab" data-tab="history" aria-selected="false" aria-controls="tab-history">History<span class="badge" id="tabCount">0</span></button>
+  </nav>
+
+  <main class="stack">
+   <div class="tabpanel" id="tab-today" role="tabpanel" aria-labelledby="tab-today">
+
+    <!-- THE GARDEN ----------------------------------------------------- -->
+    <section class="card hero">
+      <div class="hero-top" id="heroTop"></div>
+      <div class="scene">
+        <div class="sun"></div>
+        <div class="cloud c1"></div>
+        <div class="cloud c2"></div>
+        <div class="hill"></div>
+        <div class="stage" id="stage"></div>
+      </div>
+      <div class="quest" id="quest"></div>
+    </section>
+
+    <!-- THE COLLECTION ------------------------------------------------- -->
+    <section class="card">
+      <div class="card-hd">
+        <h2>Your collection</h2>
+        <span class="sub" id="collSub"></span>
+      </div>
+      <div class="card-bd"><div class="coll" id="coll"></div></div>
+    </section>
+
+    <!-- CRAVING WEATHER ------------------------------------------------ -->
+    <section class="card">
+      <div class="card-hd">
+        <h2>Craving weather</h2>
+        <span class="sub" id="wxNote"></span>
+      </div>
+      <div class="card-bd">
+        <div class="wx-now">
+          <div class="big" id="wxIco">\u2600\ufe0f</div>
+          <div>
+            <div class="word" id="wxWord">Clear</div>
+            <div class="sub" id="wxSub"></div>
+          </div>
+        </div>
+        <div class="wx" id="wxStrip"></div>
+        <div class="armbar" style="margin-top:16px">
+          <button class="btn primary" id="armBtn">Arm early warnings</button>
+          <div class="armstate" id="armState"><span class="led"></span><span id="armTxt">Warnings off</span></div>
+        </div>
+      </div>
+    </section>
+
+   </div><!-- /today -->
+
+   <div class="tabpanel" id="tab-log" role="tabpanel" hidden>
+    <!-- LOG ----------------------------------------------------------- -->
+    <section class="card">
+      <div class="card-hd">
+        <h2>Log an urge</h2>
+        <span class="sub" id="flowCount"></span>
+      </div>
+      <div class="card-bd">
+        <div class="flow-dots" id="flowDots" aria-hidden="true"></div>
+        <div id="flowBody" role="group" aria-live="polite"></div>
+      </div>
+    </section>
+
+   </div><!-- /log -->
+
+   <div class="tabpanel" id="tab-patterns" role="tabpanel" hidden>
+    <!-- THE DETAILED CURVE -------------------------------------------- -->
+    <section class="card">
+      <div class="card-hd">
+        <h2>The next 24 hours in detail</h2>
+        <span class="sub" id="chartNote"></span>
+      </div>
+      <div class="card-bd">
+        <div class="plot" id="fcPlot" style="min-height:200px"></div>
+        <div class="hm-legend" id="fcLegend" style="margin-top:8px">
+          <span>lower</span>
+          <span class="sw" id="lgd1"></span>
+          <span>higher</span>
+          <span style="margin-left:auto">dotted line = alert threshold \u00b7 shaded band = predicted window</span>
+        </div>
+        <div class="hint" style="margin-top:11px">
+          <span id="nextWhen"></span> <span id="nextIn"></span><br><span id="nextWhy"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS --------------------------------------------------------- -->
+    <section class="card">
+      <div class="tiles" id="tiles"></div>
+    </section>
+
+    <!-- PATTERNS ------------------------------------------------------ -->
+    <section class="card">
+      <div class="card-hd">
+        <h2>Your week, hour by hour</h2>
+        <span class="sub" id="hmSub"></span>
+      </div>
+      <div class="card-bd">
+        <div class="plot" id="hmPlot"></div>
+        <div class="hm-legend" style="margin-top:10px">
+          <span>calm</span><span class="sw" id="lgd2"></span><span>high risk</span>
+          <span style="margin-left:auto" id="hmToday"></span>
+        </div>
+        <details class="tablefold">
+          <summary>View as table</summary>
+          <div class="tablescroll" id="hmTable"></div>
+        </details>
+      </div>
+    </section>
+
+    <div class="grid-2">
+      <section class="card">
+        <div class="card-hd"><h2>Triggers</h2><span class="sub">ranked by weight in your logs</span></div>
+        <div class="card-bd"><div id="trigBars"></div></div>
+      </section>
+      <section class="card">
+        <div class="card-hd"><h2>Moods &amp; settings</h2><span class="sub">where urges start</span></div>
+        <div class="card-bd"><div id="moodBars"></div></div>
+      </section>
+    </div>
+
+    <section class="card">
+      <div class="card-hd"><h2>What has worked</h2><span class="sub">pulled from urges you held out on</span></div>
+      <div class="card-bd"><div id="copeList"></div></div>
+    </section>
+
+    <!-- WHERE THE BASELINE COMES FROM ---------------------------------- -->
+    <section class="card">
+      <div class="card-hd">
+        <h2>The baseline underneath</h2>
+        <span class="sub" id="priorSub"></span>
+      </div>
+      <div class="card-bd">
+        <div class="hint" id="priorNote" style="margin-bottom:13px"></div>
+        <div class="hint" id="priorWhy" style="margin-bottom:15px"></div>
+        <div class="prior-bars" id="priorBars"></div>
+        <div class="prior-ax" id="priorAx"></div>
+        <div style="margin-top:17px">
+          <div class="flabel" style="margin-bottom:7px">What they said set it off</div>
+          <div class="prior-reasons" id="priorReasons"></div>
+        </div>
+      </div>
+    </section>
+   </div><!-- /patterns -->
+
+   <div class="tabpanel" id="tab-history" role="tabpanel" hidden>
+    <!-- HISTORY ------------------------------------------------------- -->
+    <section class="card">
+      <div class="card-hd">
+        <h2>Everything you have logged</h2>
+        <span class="sub"><button class="btn sm ghost" id="exportBtn">Export JSON</button>
+        <button class="btn sm ghost" id="importBtn">Import</button></span>
+      </div>
+      <div class="card-bd"><div class="log-list" id="logList"></div></div>
+    </section>
+   </div><!-- /history -->
+
+  </main>
+
+  <footer>
+    <span class="grow" id="footNote">Everything you type stays in this browser — no account, no server, no upload.</span>
+    <button class="btn sm ghost" id="demoBtn" title="Draws 48 entries whose timing and triggers are resampled from the phone-survey data">Load sample data</button>
+    <button class="btn sm ghost" id="wipeBtn">Erase everything</button>
+  </footer>
+</div>
+
+<div id="tip" role="status"></div>
+
+<!-- SETTINGS -->
+<dialog id="setDlg">
+  <div class="dlg-hd"><h2>Early warnings</h2><button class="btn sm ghost" data-close>Close</button></div>
+  <div class="dlg-bd">
+    <div class="row-between" id="notifRow">
+      <div class="grow">
+        <div style="font-weight:600">Desktop notifications</div>
+        <div class="hint" id="notifHint">Fires a system notification ahead of a predicted window.</div>
+      </div>
+      <label class="sw-toggle"><input type="checkbox" id="notifTog"><span></span></label>
+    </div>
+    <div class="row-between">
+      <div class="grow">
+        <div style="font-weight:600">Alert sound</div>
+        <div class="hint">A short two-tone chime with each warning.</div>
+      </div>
+      <label class="sw-toggle"><input type="checkbox" id="soundTog"><span></span></label>
+    </div>
+    <div class="field">
+      <label for="leadIn">Warn me this far ahead</label>
+      <div class="range-row">
+        <input type="range" id="leadIn" min="5" max="90" step="5" value="25">
+        <span class="range-val" id="leadVal">25 min</span>
+      </div>
+      <div class="hint">The warning lands before the window opens, so you can change what you're doing while it's still easy.</div>
+    </div>
+    <div class="field">
+      <label for="sensIn">Sensitivity</label>
+      <div class="range-row">
+        <input type="range" id="sensIn" min="0" max="100" step="5" value="50">
+        <span class="range-val" id="sensVal">Balanced</span>
+      </div>
+      <div class="hint">Higher sensitivity flags more of the day as risky. Lower keeps warnings rare and sharp.</div>
+    </div>
+    <div class="field">
+      <label for="quietTog">Quiet hours</label>
+      <div class="row-between">
+        <label class="sw-toggle"><input type="checkbox" id="quietTog"><span></span></label>
+        <span class="hint grow">Hold warnings between</span>
+        <input type="number" id="qFrom" min="0" max="23" style="width:62px" value="23" aria-label="Quiet hours start">
+        <span class="hint">and</span>
+        <input type="number" id="qTo" min="0" max="23" style="width:62px" value="7" aria-label="Quiet hours end">
+      </div>
+    </div>
+    <div class="hint" id="tabHint"></div>
+  </div>
+  <div class="dlg-ft"><button class="btn primary" data-close>Done</button></div>
+</dialog>
+
+<!-- ADD TO AN ENTRY -->
+<dialog id="noteDlg">
+  <div class="dlg-hd"><h2 id="ndTitle">Add to this entry</h2><button class="btn sm ghost" data-close>Close</button></div>
+  <div class="dlg-bd">
+    <div class="hint" id="ndWhen"></div>
+    <div class="field">
+      <label for="ndNote">Note</label>
+      <textarea id="ndNote" placeholder="Anything worth remembering about this one."></textarea>
+    </div>
+    <div class="field" id="ndCopeField">
+      <label for="ndCope">What got you through it</label>
+      <textarea id="ndCope" placeholder="Walked the block. Called Sam. Drank water and waited 10 minutes."></textarea>
+      <div class="hint">These come back to you inside a warning, right when they're useful.</div>
+    </div>
+  </div>
+  <div class="dlg-ft">
+    <button class="btn ghost" data-close>Cancel</button>
+    <button class="btn primary" id="ndSave">Save</button>
+  </div>
+</dialog>
+
+<!-- ACCOUNT -->
+<dialog id="acctDlg">
+  <div class="dlg-hd"><h2>Your account</h2><button class="btn sm ghost" data-close>Close</button></div>
+  <div class="dlg-bd">
+    <div class="acct-msg" id="acctMsg"></div>
+
+    <div id="acctOut" hidden>
+      <div class="hint" style="margin-bottom:15px">Sign in and CraveCast keeps your habits, logs and garden
+        on the server instead of only in this browser — so they survive clearing your history and follow
+        you to any device you sign in on. Everything already in this browser is merged in, never replaced.</div>
+      <form id="acctForm" style="display:flex; flex-direction:column; gap:13px">
+        <div class="field">
+          <label for="acctEmail">Email</label>
+          <input type="email" id="acctEmail" autocomplete="email" required placeholder="you@example.com">
+        </div>
+        <div class="field">
+          <label for="acctPass">Password</label>
+          <input type="password" id="acctPass" autocomplete="current-password" required minlength="8"
+                 placeholder="At least 8 characters">
+        </div>
+        <div style="display:flex; gap:9px; flex-wrap:wrap; align-items:center">
+          <button class="btn primary" type="submit" id="acctSignIn">Sign in</button>
+          <button class="btn" type="button" id="acctSignUp">Create account</button>
+          <button class="btn ghost sm" type="button" id="acctForgot" style="margin-left:auto">Forgot password</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="acctIn" hidden style="display:flex; flex-direction:column; gap:15px">
+      <div class="acct-who">
+        <div class="avatar">🌱</div>
+        <div style="min-width:0">
+          <div class="mail" id="acctWhoMail"></div>
+          <div class="sub" id="acctWhoSub"></div>
+        </div>
+      </div>
+      <div style="display:flex; gap:9px; flex-wrap:wrap">
+        <button class="btn" type="button" id="acctSyncNow">Sync now</button>
+        <button class="btn" type="button" id="acctSignOut">Sign out</button>
+      </div>
+      <div class="acct-danger">
+        <div style="font-weight:700; margin-bottom:3px">Delete this account</div>
+        <div class="hint" style="margin-bottom:11px">Removes the login and every habit, log and plant stored
+          on the server, permanently. Anything still in this browser is left alone — use
+          <b>Erase everything</b> at the foot of the page for that.</div>
+        <button class="btn" type="button" id="acctDelete">Delete my account</button>
+      </div>
+    </div>
+  </div>
+  <div class="dlg-ft"><button class="btn ghost" data-close>Done</button></div>
+</dialog>
+
+<!-- SEEDS -->
+<dialog id="seedDlg">
+  <div class="dlg-hd"><h2>Pick something to grow</h2><button class="btn sm ghost" data-close>Close</button></div>
+  <div class="dlg-bd">
+    <div class="hint">One clean day grows one thing. Plant it, get through 24 hours without logging that you gave in,
+      and it moves into your garden for good. Log a slip before the time is up and that one is lost — but nothing
+      you have already grown is ever taken away.</div>
+    <div class="seedgrid" id="seedGrid"></div>
+  </div>
+  <div class="dlg-ft"><button class="btn ghost" data-close>Not now</button></div>
+</dialog>
+
+<!-- HABITS -->
+<dialog id="habDlg">
+  <div class="dlg-hd"><h2>Tracked habits</h2><button class="btn sm ghost" data-close>Close</button></div>
+  <div class="dlg-bd">
+    <div id="habList" class="log-list"></div>
+    <form id="habForm" class="row-between">
+      <input type="text" id="habName" placeholder="e.g. Vaping, doomscrolling, late-night snacking" class="grow" required>
+      <button class="btn primary" type="submit">Add</button>
+    </form>
+    <div class="hint">Each habit gets its own forecast. Deleting one deletes its logs.</div>
+  </div>
+  <div class="dlg-ft"><button class="btn primary" data-close>Done</button></div>
+</dialog>
+
+<script>
+"use strict";
+/* ════════════════════════════════════════════════════════════════════
+   CraveCast — urge forecasting
+   Model: recency-weighted, intensity-weighted kernel density over
+   time-of-day (circular) × day-of-week (circular), evaluated
+   continuously so risk can be read at any instant.
+   ════════════════════════════════════════════════════════════════════ */
+
+const KEY = "cravecast.v2";
+const AUTH_KEY = "cravecast.auth";
+
+/* ══ Accounts (optional) ═══════════════════════════════════════
+   Paste a Supabase project URL and its anon public key here and the app
+   grows sign-in, email verification, cross-device sync and account
+   deletion. Leave them empty and none of that code ever runs — the app
+   stays what it is now, a page that keeps everything in this browser.
+   Setup takes about five minutes: see README-ACCOUNTS.md.
+
+   The anon key is meant to be public; it grants nothing on its own. Row
+   level security, in supabase-schema.sql, is what confines each account
+   to its own data. Never paste the service role key here.              */
+const CLOUD = {
+  url: "",     // e.g. https://abcdefghijklm.supabase.co
+  key: ""      // the anon / public key, NOT the service role key
+};
+const cloudOn = () => !!(CLOUD.url && CLOUD.key);
+const HALF_LIFE_DAYS = 21;   // an entry is worth half as much 3 weeks on
+const SIG_HOUR = 1.15;       // hours — how far an urge's influence spreads
+const SIG_DOW  = 0.85;       // days
+const MIN_LOGS = 6;          // below this we don't pretend to forecast
+
+const MOODS = ["Stressed","Anxious","Bored","Lonely","Tired","Angry","Restless","Celebrating","Content"];
+const ACTS  = ["Working","On a break","Commuting","Scrolling","With friends","Drinking","Alone at home","After a meal","Winding down"];
+const TRIGS = ["Stress","Boredom","Social pressure","Alcohol","Seeing someone else do it","Argument","Deadline","Loneliness","Habit / routine","Money worry","Celebration","Smell or sight of it","Coffee","Hunger",
+  // the categories the phone-survey participants actually reported
+  "Started thinking about it","Unsafe surroundings","Inconvenienced",
+  "Injury or health","Legal problem"];
+const INTENSITY_WORDS = {1:"Faint",2:"Mild",3:"Noticeable",4:"Strong",5:"Overwhelming"};
+const DOW_SHORT = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+
+/* Fitted by fit-prior.py from 'Final Phone Survey Stress Events.xlsm':
+   99 stress events reported by 10 participants over four phone surveys
+   a day, 2019-04-30 to 2020-02-21. These are stress events, NOT cravings — the study
+   never asked about cravings. Hours 06:00-08:59 were outside every survey
+   window, so their values are interpolated, not observed. There is
+   deliberately no day-of-week term: across 10 participants enrolled
+   at different times, weekday variation is not separable from who
+   happened to be reporting that week. */
+const PRIOR = {
+  n: 99, cases: 10,
+  unsurveyed: [6, 7, 8],
+  hour: [54.0, 37.6, 23.9, 16.8, 14.6, 14.3, 17.7, 45.6, 83.3, 97.9, 99.0, 85.4, 71.9, 72.6, 75.2, 69.4, 67.3, 75.3, 82.5, 86.5, 95.3, 100.0, 88.2, 70.1],
+  reasons: [{"label": "Started thinking about it", "pct": 29}, {"label": "Conflict with someone", "pct": 21}, {"label": "Inconvenienced", "pct": 9}, {"label": "Money worry", "pct": 8}, {"label": "Unsafe surroundings", "pct": 8}, {"label": "Too much to do", "pct": 6}, {"label": "Something else", "pct": 6}, {"label": "Injury or health", "pct": 6}, {"label": "Legal problem", "pct": 6}]
+};
+
+/* ── state ─────────────────────────────────────────────────────────── */
+const DEFAULTS = () => ({
+  habits: [],
+  logs: [],
+  activeHabit: null,
+  fired: {},                 // dedupe key -> timestamp
+  garden: {growing:null, plot:[], wilted:0},
+  settings: {
+    notify:false, sound:true, lead:25, sensitivity:50,
+    quiet:false, qFrom:23, qTo:7, theme:"auto", armed:false
+  }
+});
+let S = load();
+
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(!raw) return DEFAULTS();
+    const p = JSON.parse(raw);
+    const d = DEFAULTS();
+    const g = {...d.garden, ...(p.garden||{})};
+    if(!Array.isArray(g.plot)) g.plot = [];
+    if(typeof g.wilted !== "number") g.wilted = 0;
+    return {...d, ...p, settings:{...d.settings, ...(p.settings||{})}, garden:g};
+  }catch(e){ return DEFAULTS(); }
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch(e){ /* private mode / quota — the session still works */ }
+  cloudPush();          // debounced, and a no-op unless signed in
+}
+const uid = () => Math.random().toString(36).slice(2,10) + Date.now().toString(36);
+
+/* ── time helpers ──────────────────────────────────────────────────── */
+const MS_H = 3600000;
+const hourOf = d => d.getHours() + d.getMinutes()/60 + d.getSeconds()/3600;
+const dowOf  = d => (d.getDay() + 6) % 7;                 // 0 = Monday
+const circ   = (a,b,m) => { const x = Math.abs(a-b) % m; return Math.min(x, m-x); };
+
+function fmtClock(h){
+  const hh = Math.floor(((h % 24) + 24) % 24), mm = Math.round((h - Math.floor(h)) * 60) % 60;
+  const d = new Date(); d.setHours(hh, mm, 0, 0);
+  return d.toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
+}
+function fmtDur(ms){
+  const m = Math.max(0, Math.round(ms/60000));
+  if(m < 60) return m + " min";
+  const h = Math.floor(m/60), r = m % 60;
+  if(h < 24) return h + "h" + (r ? " " + r + "m" : "");
+  return Math.round(h/24) + " days";
+}
+function dayLabel(d){
+  const t = new Date(); t.setHours(0,0,0,0);
+  const x = new Date(d); x.setHours(0,0,0,0);
+  const diff = Math.round((x - t) / 86400000);
+  if(diff === 0) return "today";
+  if(diff === 1) return "tomorrow";
+  if(diff === -1) return "yesterday";
+  return d.toLocaleDateString([], {weekday:"long"});
+}
+function toLocalInput(d){
+  const p = n => String(n).padStart(2,"0");
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+/* ── the model ─────────────────────────────────────────────────────── */
+function activeLogs(){
+  const h = S.activeHabit;
+  return S.logs.filter(l => !h || l.habitId === h).sort((a,b) => b.ts - a.ts);
+}
+
+function buildModel(){
+  const logs = activeLogs();
+  const now = Date.now();
+  const pts = logs.map(l => {
+    const d = new Date(l.ts);
+    const age = Math.max(0, (now - l.ts) / 86400000);
+    const recency = Math.pow(0.5, age / HALF_LIFE_DAYS);
+    const sev = (l.intensity || 3) / 3;
+    const w = recency * sev * (l.outcome === "slip" ? 1.4 : 1);
+    return {h: hourOf(d), dow: dowOf(d), w, log: l};
+  });
+  const totalW = pts.reduce((s,p) => s + p.w, 0);
+  const n = pts.length;
+  const alpha = Math.min(0.55, n / 70);            // trust the joint fit as data grows
+
+  function raw(hour, dow){
+    if(!totalW) return 0;
+    let hourTerm = 0, dowTerm = 0, joint = 0;
+    for(const p of pts){
+      const kh = Math.exp(-Math.pow(circ(hour, p.h, 24), 2) / (2*SIG_HOUR*SIG_HOUR));
+      const kd = Math.exp(-Math.pow(circ(dow,  p.dow, 7), 2) / (2*SIG_DOW*SIG_DOW));
+      hourTerm += p.w * kh;
+      dowTerm  += p.w * kd;
+      joint    += p.w * kh * kd;
+    }
+    const hN = hourTerm / totalW;
+    const dN = dowTerm / (totalW / 7);              // ~1 when the day is average
+    const jN = (joint / totalW) * 7;
+    const dayFactor = 0.55 + 0.45 * Math.min(dN, 2.4);
+    return (1 - alpha) * hN * dayFactor + alpha * jN;
+  }
+
+  // normalise against the busiest cell of a full week, at 15-min resolution
+  let peak = 0;
+  for(let d = 0; d < 7; d++)
+    for(let q = 0; q < 96; q++)
+      peak = Math.max(peak, raw(q/4, d));
+
+  const scale = peak > 0 ? 100 / peak : 0;
+  const effN = totalW;
+  const confidence = Math.max(0, Math.min(1, (n - 2) / 16)) * Math.min(1, effN / 6);
+
+  /* ── shrink toward the survey prior ──────────────────────────────
+     With few logs of your own, the honest answer to "how risky is 3pm"
+     is mostly what the phone-survey participants reported, not a curve
+     fitted to four data points. w moves from 0 to 1 as your own logs
+     accumulate, and K sets how fast.
+
+     K used to be 8, picked by feel. The Timeline Followback calendars
+     (see fit-weekday.py) put a number on it: across 11 participants and
+     159 monitored days, 76% of the variance in daily drinking was
+     BETWEEN people rather than within them — one participant logged
+     nothing for two weeks while another drank every single day. A
+     random-effects fit on that puts the shrinkage constant at 0.3, i.e.
+     trust the person almost immediately. That figure is for a single
+     daily number though, and here we are learning a 24-hour shape, which
+     costs several times more data — scaling by the roughly 6-8 effective
+     degrees of freedom in the smoothed curve lands at K ≈ 3.
+
+     So: half yours by the third log instead of the eighth.            */
+  const K = 3;
+  const w = n / (n + K);
+  const priorAt = hour => {
+    const x = ((hour % 24) + 24) % 24;
+    const i = Math.floor(x), j = (i + 1) % 24, f = x - i;
+    return PRIOR.hour[i] * (1 - f) + PRIOR.hour[j] * f;
+  };
+  const blend = (hour, dow) => w * (raw(hour, dow) * scale) + (1 - w) * priorAt(hour);
+
+  return {
+    n, confidence, ready: n >= MIN_LOGS && confidence > 0.25, pts, logs,
+    w, priorAt,
+    source: n === 0 ? "baseline" : w < 0.75 ? "blended" : "yours",
+    at(date){ return blend(hourOf(date), dowOf(date)); },
+    atHD(hour, dow){ return blend(hour, dow); },
+    mine(date){ return raw(hourOf(date), dowOf(date)) * scale; }
+  };
+}
+
+function threshold(){
+  // sensitivity 0 → only the sharpest peaks; 100 → most of the elevated day
+  return 78 - 0.42 * (S.settings.sensitivity ?? 50);
+}
+
+/* Scan forward and return contiguous stretches above threshold. */
+function findWindows(model, fromTs, hours){
+  const th = threshold(), step = 10 * 60000, out = [];
+  let cur = null;
+  for(let t = fromTs; t <= fromTs + hours*MS_H; t += step){
+    const d = new Date(t), v = model.at(d);
+    if(v >= th){
+      if(!cur) cur = {start:t, end:t, peak:v, peakTs:t};
+      else { cur.end = t; if(v > cur.peak){ cur.peak = v; cur.peakTs = t; } }
+    }else if(cur){
+      if(cur.end - cur.start >= 20*60000) out.push(cur);
+      cur = null;
+    }
+  }
+  if(cur && cur.end - cur.start >= 20*60000) out.push(cur);
+  return out;
+}
+
+function band(v){
+  if(v >= 66) return {k:"high",  label:"High risk"};
+  if(v >= 38) return {k:"watch", label:"Watch"};
+  return {k:"calm", label:"Calm"};
+}
+const RAMP = () => {
+  const cs = getComputedStyle(document.documentElement);
+  return [0,1,2,3,4,5].map(i => cs.getPropertyValue("--r"+i).trim());
+};
+function rampColor(v, ramp){          // v: 0–100
+  const stops = ramp || RAMP();
+  const x = Math.max(0, Math.min(1, v/100)) * (stops.length - 1);
+  return stops[Math.round(x)];
+}
+
+/* What tends to drive a given window — read straight off the user's logs. */
+function windowDrivers(model, win){
+  const cH = hourOf(new Date((win.start + win.end)/2));
+  const cD = dowOf(new Date(win.start));
+  const score = new Map(), moods = new Map();
+  let hits = 0, slips = 0;
+  for(const p of model.pts){
+    const near = circ(cH, p.h, 24) <= 2.2 && circ(cD, p.dow, 7) <= 1.6;
+    if(!near) continue;
+    hits++;
+    if(p.log.outcome === "slip") slips++;
+    for(const t of (p.log.triggers || [])) score.set(t, (score.get(t)||0) + p.w);
+    if(p.log.mood) moods.set(p.log.mood, (moods.get(p.log.mood)||0) + p.w);
+  }
+  const top = m => [...m.entries()].sort((a,b) => b[1]-a[1]).slice(0,2).map(e => e[0]);
+  return {triggers: top(score), moods: top(moods), hits, slipRate: hits ? slips/hits : 0};
+}
+
+function copingIdeas(){
+  const held = activeLogs().filter(l => l.outcome === "held" && l.coping && l.coping.trim());
+  return held.slice(0, 12).map(l => ({text: l.coping.trim(), ts: l.ts}));
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Rendering
+   ════════════════════════════════════════════════════════════════════ */
+const $ = s => document.querySelector(s);
+const el = (t, a = {}, kids = []) => {
+  const n = document.createElement(t);
+  for(const [k,v] of Object.entries(a)){
+    if(k === "class") n.className = v;
+    else if(k === "html") n.innerHTML = v;
+    else if(k === "text") n.textContent = v;
+    else if(k.startsWith("on")) n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v);
+  }
+  for(const c of [].concat(kids)) if(c) n.append(c);
+  return n;
+};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+let MODEL = null, WINDOWS = [], lastRisk = null;
+
+function renderAll(){
+  MODEL = buildModel();
+  WINDOWS = findWindows(MODEL, Date.now() - 30*60000, 50);
+  gardenTick();
+  renderGarden();
+  renderHabitSel();
+  renderGauge();
+  renderForecast();
+  renderTiles();
+  renderHeatmap();
+  renderBars();
+  renderCoping();
+  renderHistory();
+  renderArm();
+  renderBaseline();
+  $("#tabCount").textContent = activeLogs().length;
+  scheduleSync();      // debounced; keeps the OS queue matching the forecast
+}
+
+/* ── tabs ──────────────────────────────────────────────────────────── */
+let TAB = "today";
+function showTab(name){
+  TAB = name;
+  for(const b of document.querySelectorAll("#tabBar button"))
+    b.setAttribute("aria-selected", b.dataset.tab === name ? "true" : "false");
+  for(const pane of document.querySelectorAll(".tabpanel"))
+    pane.hidden = pane.id !== "tab-" + name;
+  // a chart measured while its panel was hidden has zero width, so anything
+  // that draws to a measured box has to be redrawn once it's visible
+  if(name === "today") renderWeather();
+  if(name === "patterns"){ renderForecast(); renderHeatmap(); renderBaseline(); }
+}
+
+/* ── the survey the cold-start baseline is fitted from ─────────────── */
+function renderBaseline(){
+  $("#priorSub").textContent = PRIOR.n + " stress events · " + PRIOR.cases + " people";
+  $("#priorNote").innerHTML =
+    "Before you've logged much, the forecast leans on this: " + PRIOR.n + " stress events reported by " +
+    PRIOR.cases + " people answering four phone surveys a day. <b>It is stress data, not craving data</b> — " +
+    "the study never asked about cravings — so treat it as a starting shape, not a prediction about you. " +
+    "Every urge you log pulls the forecast away from it and toward your own pattern" +
+    (MODEL ? " (currently " + Math.round(MODEL.w * 100) + "% yours)." : ".");
+  $("#priorWhy").innerHTML =
+    "<b>Why it hands over so fast.</b> Timeline Followback calendars from 11 people in the same " +
+    "study \u2014 159 monitored days \u2014 show that <b>76% of the variation in daily drinking is between " +
+    "people, not between days of the week</b>. One participant recorded nothing for a fortnight; another " +
+    "drank every day of theirs. Weekday itself explained nothing that survived testing (p = 0.27). " +
+    "That is the case for leaning on your own logs early, so the forecast is half yours by the third one.";
+
+  const gap = new Set(PRIOR.unsurveyed);
+  $("#priorBars").innerHTML = PRIOR.hour.map((v, i) =>
+    `<i class="${gap.has(i) ? "gap" : ""}" style="height:${Math.max(2, v)}%" title="${
+      gap.has(i) ? String(i).padStart(2,"0") + ":00 — outside every survey window, interpolated"
+                 : String(i).padStart(2,"0") + ":00 — " + v + " of 100"}"></i>`).join("");
+  $("#priorAx").innerHTML = PRIOR.hour.map((_, i) =>
+    `<span>${i % 6 === 0 ? String(i).padStart(2,"0") : ""}</span>`).join("");
+
+  const top = PRIOR.reasons[0].pct || 1;
+  $("#priorReasons").innerHTML = PRIOR.reasons.map(r =>
+    `<div class="r"><span class="n">${r.pct}%</span>
+       <span class="t"><i style="width:${Math.round(r.pct / top * 100)}%"></i></span>
+       <span style="flex:1.4">${esc(r.label)}</span></div>`).join("");
+}
+
+/* ── habit selector ────────────────────────────────────────────────── */
+function renderHabitSel(){
+  // the "name what you're quitting" prompt has served its purpose
+  if(S.habits.length) document.getElementById("bootAlert")?.remove();
+  const sel = $("#habitSel");
+  sel.innerHTML = "";
+  if(!S.habits.length){
+    sel.append(el("option",{value:"",text:"No habit yet"}));
+    sel.disabled = true; return;
+  }
+  sel.disabled = false;
+  for(const h of S.habits){
+    const o = el("option",{value:h.id, text:h.name});
+    if(h.id === S.activeHabit) o.selected = true;
+    sel.append(o);
+  }
+}
+
+/* ── gauge + next window ───────────────────────────────────────────── */
+/* The big number and its band moved to the weather panel on the home tab.
+   What is left here is the written detail that sits under the chart. */
+function renderGauge(){
+  const next = WINDOWS.find(w => w.start > Date.now());
+  const inside = WINDOWS.find(w => w.start <= Date.now() && w.end >= Date.now());
+
+  if(inside){
+    $("#nextWhen").textContent = "Open now";
+    $("#nextIn").textContent = "Runs until " + new Date(inside.end).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
+    $("#nextWhy").textContent = whyText(inside);
+  } else if(next){
+    const d = new Date(next.start);
+    $("#nextWhen").textContent = d.toLocaleTimeString([], {hour:"numeric", minute:"2-digit"}) + " " + dayLabel(d);
+    $("#nextIn").textContent = "in " + fmtDur(next.start - Date.now()) +
+      " · peaks " + new Date(next.peakTs).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
+    $("#nextWhy").textContent = whyText(next);
+  } else {
+    $("#nextWhen").textContent = "Nothing flagged";
+    $("#nextIn").textContent = "next 48 hours look clear";
+    $("#nextWhy").textContent = "No stretch crosses your alert threshold. Turn sensitivity up in Settings if you'd rather be warned earlier.";
+  }
+}
+
+function whyText(win){
+  const d = windowDrivers(MODEL, win);
+  const bits = [];
+  if(MODEL.source === "baseline")
+    return "From the phone-survey baseline: " + PRIOR.n + " stress events reported by "
+         + PRIOR.cases + " people. Log your own urges and this becomes yours.";
+  if(d.hits) bits.push(d.hits + " past " + (d.hits === 1 ? "urge" : "urges") + " around this time");
+  if(d.triggers.length) bits.push("usually " + d.triggers.join(" or ").toLowerCase());
+  if(d.moods.length) bits.push("you're often " + d.moods[0].toLowerCase());
+  if(d.slipRate >= 0.5 && d.hits >= 2) bits.push("you gave in " + Math.round(d.slipRate*100) + "% of the time");
+  return bits.length ? bits.join(" · ") : "";
+}
+
+/* ── forecast ridge ────────────────────────────────────────────────── */
+function renderForecast(){
+  const host = $("#fcPlot");
+  // settle the legend first — it shares the flex column, so toggling it after
+  // measuring would leave the svg sized to a box that no longer exists
+  $("#fcLegend").style.display = "";
+  const W = Math.max(320, host.clientWidth || 640);
+  const H = Math.max(168, Math.min(300, host.clientHeight || 180));
+  const padL = 4, padR = 4, padT = 10, padB = 20;
+  const iw = W - padL - padR, ih = H - padT - padB;
+  const t0 = Date.now() - MS_H, span = 24 * MS_H;
+  const ramp = RAMP();
+
+  $("#chartNote").textContent =
+    MODEL.source === "baseline" ? "study baseline · " + PRIOR.n + " events"
+  : MODEL.source === "blended"  ? Math.round(MODEL.w * 100) + "% yours · rest is the baseline"
+  :                               "your pattern · confidence " + Math.round(MODEL.confidence * 100) + "%";
+
+  const x = t => padL + ((t - t0) / span) * iw;
+  const y = v => padT + ih - (Math.max(0, Math.min(100, v)) / 100) * ih;
+
+  let pts = [];
+  for(let t = t0; t <= t0 + span; t += 10*60000) pts.push([t, MODEL.at(new Date(t))]);
+
+  const line = pts.map((p,i) => (i ? "L" : "M") + x(p[0]).toFixed(1) + " " + y(p[1]).toFixed(1)).join(" ");
+  const area = pts.length ? line + ` L${x(pts[pts.length-1][0]).toFixed(1)} ${padT+ih} L${x(pts[0][0]).toFixed(1)} ${padT+ih} Z` : "";
+
+  // hour ticks every 3h on the clock
+  let ticks = "";
+  const start = new Date(t0); start.setMinutes(0,0,0);
+  for(let t = start.getTime(); t <= t0 + span; t += MS_H){
+    const d = new Date(t);
+    if(d.getHours() % 3) continue;
+    const px = x(t); if(px < padL - 1 || px > W - padR + 1) continue;
+    ticks += `<line x1="${px.toFixed(1)}" y1="${padT}" x2="${px.toFixed(1)}" y2="${padT+ih}" stroke="var(--grid)" stroke-width="1"/>`;
+    ticks += `<text class="axlab" x="${px.toFixed(1)}" y="${H-5}" text-anchor="middle">${d.getHours() === 0 ? DOW_SHORT[dowOf(d)] : String(d.getHours()).padStart(2,"0")}</text>`;
+  }
+
+  // predicted windows in view
+  let bands = "";
+  for(const w of WINDOWS){
+    if(w.end < t0 || w.start > t0 + span) continue;
+    const a = Math.max(x(w.start), padL), b = Math.min(x(w.end), W - padR);
+    bands += `<rect x="${a.toFixed(1)}" y="${padT}" width="${Math.max(2,b-a).toFixed(1)}" height="${ih}"
+      fill="var(--high)" opacity="0.09"/>`;
+    bands += `<line x1="${a.toFixed(1)}" y1="${padT}" x2="${a.toFixed(1)}" y2="${padT+ih}" stroke="var(--high)" stroke-width="1.5" stroke-dasharray="3 3"/>`;
+    const pk = x(w.peakTs);
+    if(pk > padL && pk < W - padR)
+      bands += `<circle cx="${pk.toFixed(1)}" cy="${y(w.peak).toFixed(1)}" r="4" fill="var(--high)" stroke="var(--surface)" stroke-width="2"/>`;
+  }
+
+  const nowX = x(Date.now());
+  const thY = y(threshold());
+
+  host.innerHTML = `
+    <svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img"
+         aria-label="Predicted craving pressure over the next 24 hours">
+      <defs>
+        <linearGradient id="fcg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="${ramp[5]}" stop-opacity="0.55"/>
+          <stop offset="55%"  stop-color="${ramp[3]}" stop-opacity="0.30"/>
+          <stop offset="100%" stop-color="${ramp[1]}" stop-opacity="0.05"/>
+        </linearGradient>
+      </defs>
+      ${ticks}
+      ${bands}
+      <line x1="${padL}" y1="${thY.toFixed(1)}" x2="${W-padR}" y2="${thY.toFixed(1)}"
+            stroke="var(--ink-3)" stroke-width="1" stroke-dasharray="2 4" opacity=".6"/>
+      <path d="${area}" fill="url(#fcg)"/>
+      <path d="${line}" fill="none" stroke="${ramp[4]}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      <line x1="${nowX.toFixed(1)}" y1="${padT-6}" x2="${nowX.toFixed(1)}" y2="${padT+ih}" stroke="var(--ink)" stroke-width="1.5"/>
+      <text class="axlab halo" x="${(nowX+4).toFixed(1)}" y="${padT-1}" fill="var(--ink)">now</text>
+      <rect id="fcHit" x="${padL}" y="${padT}" width="${iw}" height="${ih}" fill="transparent" style="cursor:crosshair"/>
+    </svg>`;
+
+  const hit = host.querySelector("#fcHit");
+  if(hit){
+    hit.addEventListener("pointermove", ev => {
+      const r = host.querySelector("svg").getBoundingClientRect();
+      const rel = (ev.clientX - r.left) / r.width * W;
+      const t = t0 + ((rel - padL) / iw) * span;
+      const d = new Date(t), v = MODEL.at(d), bb = band(v);
+      showTip(ev, `${d.toLocaleTimeString([], {hour:"numeric", minute:"2-digit"})} ${dayLabel(d)}`,
+        Math.round(v) + " · " + bb.label,
+        v >= threshold() ? "Above your alert line." : "");
+    });
+    hit.addEventListener("pointerleave", hideTip);
+  }
+  $("#lgd1").innerHTML = ramp.map(c => `<i style="background:${c}"></i>`).join("");
+}
+
+/* ── tooltip ───────────────────────────────────────────────────────── */
+function showTip(ev, head, val, desc){
+  const t = $("#tip");
+  t.innerHTML = `<div class="t-h">${esc(head)}</div><div class="t-v">${esc(val)}</div>` +
+                (desc ? `<div class="t-d">${esc(desc)}</div>` : "");
+  t.classList.add("on");
+  const w = t.offsetWidth, h = t.offsetHeight;
+  let L = ev.clientX + 14, T = ev.clientY - h - 12;
+  if(L + w > innerWidth - 8) L = ev.clientX - w - 14;
+  if(T < 8) T = ev.clientY + 18;
+  t.style.left = L + "px"; t.style.top = T + "px";
+}
+const hideTip = () => $("#tip").classList.remove("on");
+
+/* ── stat tiles ────────────────────────────────────────────────────── */
+function renderTiles(){
+  const logs = activeLogs();
+  const now = Date.now();
+  const d30 = logs.filter(l => now - l.ts < 30*86400000);
+  const held = d30.filter(l => l.outcome === "held").length;
+  const rate = d30.length ? Math.round(held / d30.length * 100) : null;
+  const lastSlip = logs.find(l => l.outcome === "slip");
+  const habit = S.habits.find(h => h.id === S.activeHabit);
+  const since = lastSlip ? lastSlip.ts : (habit ? habit.createdAt : null);
+  const days = since ? Math.floor((now - since) / 86400000) : null;
+
+  // busiest clock hour by model weight
+  let peakH = null, peakV = -1;
+  for(let h = 0; h < 24; h += 0.25){
+    let s = 0; for(let d = 0; d < 7; d++) s += MODEL.atHD(h, d);
+    if(s > peakV){ peakV = s; peakH = h; }
+  }
+
+  const tiles = [
+    {v: days === null ? "—" : days,
+     k: (days === 1 ? "day" : "days") + (lastSlip ? " since you gave in" : " tracked")},
+    {v: d30.length, k: "urges logged, last 30 days"},
+    {v: rate === null ? "—" : rate + "%", k: "held out, last 30 days"},
+    {v: peakH === null ? "—" : fmtClock(peakH),
+     k: MODEL.source === "baseline" ? "riskiest hour (baseline)" : "your riskiest hour"}
+  ];
+  $("#tiles").innerHTML = tiles.map(t =>
+    `<div class="tile"><span class="v">${esc(t.v)}</span><span class="k">${esc(t.k)}</span></div>`).join("");
+}
+
+/* ── weekly heatmap ────────────────────────────────────────────────── */
+function renderHeatmap(){
+  const host = $("#hmPlot");
+  const ramp = RAMP();
+  $("#lgd2").innerHTML = ramp.map(c => `<i style="background:${c}"></i>`).join("");
+
+  if(!MODEL.ready){
+    host.innerHTML = `<div class="empty"><b>Not enough logs to map the week yet</b>
+      Once patterns show up, this grid marks every hour of every weekday by how much pressure it usually carries.</div>`;
+    $("#hmSub").textContent = ""; $("#hmToday").textContent = ""; $("#hmTable").innerHTML = "";
+    return;
+  }
+
+  const W = Math.max(320, host.clientWidth || 640);
+  const labW = 34, gap = 2, topH = 14;
+  const cw = (W - labW - gap*23) / 24;
+  const ch = Math.max(13, Math.min(22, cw * 0.85));
+  const H = topH + 7*(ch+gap);
+
+  const vals = [];
+  for(let d = 0; d < 7; d++){
+    vals[d] = [];
+    for(let h = 0; h < 24; h++) vals[d][h] = MODEL.atHD(h + 0.5, d);
+  }
+  const today = dowOf(new Date()), nowH = new Date().getHours();
+
+  let cells = "";
+  for(let d = 0; d < 7; d++){
+    const cy = topH + d*(ch+gap);
+    cells += `<text class="axlab" x="0" y="${(cy + ch*0.72).toFixed(1)}"
+      fill="${d === today ? "var(--ink)" : "var(--ink-3)"}" font-weight="${d === today ? 600 : 400}">${DOW_SHORT[d]}</text>`;
+    for(let h = 0; h < 24; h++){
+      const cx = labW + h*(cw+gap), v = vals[d][h];
+      const isNow = d === today && h === nowH;
+      cells += `<rect class="hmc" x="${cx.toFixed(1)}" y="${cy.toFixed(1)}" width="${cw.toFixed(1)}" height="${ch.toFixed(1)}"
+        rx="2.5" fill="${rampColor(v, ramp)}" data-d="${d}" data-h="${h}" data-v="${v.toFixed(0)}"
+        ${isNow ? 'stroke="var(--ink)" stroke-width="1.5"' : ''} style="cursor:pointer"/>`;
+    }
+  }
+  let hl = "";
+  for(let h = 0; h < 24; h += 3){
+    const cx = labW + h*(cw+gap) + cw/2;
+    hl += `<text class="axlab" x="${cx.toFixed(1)}" y="9" text-anchor="middle">${String(h).padStart(2,"0")}</text>`;
+  }
+
+  host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img"
+    aria-label="Risk by hour of day and day of week">${hl}${cells}</svg>`;
+
+  host.querySelectorAll(".hmc").forEach(r => {
+    r.addEventListener("pointerenter", ev => {
+      const d = +r.dataset.d, h = +r.dataset.h, v = +r.dataset.v;
+      showTip(ev, DOW_SHORT[d] + " " + String(h).padStart(2,"0") + ":00–" + String((h+1)%24).padStart(2,"0") + ":00",
+        v + " · " + band(v).label, countNear(h + 0.5, d));
+    });
+    r.addEventListener("pointerleave", hideTip);
+  });
+
+  // written summary of the top hours
+  const flat = [];
+  for(let d = 0; d < 7; d++) for(let h = 0; h < 24; h++) flat.push({d, h, v: vals[d][h]});
+  flat.sort((a,b) => b.v - a.v);
+  const top = flat.slice(0,3).map(c => `${DOW_SHORT[c.d]} ${String(c.h).padStart(2,"0")}:00`);
+  $("#hmSub").textContent = "hottest: " + top.join(", ");
+  $("#hmToday").textContent = "outlined cell = right now";
+
+  const rows = flat.slice(0,12).map(c =>
+    `<tr><td>${DOW_SHORT[c.d]}</td><td>${String(c.h).padStart(2,"0")}:00</td><td>${Math.round(c.v)}</td>
+     <td>${band(c.v).label}</td><td>${esc(countNear(c.h + 0.5, c.d) || "—")}</td></tr>`).join("");
+  $("#hmTable").innerHTML =
+    `<table><thead><tr><th>Day</th><th>Hour</th><th>Risk</th><th>Band</th><th>From your logs</th></tr></thead>
+     <tbody>${rows}</tbody></table>`;
+}
+
+function countNear(hour, dow){
+  let c = 0, slips = 0;
+  for(const p of MODEL.pts){
+    if(circ(hour, p.h, 24) <= 1.5 && circ(dow, p.dow, 7) <= 1){
+      c++; if(p.log.outcome === "slip") slips++;
+    }
+  }
+  if(!c) return "";
+  return c + " logged nearby" + (slips ? ", " + slips + " gave in" : "");
+}
+
+/* ── trigger / mood bars ───────────────────────────────────────────── */
+function tally(field, isList){
+  const logs = activeLogs(), now = Date.now();
+  const m = new Map();
+  for(const l of logs){
+    const w = Math.pow(0.5, ((now - l.ts)/86400000) / HALF_LIFE_DAYS) * ((l.intensity||3)/3);
+    const items = isList ? (l[field] || []) : (l[field] ? [l[field]] : []);
+    for(const it of items){
+      const e = m.get(it) || {w:0, n:0, slips:0};
+      e.w += w; e.n++; if(l.outcome === "slip") e.slips++;
+      m.set(it, e);
+    }
+  }
+  return [...m.entries()].map(([k,v]) => ({name:k, ...v})).sort((a,b) => b.w - a.w);
+}
+
+function barBlock(rows, emptyMsg){
+  if(!rows.length) return `<div class="empty">${esc(emptyMsg)}</div>`;
+  const max = rows[0].w || 1;
+  return `<div class="barlist">` + rows.slice(0,7).map(r => {
+    const pct = Math.max(4, (r.w/max)*100);
+    const slipPct = r.n ? Math.round(r.slips/r.n*100) : 0;
+    return `<div class="bar-row">
+      <div class="bar-top"><span class="nm">${esc(r.name)}</span>
+        <span class="vl">${r.n}×${r.n >= 2 ? " · gave in " + slipPct + "%" : ""}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct.toFixed(1)}%;background:${rampColor(30 + (r.w/max)*70)}"></div></div>
+    </div>`;
+  }).join("") + `</div>`;
+}
+
+function renderBars(){
+  $("#trigBars").innerHTML = barBlock(tally("triggers", true),
+    "No triggers tagged yet. Tag them as you log — this is the panel that tells you what to actually change.");
+  const moods = tally("mood", false), acts = tally("activity", false);
+  $("#moodBars").innerHTML =
+    (moods.length ? `<div style="font-size:14.5px;color:var(--ink-2);font-family:var(--disp);font-weight:600;margin-bottom:9px">Mood</div>` + barBlock(moods,"") : "") +
+    (acts.length ? `<div style="font-size:14.5px;color:var(--ink-2);font-family:var(--disp);font-weight:600;margin:16px 0 9px">Doing what</div>` + barBlock(acts,"") : "") ||
+    `<div class="empty">Tag a mood and an activity when you log and they'll rank here.</div>`;
+}
+
+function renderCoping(){
+  const ideas = copingIdeas();
+  const host = $("#copeList");
+  if(!ideas.length){
+    host.innerHTML = `<div class="empty"><b>Nothing recorded yet</b>
+      When you hold out on an urge, write down what got you through. Those lines come back in the warning, right when you need them.</div>`;
+    return;
+  }
+  host.innerHTML = `<div class="log-list">` + ideas.map(i =>
+    `<div class="log-row" style="grid-template-columns:64px 1fr">
+      <div class="log-time"><b>${new Date(i.ts).toLocaleDateString([], {month:"short", day:"numeric"})}</b></div>
+      <div class="log-main">${esc(i.text)}</div>
+    </div>`).join("") + `</div>`;
+}
+
+/* ── history ───────────────────────────────────────────────────────── */
+function renderHistory(){
+  const logs = activeLogs().slice(0, 60);
+  const host = $("#logList");
+  if(!logs.length){
+    host.innerHTML = `<div class="empty"><b>Nothing logged yet</b>Your first entry starts the model.</div>`;
+    return;
+  }
+  host.innerHTML = logs.map(l => {
+    const d = new Date(l.ts);
+    const tags = []
+      .concat(l.mood ? [l.mood] : [])
+      .concat(l.activity ? [l.activity] : [])
+      .concat(l.triggers || []);
+    const bars = [1,2,3,4,5].map(i =>
+      `<i style="${i <= (l.intensity||3) ? "background:" + rampColor(20 + i*16) : ""}"></i>`).join("");
+    return `<div class="log-row">
+      <div class="log-time"><b>${d.toLocaleTimeString([], {hour:"numeric", minute:"2-digit"})}</b>
+        ${d.toLocaleDateString([], {month:"short", day:"numeric"})}<br>${DOW_SHORT[dowOf(d)]}</div>
+      <div class="log-main">
+        <div class="log-ttl">
+          <span class="outcome ${l.outcome === "slip" ? "slip" : "held"}">${l.outcome === "slip" ? "Gave in" : "Held out"}</span>
+          <span class="intensity" title="Intensity ${l.intensity||3} of 5">${bars}</span>
+          <span style="color:var(--ink-3);font-size:12.5px">${esc(INTENSITY_WORDS[l.intensity||3])}</span>
+        </div>
+        ${tags.length ? `<div class="log-tags">${tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
+        ${l.note ? `<div class="log-note">${esc(l.note)}</div>` : ""}
+        ${l.coping ? `<div class="log-note" style="font-style:normal;color:var(--good)">Worked: ${esc(l.coping)}</div>` : ""}
+      </div>
+      <div class="rowacts">
+        <button class="btn sm" data-note="${l.id}">${l.note || l.coping ? "Edit note" : "Add note"}</button>
+        <button class="btn sm ghost" data-del="${l.id}" aria-label="Delete this entry">Delete</button>
+      </div>
+    </div>`;
+  }).join("");
+  host.querySelectorAll("[data-note]").forEach(b =>
+    b.addEventListener("click", () => openNote(b.dataset.note, "note")));
+  host.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => {
+    S.logs = S.logs.filter(l => l.id !== b.dataset.del);
+    save(); renderAll();
+  }));
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   The garden — a clean day grows one thing
+   A seed planted now matures 24 hours later, but only if no slip is
+   logged inside that window. What has already grown is permanent, and
+   the size of the plot is what unlocks the next species up the list.
+   ════════════════════════════════════════════════════════════════════ */
+const GROW_MS = 24 * 3600000;
+
+/* the three stages before the thing itself shows up */
+const SG_PLANT = ["🌱","🌿","🪴"];   // seed → sprout → potted on
+const SG_BIRD  = ["🥚","🐣","🐤"];   // egg → hatched → fledgling
+const SG_BEAST = ["🌾","🐾","🍼"];   // bedding → tracks → hand-reared
+const SG_BEE   = ["🌼","🌻","🍯"];   // flowers → forage → honey
+
+const SPECIES = [
+  {id:"sunflower", name:"Sunflower",    kind:"flower", emoji:"🌻", base:SG_PLANT, need:0},
+  {id:"tulip",     name:"Tulip",        kind:"flower", emoji:"🌷", base:SG_PLANT, need:0},
+  {id:"herb",      name:"Herb sprig",   kind:"plant",  emoji:"🌿", base:SG_PLANT, need:0},
+  {id:"daisy",     name:"Daisy",        kind:"flower", emoji:"🌼", base:SG_PLANT, need:2},
+  {id:"clover",    name:"Lucky clover", kind:"plant",  emoji:"🍀", base:SG_PLANT, need:3},
+  {id:"rose",      name:"Rose",         kind:"flower", emoji:"🌹", base:SG_PLANT, need:4},
+  {id:"cactus",    name:"Cactus",       kind:"plant",  emoji:"🌵", base:SG_PLANT, need:5},
+  {id:"oak",       name:"Oak",          kind:"tree",   emoji:"🌳", base:SG_PLANT, need:6},
+  {id:"chicken",   name:"Chicken",      kind:"animal", emoji:"🐔", base:SG_BIRD,  need:7},
+  {id:"hibiscus",  name:"Hibiscus",     kind:"flower", emoji:"🌺", base:SG_PLANT, need:8},
+  {id:"pine",      name:"Pine",         kind:"tree",   emoji:"🌲", base:SG_PLANT, need:9},
+  {id:"rabbit",    name:"Rabbit",       kind:"animal", emoji:"🐰", base:SG_BEAST, need:10},
+  {id:"cherry",    name:"Cherry tree",  kind:"tree",   emoji:"🌸", base:SG_PLANT, need:12},
+  {id:"duck",      name:"Duck",         kind:"animal", emoji:"🦆", base:SG_BIRD,  need:14},
+  {id:"bees",      name:"Beehive",      kind:"animal", emoji:"🐝", base:SG_BEE,   need:16},
+  {id:"palm",      name:"Palm",         kind:"tree",   emoji:"🌴", base:SG_PLANT, need:18},
+  {id:"sheep",     name:"Sheep",        kind:"animal", emoji:"🐑", base:SG_BEAST, need:20},
+  {id:"maple",     name:"Maple",        kind:"tree",   emoji:"🍁", base:SG_PLANT, need:22},
+  {id:"pig",       name:"Pig",          kind:"animal", emoji:"🐖", base:SG_BEAST, need:25},
+  {id:"cow",       name:"Cow",          kind:"animal", emoji:"🐄", base:SG_BEAST, need:29},
+  {id:"goat",      name:"Goat",         kind:"animal", emoji:"🐐", base:SG_BEAST, need:33},
+  {id:"horse",     name:"Horse",        kind:"animal", emoji:"🐴", base:SG_BEAST, need:38},
+  {id:"cat",       name:"Barn cat",     kind:"animal", emoji:"🐈", base:SG_BEAST, need:44},
+  {id:"dog",       name:"Farm dog",     kind:"animal", emoji:"🐕", base:SG_BEAST, need:50},
+  {id:"peacock",   name:"Peacock",      kind:"animal", emoji:"🦚", base:SG_BIRD,  need:60}
+];
+
+const speciesOf   = id => SPECIES.find(s => s.id === id) || SPECIES[0];
+const grownCount  = () => S.garden.plot.length;
+const unlocked    = () => SPECIES.filter(s => s.need <= grownCount());
+const growProgress = () => S.garden.growing
+  ? Math.max(0, Math.min(1, (Date.now() - S.garden.growing.start) / GROW_MS)) : 0;
+/* the emoji swaps three times on the way up, then becomes the thing itself */
+const growStage = (sp, p) => p >= 1 ? sp.emoji : sp.base[Math.min(2, Math.floor(p * 3))];
+/* the window is never longer than a day, so fmtDur's "days" branch would
+   only ever render the unlovely "1 days" — count in hours and minutes */
+function fmtLeft(ms){
+  const m = Math.max(0, Math.round(ms / 60000));
+  if(m < 60) return m + (m === 1 ? " minute" : " minutes");
+  return Math.floor(m / 60) + "h " + String(m % 60).padStart(2, "0") + "m";
+}
+
+/* resolve whatever is growing: a slip inside the window kills it, and the
+   far end of the window plants it. Called on every render and on a timer. */
+function gardenTick(){
+  const g = S.garden;
+  if(!g.growing) return;
+  const sp = speciesOf(g.growing.sp);
+  const start = g.growing.start, end = start + GROW_MS, now = Date.now();
+
+  const slip = S.logs.find(l =>
+    l.outcome === "slip" && l.ts >= start && l.ts <= Math.min(now, end));
+  if(slip){
+    g.growing = null; g.wilted++; save();
+    pushAlert("watch", "The " + sp.name.toLowerCase() + " did not make it",
+      "A slip inside the 24 hours ends that one's run. Everything already in your garden stays exactly "
+      + "where it is — plant another whenever you want to start the clock again.",
+      [], {ico:"🥀", acts:[
+        {label:"Plant another", run:openSeeds},
+        {label:"Dismiss", ghost:true}
+      ]});
+    return;
+  }
+
+  if(now >= end){
+    const before = unlocked().length;
+    g.plot.push({sp: sp.id, at: end});
+    g.growing = null; save();
+    const opened = unlocked().length - before;
+    const fresh = opened ? unlocked().slice(-opened) : [];
+    const n = grownCount();
+    pushAlert("grow", "Your " + sp.name.toLowerCase() + " is fully grown " + sp.emoji,
+      "Twenty-four hours, no slips logged. That makes " + n + (n === 1 ? " thing" : " things")
+      + " growing in your garden.",
+      fresh.length ? [{label:"Unlocked: " + fresh.map(s => s.emoji + " " + s.name).join("  ")}] : [],
+      {ico: sp.emoji, acts:[
+        {label:"Plant another", run:openSeeds},
+        {label:"Nice", ghost:true}
+      ]});
+    confetti(sp.emoji);
+    chime();
+  }
+}
+
+/* ── ranks, streaks and the other game furniture ────────────────────── */
+const RANKS = [
+  {at:0,  name:"Bare plot",   emoji:"\u{1F33E}"},
+  {at:1,  name:"Seedling",    emoji:"\u{1F331}"},
+  {at:3,  name:"Sprout",      emoji:"\u{1F33F}"},
+  {at:6,  name:"Gardener",    emoji:"\u{1F337}"},
+  {at:10, name:"Grower",      emoji:"\u{1F33B}"},
+  {at:16, name:"Cultivator",  emoji:"\u{1F333}"},
+  {at:25, name:"Smallholder", emoji:"\u{1F414}"},
+  {at:40, name:"Farmer",      emoji:"\u{1F404}"},
+  {at:60, name:"Homesteader", emoji:"\u{1F3E1}"}
+];
+const rankOf = n => RANKS.filter(r => r.at <= n).pop();
+
+/* Consecutive days with nothing logged as a slip. Counts the run backwards
+   from today, so it survives days you didn't log at all. */
+function streakDays(){
+  const slips = activeLogs().filter(l => l.outcome === "slip");
+  if(!slips.length){
+    const h = S.habits.find(x => x.id === S.activeHabit);
+    return h ? Math.floor((Date.now() - h.createdAt) / 86400000) : 0;
+  }
+  const last = Math.max(...slips.map(l => l.ts));
+  return Math.max(0, Math.floor((Date.now() - last) / 86400000));
+}
+
+/* ── the hero: what is growing, right now ──────────────────────────── */
+function renderGarden(){
+  const g = S.garden, n = grownCount(), u = unlocked().length;
+  const rank = rankOf(n), streak = streakDays();
+
+  $("#heroTop").innerHTML =
+    `<span class="chip-stat rank">${rank.emoji} ${esc(rank.name)}</span>` +
+    `<span class="chip-stat fire">\u{1F525} <span class="n">${streak}</span> day${streak === 1 ? "" : "s"} clean</span>` +
+    `<span class="chip-stat">\u{1F33B} <span class="n">${n}</span> grown</span>` +
+    `<span class="chip-stat" style="margin-left:auto">${u} / ${SPECIES.length} unlocked</span>`;
+
+  const stage = $("#stage");
+  if(g.growing){
+    const sp = speciesOf(g.growing.sp), pr = growProgress();
+    const end = g.growing.start + GROW_MS;
+    const at = new Date(end).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
+    const C = 2 * Math.PI * 54;
+    stage.innerHTML =
+      `<div class="ringwrap${pr >= 1 ? " ready" : ""}">
+         <svg viewBox="0 0 120 120" aria-hidden="true">
+           <circle class="bg" cx="60" cy="60" r="54"/>
+           <circle class="fg" cx="60" cy="60" r="54"
+                   stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - pr)).toFixed(1)}"/>
+         </svg>
+         <div class="disc"><em>${growStage(sp, pr)}</em></div>
+         <span class="pct">${Math.round(pr * 100)}%</span>
+       </div>
+       <h3>${esc(sp.name)} on the way</h3>
+       <div class="when">${pr >= 1 ? "ready now"
+          : fmtLeft(end - Date.now()) + " to go \u00b7 ready " + dayLabel(new Date(end)) + " at " + at}</div>`;
+  }else{
+    stage.innerHTML =
+      `<div class="ringwrap">
+         <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="bg" cx="60" cy="60" r="54"/></svg>
+         <div class="disc"><em>\u{1F330}</em></div>
+       </div>
+       <h3>Nothing growing</h3>
+       <div class="when">One clean day grows one thing.</div>
+       <button class="btn primary" id="plantBtn">Plant something</button>`;
+    $("#plantBtn").addEventListener("click", openSeeds);
+  }
+
+  /* the quest strip: what the next unlock is and how close it is */
+  const next = SPECIES.find(s => s.need > n);
+  const q = $("#quest");
+  if(next){
+    const prev = [...SPECIES].filter(s => s.need <= n).pop();
+    const from = prev ? prev.need : 0;
+    const pct = Math.max(4, Math.min(100, ((n - from) / Math.max(1, next.need - from)) * 100));
+    q.innerHTML =
+      `<div class="quest-row">
+         <span>Next up:</span><span class="goal">${next.emoji} ${esc(next.name)}</span>
+         <span class="left">${next.need - n} more to unlock</span>
+       </div>
+       <div class="quest-bar"><i style="width:${pct.toFixed(0)}%"></i></div>`;
+  }else{
+    q.innerHTML = `<div class="quest-row"><span class="goal">\u{1F3C6} Every species unlocked \u2014 the whole farm is yours.</span></div>`;
+  }
+
+  renderCollection();
+  renderWeather();
+}
+
+/* ── the collection: what you have, and what is still behind glass ──── */
+function renderCollection(){
+  const g = S.garden, n = grownCount();
+  const counts = new Map();
+  for(const x of g.plot) counts.set(x.sp, (counts.get(x.sp) || 0) + 1);
+  const owned = [...counts.values()].reduce((a, b) => a + b, 0);
+  $("#collSub").textContent = owned
+    ? counts.size + " species \u00b7 " + owned + " growing" + (g.wilted ? " \u00b7 " + g.wilted + " lost" : "")
+    : "nothing grown yet";
+
+  // everything unlocked, plus the next four still locked, as a tease
+  const showLocked = SPECIES.filter(s => s.need > n).slice(0, 4);
+  const cells = SPECIES.filter(s => s.need <= n).map(s => {
+    const c = counts.get(s.id) || 0;
+    return `<div class="slot${c ? " have" : ""}" title="${esc(s.name)}${c ? " \u00d7" + c : " \u2014 unlocked, not grown yet"}">
+      ${c ? s.emoji : `<span style="opacity:.32">${s.emoji}</span>`}${c > 1 ? `<b>${c}</b>` : ""}</div>`;
+  }).concat(showLocked.map(s =>
+    `<div class="slot locked" title="${esc(s.name)} \u2014 unlocks at ${s.need} grown">
+       <span class="lk">\u{1F512}</span><span class="need">at ${s.need}</span></div>`));
+
+  $("#coll").innerHTML = cells.join("") ||
+    `<div class="empty" style="grid-column:1/-1"><b>Nothing here yet</b>Plant your first one and it lands here.</div>`;
+}
+
+/* ── craving weather ────────────────────────────────────────────────── */
+/* The same numbers as the chart, told the way a forecast is told. */
+const WX = [
+  {at:0,  ico:"\u2600\ufe0f",       word:"Clear"},
+  {at:26, ico:"\u{1F324}\ufe0f",    word:"Fair"},
+  {at:40, ico:"\u26c5",              word:"Changeable"},
+  {at:54, ico:"\u{1F325}\ufe0f",    word:"Overcast"},
+  {at:68, ico:"\u{1F327}\ufe0f",    word:"Rough"},
+  {at:82, ico:"\u26c8\ufe0f",       word:"Stormy"}
+];
+const wxOf = v => WX.filter(w => w.at <= v).pop();
+
+function renderWeather(){
+  const now = new Date(), v = MODEL.at(now), w = wxOf(v);
+  $("#wxIco").textContent = w.ico;
+  $("#wxWord").textContent = w.word;
+
+  const nextWin = WINDOWS.find(x => x.start > Date.now());
+  const inside = WINDOWS.find(x => x.start <= Date.now() && x.end >= Date.now());
+  const when = t => new Date(t).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
+  $("#wxSub").textContent =
+    inside   ? "You're in a rough patch now \u2014 it eases around " + when(inside.end) + "."
+  : nextWin  ? "Calm for " + fmtDur(nextWin.start - Date.now()) + ", then it turns around " + when(nextWin.start) + "."
+  :            "Nothing choppy in the next couple of days.";
+
+  $("#wxNote").textContent =
+    MODEL.source === "baseline" ? "study baseline"
+  : MODEL.source === "blended"  ? Math.round(MODEL.w * 100) + "% your own pattern"
+  :                               "your own pattern";
+
+  const ramp = RAMP();
+  let out = "";
+  for(let i = 0; i < 12; i++){
+    const t = new Date(Date.now() + i * MS_H);
+    const val = MODEL.at(t), ww = wxOf(val);
+    const inWin = WINDOWS.some(x => t.getTime() >= x.start - 30*60000 && t.getTime() <= x.end);
+    out += `<div class="wx-h${i === 0 ? " now" : ""}${inWin ? " peak" : ""}"
+                 title="${when(t)} \u2014 ${ww.word}">
+        <span class="hr">${i === 0 ? "now" : t.toLocaleTimeString([], {hour:"numeric"}).replace(" ", "")}</span>
+        <span class="ico">${ww.ico}</span>
+        <span class="lvl" style="background:${rampColor(val, ramp)}"></span>
+      </div>`;
+  }
+  $("#wxStrip").innerHTML = out;
+}
+
+/* ── a small celebration, when something finally grows ──────────────── */
+function confetti(emoji){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box = el("div", {class:"confetti"});
+  const pool = [emoji, "\u{1F33F}", "\u2728", "\u{1F33C}"];
+  for(let i = 0; i < 26; i++){
+    const s = el("i", {text: pool[i % pool.length]});
+    s.style.left = (Math.random() * 100) + "%";
+    s.style.animationDuration = (1.6 + Math.random() * 1.4) + "s";
+    s.style.animationDelay = (Math.random() * 0.35) + "s";
+    box.append(s);
+  }
+  document.body.append(box);
+  setTimeout(() => box.remove(), 3600);
+}
+
+function openSeeds(){
+  const n = grownCount();
+  $("#seedGrid").innerHTML = SPECIES.map(s => {
+    const locked = s.need > n;
+    return `<button type="button" class="seed" data-sp="${s.id}"${locked ? " disabled" : ""}>
+      <span class="seed-emo">${locked ? "🔒" : s.emoji}</span>
+      <span class="seed-nm">${esc(s.name)}</span>
+      <span class="seed-sub">${locked ? "at " + s.need + " grown" : s.kind}</span>
+    </button>`;
+  }).join("");
+  $("#seedDlg").showModal();
+}
+
+function plantSeed(id){
+  const sp = speciesOf(id);
+  if(sp.need > grownCount()) return;          // locked, or a stale click
+  // the log form's datetime-local field has minute resolution, so a slip
+  // logged "now" can land a few seconds before this. Start the clock at the
+  // top of the minute and the same-minute case counts, as it should.
+  S.garden.growing = {sp: sp.id, start: Math.floor(Date.now() / 60000) * 60000};
+  save(); $("#seedDlg").close(); renderGarden();
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Alerting — the proactive part
+   ════════════════════════════════════════════════════════════════════ */
+let armed = false, tickTimer = null;
+
+/* ── native bridge ──────────────────────────────────────────────────
+   In the Android shell we hand the whole schedule to the OS alarm
+   manager, so warnings fire with the app closed. In a browser there is
+   no such facility, so the in-page timer below stays the mechanism.   */
+const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform &&
+                  window.Capacitor.isNativePlatform());
+const LN = () => window.Capacitor?.Plugins?.LocalNotifications;
+const CHANNEL = "cravecast-warnings";
+const MAX_SCHEDULED = 24;          // a week of windows, comfortably
+let scheduledCount = 0;
+
+async function nativePermission(){
+  const ln = LN(); if(!ln) return false;
+  try{
+    let p = await ln.checkPermissions();
+    if(p.display !== "granted") p = await ln.requestPermissions();
+    return p.display === "granted";
+  }catch(e){ return false; }
+}
+
+/* Push the next week of predicted windows into the OS scheduler. */
+async function syncNativeSchedule(){
+  const ln = LN(); if(!NATIVE || !ln) return;
+  try{
+    const pending = await ln.getPending();
+    if(pending.notifications?.length)
+      await ln.cancel({notifications: pending.notifications.map(n => ({id:n.id}))});
+
+    scheduledCount = 0;
+    if(!armed){ renderArm(); return; }
+
+    const lead = (S.settings.lead || 25) * 60000;
+    const wins = findWindows(MODEL, Date.now(), 7 * 24);
+    const ideas = copingIdeas();
+    const list = [];
+
+    for(const w of wins){
+      const at = new Date(w.start - lead);
+      if(at.getTime() <= Date.now() + 60000) continue;   // already past
+      if(inQuiet(at)) continue;
+      const d = windowDrivers(MODEL, w);
+      const when = new Date(w.start).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
+      const bits = [];
+      if(d.triggers.length) bits.push("Usually " + d.triggers.join(" and ").toLowerCase() + ".");
+      if(d.moods.length) bits.push("You're often " + d.moods[0].toLowerCase() + " here.");
+      if(ideas.length) bits.push("Last time: " + ideas[list.length % Math.min(3, ideas.length)].text);
+      list.push({
+        id: list.length + 1,
+        channelId: CHANNEL,
+        title: Math.round((w.start - at) / 60000) + " min to a high-risk window",
+        body: "Opens around " + when + ". " + bits.join(" "),
+        schedule: {at, allowWhileIdle: true},
+        smallIcon: "ic_stat_cravecast"
+      });
+      if(list.length >= MAX_SCHEDULED) break;
+    }
+    if(list.length) await ln.schedule({notifications: list});
+    scheduledCount = list.length;
+  }catch(e){
+    scheduledCount = -1;   // surfaced in the arm bar rather than swallowed
+  }
+  renderArm();
+}
+
+/* Anything that moves the forecast should move the alarms with it. */
+let syncT = null;
+function scheduleSync(){
+  if(!NATIVE) return;
+  clearTimeout(syncT);
+  syncT = setTimeout(syncNativeSchedule, 400);
+}
+
+function renderArm(){
+  const st = $("#armState"), btn = $("#armBtn");
+  st.classList.toggle("on", armed);
+  btn.textContent = armed ? "Stand down" : "Arm early warnings";
+  btn.classList.toggle("primary", !armed);
+  if(!armed){ $("#armTxt").textContent = "Warnings off"; return; }
+  const next = WINDOWS.find(w => w.start > Date.now());
+  if(next){
+    const at = next.start - S.settings.lead*60000;
+    const head = at > Date.now()
+      ? "Armed — next warning in " + fmtDur(at - Date.now())
+      : "Armed — window opening now";
+    $("#armTxt").textContent = NATIVE
+      ? head + (scheduledCount > 0 ? " · " + scheduledCount + " queued with Android"
+              : scheduledCount < 0 ? " · couldn't reach the alarm scheduler" : "")
+      : head;
+  } else $("#armTxt").textContent = "Armed — nothing flagged in 48h";
+}
+
+function inQuiet(d){
+  if(!S.settings.quiet) return false;
+  const h = d.getHours(), a = S.settings.qFrom, b = S.settings.qTo;
+  return a === b ? false : (a < b ? (h >= a && h < b) : (h >= a || h < b));
+}
+
+function firedKey(w){ return (S.activeHabit || "all") + "|" + Math.round(w.start / 60000); }
+
+function tick(){
+  if(!armed) return;
+  MODEL = buildModel();
+  WINDOWS = findWindows(MODEL, Date.now() - 30*60000, 50);
+  renderGauge(); renderArm();
+  // don't yank the chart out from under a hover
+  if(!$("#tip").classList.contains("on")) renderForecast();
+
+  // on Android the OS holds the schedule; firing here too would double up
+  if(NATIVE) return;
+
+  const now = Date.now();
+  const lead = (S.settings.lead || 25) * 60000;
+
+  for(const w of WINDOWS){
+    const at = w.start - lead;
+    if(now < at || now > w.start + 5*60000) continue;      // only inside the warning slot
+    const k = firedKey(w);
+    if(S.fired[k]) continue;
+    if(inQuiet(new Date())) continue;
+    S.fired[k] = now; save();
+    fireWarning(w, Math.round((w.start - now)/60000));
+  }
+
+  // unscheduled surge: risk climbed through the line without a mapped window
+  {
+    const v = MODEL.at(new Date());
+    if(lastRisk !== null && lastRisk < threshold() && v >= threshold()){
+      const k = "surge|" + Math.round(now/(45*60000));
+      if(!S.fired[k] && !inQuiet(new Date())){
+        S.fired[k] = now; save();
+        pushAlert("watch", "Pressure just crossed your line",
+          "Risk is at " + Math.round(v) + " and climbing. " + (whyText({start:now, end:now+MS_H}) || ""), []);
+        systemNotify("Craving risk rising", "You're at " + Math.round(v) + " on the scale right now.");
+      }
+    }
+    lastRisk = v;
+  }
+
+  // housekeeping — forget dedupe keys older than 3 days
+  const cutoff = now - 3*86400000; let dirty = false;
+  for(const k in S.fired) if(S.fired[k] < cutoff){ delete S.fired[k]; dirty = true; }
+  if(dirty) save();
+}
+
+function fireWarning(w, minsAhead){
+  const d = windowDrivers(MODEL, w);
+  const when = new Date(w.start).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
+  const ideas = copingIdeas();
+  const parts = [];
+  if(d.triggers.length) parts.push("Usually " + d.triggers.join(" and ").toLowerCase() + ".");
+  if(d.moods.length) parts.push("You're often " + d.moods[0].toLowerCase() + " here.");
+  if(d.hits) parts.push(d.hits + " past " + (d.hits === 1 ? "urge" : "urges") + " sit in this window.");
+  const msg = `A high-risk stretch opens at ${when}, about ${minsAhead} minutes out. ` + parts.join(" ");
+  const cope = ideas.length ? ideas[Math.floor(Math.random()*Math.min(3, ideas.length))].text : null;
+
+  pushAlert("high", "Heads up — " + minsAhead + " minutes to a high-risk window", msg,
+    cope ? [{label:"Last time this worked: " + cope, kind:"note"}] : []);
+  systemNotify("Craving window opens at " + when, msg + (cope ? " Last time: " + cope : ""));
+  chime();
+}
+
+function pushAlert(kind, title, msg, extras, opts){
+  opts = opts || {};
+  const rail = $("#alertRail");
+  const node = el("div", {class:"alarm " + (kind === "high" ? "" : kind)});
+  const ico = opts.ico || (kind === "high" ? "!" : kind === "watch" ? "▲" : "i");
+  const acts = opts.acts || [
+    {act:"log", label:"Log an urge now"},
+    {act:"dismiss", label:"Dismiss", ghost:true}
+  ];
+  node.innerHTML = `
+    <div class="alarm-ico">${esc(ico)}</div>
+    <div class="alarm-bd">
+      <div class="alarm-ttl">${esc(title)}</div>
+      <div class="alarm-msg">${esc(msg)}</div>
+      ${(extras||[]).map(e => `<div class="alarm-msg" style="margin-top:6px;color:var(--good)">${esc(e.label)}</div>`).join("")}
+      <div class="alarm-acts">
+        ${acts.map((a,i) => `<button class="btn sm${a.ghost ? " ghost" : ""}" data-act="${a.act || ("a" + i)}">${esc(a.label)}</button>`).join("")}
+      </div>
+    </div>`;
+  acts.forEach((a,i) => {
+    node.querySelector(`[data-act="${a.act || ("a" + i)}"]`).addEventListener("click", () => {
+      node.remove();
+      if(a.run) a.run();
+      else if(a.act === "log"){
+        showTab("log"); startFlow();
+        $("#flowBody").scrollIntoView({behavior:"smooth", block:"center"});
+      }
+    });
+  });
+  rail.prepend(node);
+  while(rail.children.length > 3) rail.lastElementChild.remove();
+  return node;
+}
+
+function systemNotify(title, body){
+  if(!S.settings.notify) return;
+  try{
+    if(typeof Notification !== "undefined" && Notification.permission === "granted"){
+      new Notification(title, {body, tag:"cravecast", renotify:true});
+    }
+  }catch(e){ /* blocked in this context — the in-page alert already fired */ }
+  try{ if(navigator.vibrate) navigator.vibrate([120,60,120]); }catch(e){}
+}
+
+let AC = null;
+function chime(){
+  if(!S.settings.sound) return;
+  try{
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    if(AC.state === "suspended") AC.resume();
+    [[660,0],[880,.16]].forEach(([f,t]) => {
+      const o = AC.createOscillator(), g = AC.createGain();
+      o.type = "sine"; o.frequency.value = f;
+      g.gain.setValueAtTime(0, AC.currentTime + t);
+      g.gain.linearRampToValueAtTime(.14, AC.currentTime + t + .02);
+      g.gain.exponentialRampToValueAtTime(.001, AC.currentTime + t + .32);
+      o.connect(g); g.connect(AC.destination);
+      o.start(AC.currentTime + t); o.stop(AC.currentTime + t + .35);
+    });
+  }catch(e){}
+}
+
+async function toggleArm(){
+  armed = !armed;
+  S.settings.armed = armed; save();
+  if(armed){
+    let granted = true;
+    if(NATIVE){
+      granted = await nativePermission();
+      if(granted){
+        try{
+          await LN().createChannel({
+            id: CHANNEL, name: "Early warnings",
+            description: "Fires ahead of a predicted high-risk window",
+            importance: 5, visibility: 1, vibration: true
+          });
+        }catch(e){ /* channel already exists, or an OS version without them */ }
+      }
+    } else if(S.settings.notify){
+      await askNotify();
+    }
+    chime();
+    lastRisk = MODEL.at(new Date());
+    if(!tickTimer) tickTimer = setInterval(tick, 30000);
+
+    if(NATIVE && !granted){
+      armed = false; S.settings.armed = false; save();
+      pushAlert("watch", "Android is holding notifications back",
+        "CraveCast can't post warnings without notification permission. Open Settings › Apps › CraveCast › Notifications and allow them, then arm again.", []);
+    } else {
+      await syncNativeSchedule();
+      pushAlert("info", "Early warnings armed",
+        MODEL.source === "baseline"
+          ? "Armed. Until you've logged a few urges the timing comes from the phone-survey baseline — "
+            + PRIOR.n + " stress events from " + PRIOR.cases + " people. Every urge you log pulls it toward your own pattern."
+          : NATIVE
+            ? "Android now holds " + scheduledCount + " warning" + (scheduledCount === 1 ? "" : "s") +
+              ", each " + S.settings.lead + " minutes ahead of a predicted window. They fire whether or not CraveCast is open."
+            : "You'll get a heads-up " + S.settings.lead + " minutes before each predicted window, plus a nudge if risk spikes off-schedule. Keep this tab open.", []);
+    }
+  }else{
+    clearInterval(tickTimer); tickTimer = null;
+    $("#alertRail").innerHTML = "";
+    await syncNativeSchedule();          // clears the queue with the OS
+  }
+  renderArm();
+}
+
+async function askNotify(){
+  try{
+    if(typeof Notification === "undefined") return false;
+    if(Notification.permission === "granted") return true;
+    if(Notification.permission === "denied") return false;
+    return (await Notification.requestPermission()) === "granted";
+  }catch(e){ return false; }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Accounts and cloud sync
+   Optional, and completely inert unless CLOUD is filled in. Supabase is
+   reached over plain fetch, so the page stays one self-contained file
+   with no SDK and no build step. The session token lives in localStorage
+   and is refreshed on demand; the database enforces per-account
+   isolation on its own, so a tampered client still reaches only its own
+   row. See supabase-schema.sql and README-ACCOUNTS.md.
+   ════════════════════════════════════════════════════════════════════ */
+let AUTH = null;            // {access_token, refresh_token, expires_at, email, user_id, confirmed}
+let SYNC = {state:"off", at:0, note:""};
+
+function loadAuth(){
+  try{
+    const raw = localStorage.getItem(AUTH_KEY);
+    AUTH = raw ? JSON.parse(raw) : null;
+  }catch(e){ AUTH = null; }
+}
+function setAuth(d){
+  // a token grant, or a signup that came back already signed in
+  if(!d || !d.access_token) return false;
+  AUTH = {
+    access_token: d.access_token,
+    refresh_token: d.refresh_token,
+    expires_at: Date.now() + ((d.expires_in || 3600) * 1000) - 60000,
+    email: d.user?.email || AUTH?.email || "",
+    user_id: d.user?.id || AUTH?.user_id || "",
+    confirmed: !!(d.user?.email_confirmed_at || d.user?.confirmed_at)
+  };
+  try{ localStorage.setItem(AUTH_KEY, JSON.stringify(AUTH)); }catch(e){}
+  return true;
+}
+function clearAuth(){
+  AUTH = null;
+  try{ localStorage.removeItem(AUTH_KEY); }catch(e){}
+  SYNC = {state:"off", at:0, note:""};
+}
+
+/* ── transport ─────────────────────────────────────────────────────── */
+async function cloudFetch(path, {method = "GET", body, token} = {}){
+  const headers = {"apikey": CLOUD.key, "Content-Type": "application/json"};
+  if(token) headers["Authorization"] = "Bearer " + token;
+  try{
+    const res = await fetch(CLOUD.url.replace(/\/+$/, "") + path, {
+      method, headers,
+      body: body === undefined ? undefined : JSON.stringify(body)
+    });
+    const txt = await res.text();
+    let data = null;
+    try{ data = txt ? JSON.parse(txt) : null; }catch(e){ data = {message: txt}; }
+    return {ok: res.ok, status: res.status, data};
+  }catch(e){
+    return {ok:false, status:0, data:{message:"Couldn't reach the server. Check your connection."}};
+  }
+}
+
+/* Supabase spreads its error text over several field names. */
+function cloudErr(r){
+  const d = r?.data || {};
+  return d.error_description || d.msg || d.message || d.error ||
+         (r?.status ? "Something went wrong (" + r.status + ")." : "Something went wrong.");
+}
+
+/* A valid access token, refreshing first if this one is spent. */
+async function cloudToken(){
+  if(!cloudOn() || !AUTH) return null;
+  if(Date.now() < AUTH.expires_at) return AUTH.access_token;
+  const r = await cloudFetch("/auth/v1/token?grant_type=refresh_token", {
+    method:"POST", body:{refresh_token: AUTH.refresh_token}
+  });
+  if(!r.ok || !setAuth(r.data)){
+    if(r.status && r.status !== 0){ clearAuth(); renderAcct(); }  // genuinely rejected
+    return null;
+  }
+  return AUTH.access_token;
+}
+
+/* ── merging ───────────────────────────────────────────────────────── */
+/* Signing in must never cost you data, on either side. Logs and habits
+   are unioned by id, the garden by what it grew and when, and anything
+   scalar prefers this device, which is the one you are looking at. */
+function mergeState(local, remote){
+  if(!remote || typeof remote !== "object") return local;
+  const union = (a, b) => {
+    const m = new Map();
+    for(const x of [...(b || []), ...(a || [])]) if(x && x.id) m.set(x.id, x);
+    return [...m.values()];
+  };
+  const lg = local.garden  || {plot:[], wilted:0, growing:null};
+  const rg = remote.garden || {plot:[], wilted:0, growing:null};
+  const plots = new Map();
+  for(const x of [...(rg.plot || []), ...(lg.plot || [])])
+    if(x && x.sp) plots.set(x.sp + "|" + x.at, x);
+  const growing = [lg.growing, rg.growing].filter(Boolean)
+    .sort((a, b) => (b.start || 0) - (a.start || 0))[0] || null;
+
+  const habits = union(local.habits, remote.habits);
+  return {
+    ...remote,
+    ...local,
+    habits,
+    logs: union(local.logs, remote.logs).sort((a, b) => a.ts - b.ts),
+    activeHabit: habits.some(x => x.id === local.activeHabit)
+      ? local.activeHabit
+      : (habits.some(x => x.id === remote.activeHabit) ? remote.activeHabit : (habits[0]?.id || null)),
+    fired: {...(remote.fired || {}), ...(local.fired || {})},
+    garden: {
+      plot: [...plots.values()].sort((a, b) => (a.at || 0) - (b.at || 0)),
+      wilted: Math.max(lg.wilted || 0, rg.wilted || 0),
+      growing
+    },
+    settings: {...(remote.settings || {}), ...(local.settings || {})}
+  };
+}
+
+/* ── sync ──────────────────────────────────────────────────────────── */
+let pushT = null;
+function cloudPush(){
+  if(!cloudOn() || !AUTH) return;
+  clearTimeout(pushT);
+  pushT = setTimeout(cloudSave, 1500);
+}
+
+async function cloudSave(){
+  const token = await cloudToken();
+  if(!token) return;
+  SYNC.state = "busy"; renderAcct();
+  const r = await cloudFetch("/rest/v1/rpc/cc_save", {
+    method:"POST", token, body:{p_state: S}
+  });
+  if(r.ok){ SYNC = {state:"ok", at: Date.now(), note:""}; }
+  else     { SYNC = {state:"err", at: SYNC.at, note: cloudErr(r)}; }
+  renderAcct();
+}
+
+/* Pull the server's copy, merge this device into it, push the result. */
+async function cloudSync(){
+  const token = await cloudToken();
+  if(!token) return false;
+  SYNC.state = "busy"; renderAcct();
+  const r = await cloudFetch("/rest/v1/rpc/cc_load", {method:"POST", token, body:{}});
+  if(!r.ok){
+    SYNC = {state:"err", at: SYNC.at, note: cloudErr(r)};
+    renderAcct(); return false;
+  }
+  if(r.data && typeof r.data === "object"){
+    const d = DEFAULTS();
+    const merged = mergeState(S, r.data);
+    S = {
+      ...d, ...merged,
+      settings: {...d.settings, ...(merged.settings || {})},
+      garden: {...d.garden, ...(merged.garden || {})}
+    };
+    try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
+    applyTheme(); renderAll(); resetForm();
+  }
+  await cloudSave();
+  return true;
+}
+
+/* ── the account itself ────────────────────────────────────────────── */
+async function cloudSignUp(email, password){
+  const r = await cloudFetch("/auth/v1/signup", {method:"POST", body:{email, password}});
+  if(!r.ok) return {ok:false, msg: cloudErr(r)};
+  if(setAuth(r.data)){                       // project has confirmation switched off
+    await cloudSync();
+    return {ok:true, msg:"Account created. Your data is syncing now."};
+  }
+  return {ok:true, verify:true,
+    msg:"Account created. Check " + email + " for a verification link — you'll be able to sign in once you've clicked it."};
+}
+
+async function cloudSignIn(email, password){
+  const r = await cloudFetch("/auth/v1/token?grant_type=password", {
+    method:"POST", body:{email, password}
+  });
+  if(!r.ok){
+    const code = r.data?.error_code || "";
+    const msg = cloudErr(r);
+    if(code === "email_not_confirmed" || /not confirmed/i.test(msg))
+      return {ok:false, resend:true,
+        msg:"That email hasn't been verified yet. Check your inbox for the link, or resend it below."};
+    return {ok:false, msg};
+  }
+  if(!setAuth(r.data)) return {ok:false, msg:"The server didn't return a session. Try again."};
+  await cloudSync();
+  return {ok:true, msg:"Signed in. Everything on this device has been merged into your account."};
+}
+
+async function cloudResend(email){
+  const r = await cloudFetch("/auth/v1/resend", {method:"POST", body:{type:"signup", email}});
+  return r.ok
+    ? {ok:true, msg:"Sent. Check " + email + " for the verification link."}
+    : {ok:false, msg: cloudErr(r)};
+}
+
+async function cloudRecover(email){
+  const r = await cloudFetch("/auth/v1/recover", {method:"POST", body:{email}});
+  // deliberately the same answer either way, so this can't be used to test
+  // whether an address has an account here
+  return r.ok || r.status === 422
+    ? {ok:true, msg:"If that address has an account, a reset link is on its way to it."}
+    : {ok:false, msg: cloudErr(r)};
+}
+
+async function cloudSignOut(){
+  const token = await cloudToken();
+  if(token) await cloudFetch("/auth/v1/logout", {method:"POST", token, body:{}});
+  clearAuth(); renderAcct();
+  return {ok:true, msg:"Signed out. What's in this browser stays here."};
+}
+
+async function cloudDeleteAccount(){
+  const token = await cloudToken();
+  if(!token) return {ok:false, msg:"You're not signed in."};
+  const r = await cloudFetch("/rest/v1/rpc/cc_delete_account", {method:"POST", token, body:{}});
+  if(!r.ok) return {ok:false, msg: cloudErr(r)};
+  clearAuth(); renderAcct();
+  return {ok:true, msg:"Account deleted. The login and everything stored on the server are gone."};
+}
+
+/* ── UI ────────────────────────────────────────────────────────────── */
+function acctMsg(msg, kind){
+  const n = $("#acctMsg");
+  n.textContent = msg || "";
+  n.className = "acct-msg" + (kind ? " " + kind : "");
+}
+
+function renderAcct(){
+  if(!cloudOn()) return;
+  $("#acctBtn").hidden = false;
+  // the no-server promise in the footer stops being true once sync is on
+  $("#footNote").textContent = AUTH
+    ? "Synced to your account. Sign out and what's here stays in this browser."
+    : "Everything stays in this browser until you sign in.";
+  $("#acctBtn").textContent = AUTH ? "Account · on" : "Account";
+  const inV = $("#acctIn"), outV = $("#acctOut");
+  if(!inV || !outV) return;
+  inV.hidden = !AUTH; outV.hidden = !!AUTH;
+  if(!AUTH) return;
+  $("#acctWhoMail").textContent = AUTH.email || "Signed in";
+  const ago = SYNC.at ? fmtDur(Date.now() - SYNC.at) : null;
+  $("#acctWhoSub").textContent =
+    SYNC.state === "busy" ? "Syncing…" :
+    SYNC.state === "err"  ? "Last sync failed — " + SYNC.note :
+    ago                   ? "Synced " + ago + " ago" :
+                            "Signed in — changes save as you make them";
+}
+
+function wireAccount(){
+  if(!cloudOn()) return;
+  $("#acctBtn").addEventListener("click", () => {
+    acctMsg(""); renderAcct(); $("#acctDlg").showModal();
+  });
+
+  const creds = () => [$("#acctEmail").value.trim(), $("#acctPass").value];
+  const busy = (on) => {
+    ["#acctSignIn","#acctSignUp","#acctForgot"].forEach(s => { $(s).disabled = on; });
+  };
+  const show = r => acctMsg(r.msg, r.ok ? "ok" : "bad");
+
+  $("#acctForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const [email, password] = creds();
+    busy(true); acctMsg("Signing in…");
+    const r = await cloudSignIn(email, password);
+    busy(false); show(r); renderAcct();
+    if(r.resend){
+      const b = el("button", {class:"btn sm", text:"Resend the verification email", style:"margin-top:9px",
+        async onclick(){ show(await cloudResend(email)); }});
+      $("#acctMsg").append(document.createElement("br"), b);
+    }
+  });
+
+  $("#acctSignUp").addEventListener("click", async () => {
+    const [email, password] = creds();
+    if(!email || password.length < 8){
+      acctMsg("Enter an email and a password of at least 8 characters.", "bad"); return;
+    }
+    busy(true); acctMsg("Creating your account…");
+    const r = await cloudSignUp(email, password);
+    busy(false); show(r); renderAcct();
+  });
+
+  $("#acctForgot").addEventListener("click", async () => {
+    const [email] = creds();
+    if(!email){ acctMsg("Enter your email address first.", "bad"); return; }
+    busy(true); show(await cloudRecover(email)); busy(false);
+  });
+
+  $("#acctSyncNow").addEventListener("click", async () => {
+    acctMsg("Syncing…");
+    const ok = await cloudSync();
+    acctMsg(ok ? "Up to date." : "Sync failed — " + SYNC.note, ok ? "ok" : "bad");
+  });
+
+  $("#acctSignOut").addEventListener("click", async () => {
+    show(await cloudSignOut());
+  });
+
+  $("#acctDelete").addEventListener("click", async () => {
+    if(!confirm("Delete your CraveCast account?\n\nThe login and everything stored on the server are removed " +
+                "permanently. This cannot be undone. Data already in this browser is left alone.")) return;
+    if(!confirm("Last check — really delete the account for " + (AUTH?.email || "this login") + "?")) return;
+    acctMsg("Deleting…");
+    show(await cloudDeleteAccount());
+  });
+}
+
+function cloudBoot(){
+  if(!cloudOn()) return;
+  loadAuth();
+  renderAcct();
+  if(AUTH) cloudSync();
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Form + wiring
+   ════════════════════════════════════════════════════════════════════ */
+let customTrigs = [];
+
+/* ── logging, one question at a time ───────────────────────────────────
+   The old single form asked ten things at once, which is a lot to face
+   mid-urge. Now it asks one, and every question after the first can be
+   skipped. The note and what-got-you-through-it questions are gone from
+   here entirely: they are added afterwards, when there is room to think.
+   ──────────────────────────────────────────────────────────────────── */
+const INTENSITY_HINT = {
+  1:"Barely there", 2:"Easy to sit with", 3:"Definitely there",
+  4:"Hard to ignore", 5:"All I could think about"
+};
+
+const FLOW_STEPS = [
+  {id:"outcome",   q:"What just happened?",     hint:"The only one that matters. Everything after this you can skip."},
+  {id:"intensity", q:"How strong was it?",      hint:"A rough sense is plenty."},
+  {id:"mood",      q:"How were you feeling?",   hint:"Whichever is closest."},
+  {id:"activity",  q:"What were you doing?",    hint:""},
+  {id:"triggers",  q:"What set it off?",        hint:"Pick as many as fit, or none."},
+  {id:"when",      q:"When was this?",          hint:""}
+];
+
+let flow = null;
+function newFlow(){
+  return {i:0, saved:null,
+          d:{outcome:null, intensity:null, mood:null, activity:null,
+             triggers:new Set(), ts:null}};
+}
+
+function flowAdvance(){
+  flow.i++;
+  if(flow.i >= FLOW_STEPS.length) flowSave();
+  else renderFlow();
+}
+function flowBack(){ if(flow.i > 0){ flow.i--; renderFlow(); } }
+
+function flowSave(){
+  const d = flow.d;
+  const log = {
+    id: uid(), habitId: S.activeHabit, ts: d.ts || Date.now(),
+    outcome: d.outcome || "held",
+    intensity: d.intensity || 3,
+    mood: d.mood, activity: d.activity, triggers: [...d.triggers],
+    note: "", coping: ""
+  };
+  S.logs.push(log);
+  flow.saved = log.id;
+  save(); renderAll();
+  lastRisk = MODEL.at(new Date());
+  renderFlow();
+}
+
+function renderFlow(){
+  const host = $("#flowBody"), dots = $("#flowDots"), count = $("#flowCount");
+
+  if(!S.habits.length){
+    dots.innerHTML = ""; count.textContent = "";
+    host.innerHTML = `<div class="empty"><b>Name what you're quitting first</b>
+      Every urge is logged against a habit, so there needs to be one to log it against.</div>
+      <div style="display:flex; justify-content:center; margin-top:14px">
+        <button class="btn primary" id="flowAddHabit">Add a habit</button></div>`;
+    $("#flowAddHabit").addEventListener("click", () => { renderHabits(); $("#habDlg").showModal(); });
+    return;
+  }
+
+  /* ── the confirmation, once it's in ── */
+  if(flow.saved){
+    const log = S.logs.find(l => l.id === flow.saved);
+    dots.innerHTML = ""; count.textContent = "";
+    const bits = [];
+    bits.push(`<span class="outcome ${log.outcome === "slip" ? "slip" : "held"}">${
+      log.outcome === "slip" ? "Gave in" : "Held out"}</span>`);
+    bits.push(`<span class="tag">${esc(INTENSITY_WORDS[log.intensity])}</span>`);
+    if(log.mood) bits.push(`<span class="tag">${esc(log.mood)}</span>`);
+    if(log.activity) bits.push(`<span class="tag">${esc(log.activity)}</span>`);
+    for(const t of log.triggers) bits.push(`<span class="tag">${esc(t)}</span>`);
+    bits.push(`<span class="tag">${new Date(log.ts).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"})}</span>`);
+
+    const n = activeLogs().length;
+    host.innerHTML = `<div class="flow-done">
+      <div class="tick">\u2713</div>
+      <h3>Logged</h3>
+      <div class="hint">${n < MIN_LOGS
+        ? esc((MIN_LOGS - n) + " more and the forecast is properly yours.")
+        : "The forecast has been updated."}</div>
+      <div class="recap">${bits.join("")}</div>
+      <div class="acts">
+        <button class="btn" id="flowNote">Add a note</button>
+        ${log.outcome === "held" ? `<button class="btn" id="flowCope">What got you through it</button>` : ""}
+        <button class="btn primary" id="flowAgain">Log another</button>
+      </div>
+    </div>`;
+    $("#flowNote").addEventListener("click", () => openNote(log.id, "note"));
+    $("#flowCope")?.addEventListener("click", () => openNote(log.id, "cope"));
+    $("#flowAgain").addEventListener("click", () => { flow = newFlow(); renderFlow(); });
+    return;
+  }
+
+  /* ── a question ── */
+  const step = FLOW_STEPS[flow.i], d = flow.d;
+  count.textContent = "Question " + (flow.i + 1) + " of " + FLOW_STEPS.length;
+  dots.innerHTML = FLOW_STEPS.map((_, i) =>
+    `<i class="${i < flow.i ? "on" : i === flow.i ? "at" : ""}"></i>`).join("");
+
+  let body = "";
+  if(step.id === "outcome"){
+    body = `<div class="opts two">
+      <button class="opt" data-pick="held"><span class="emo">\u{1F4AA}</span>I held out</button>
+      <button class="opt" data-pick="slip"><span class="emo">\u{1F327}\u{FE0F}</span>I gave in</button>
+    </div>`;
+  } else if(step.id === "intensity"){
+    body = `<div class="scale">` + [1,2,3,4,5].map(v =>
+      `<button data-pick="${v}"><b>${v}</b><span>${esc(INTENSITY_HINT[v])}</span></button>`).join("") + `</div>`;
+  } else if(step.id === "mood"){
+    body = `<div class="opts">` + MOODS.map(m =>
+      `<button class="opt pill" data-pick="${esc(m)}">${esc(m)}</button>`).join("") + `</div>`;
+  } else if(step.id === "activity"){
+    body = `<div class="opts">` + ACTS.map(m =>
+      `<button class="opt pill" data-pick="${esc(m)}">${esc(m)}</button>`).join("") + `</div>`;
+  } else if(step.id === "triggers"){
+    body = `<div class="opts">` + TRIGS.concat(customTrigs).map(t =>
+      `<button class="opt pill" data-toggle="${esc(t)}" aria-pressed="${d.triggers.has(t)}">${esc(t)}</button>`).join("")
+      + `<button class="opt pill" id="flowOwnTrig" style="border-style:dashed">+ something else</button></div>`;
+  } else if(step.id === "when"){
+    body = `<div class="opts two">
+        <button class="opt" data-now="1"><span class="emo">\u{23F1}\u{FE0F}</span>Just now</button>
+      </div>
+      <div class="field" style="margin-top:14px">
+        <label for="flowWhen">Or pick the time it happened</label>
+        <div class="range-row">
+          <input type="datetime-local" id="flowWhen" value="${toLocalInput(new Date())}">
+          <button class="btn" id="flowWhenGo">Use this</button>
+        </div>
+      </div>`;
+  }
+
+  host.innerHTML = `<div class="flow-body">
+      <div class="flow-q">${esc(step.q)}</div>
+      ${step.hint ? `<div class="flow-hint">${esc(step.hint)}</div>` : ""}
+      ${body}
+      <div class="flow-ft">
+        ${flow.i > 0 ? `<button class="btn ghost" id="flowBack">Back</button>` : ""}
+        <span class="spacer"></span>
+        ${step.id === "triggers" ? `<button class="btn primary" id="flowGo">Continue</button>` : ""}
+        ${flow.i > 0 ? `<button class="btn ghost" id="flowSkip">Skip this</button>` : ""}
+      </div>
+    </div>`;
+
+  $("#flowBack")?.addEventListener("click", flowBack);
+  $("#flowSkip")?.addEventListener("click", flowAdvance);
+  $("#flowGo")?.addEventListener("click", flowAdvance);
+  $("#flowWhenGo")?.addEventListener("click", () => {
+    const v = $("#flowWhen").value;
+    const t = v ? new Date(v) : null;
+    d.ts = (t && !isNaN(t)) ? t.getTime() : Date.now();
+    flowAdvance();
+  });
+
+  for(const b of host.querySelectorAll("[data-pick]")){
+    b.addEventListener("click", () => {
+      const v = b.dataset.pick;
+      d[step.id] = step.id === "intensity" ? +v : v;
+      flowAdvance();
+    });
+  }
+  for(const b of host.querySelectorAll("[data-toggle]")){
+    b.addEventListener("click", () => {
+      const t = b.dataset.toggle;
+      d.triggers.has(t) ? d.triggers.delete(t) : d.triggers.add(t);
+      renderFlow();
+    });
+  }
+  host.querySelector("[data-now]")?.addEventListener("click", () => { d.ts = Date.now(); flowAdvance(); });
+  $("#flowOwnTrig")?.addEventListener("click", () => {
+    const v = prompt("Name the trigger");
+    if(v && v.trim()){
+      const s = v.trim();
+      if(!TRIGS.includes(s) && !customTrigs.includes(s)) customTrigs.push(s);
+      d.triggers.add(s); renderFlow();
+    }
+  });
+}
+
+/* Anything can be started fresh from elsewhere — an alert, a notification. */
+function startFlow(){
+  if(!flow || flow.saved) flow = newFlow();
+  renderFlow();
+}
+function resetForm(){ flow = newFlow(); renderFlow(); }
+
+/* ── the note, added whenever you have room for it ─────────────────── */
+let noteFor = null;
+function openNote(id, focus){
+  const log = S.logs.find(l => l.id === id);
+  if(!log) return;
+  noteFor = id;
+  const d = new Date(log.ts);
+  $("#ndTitle").textContent = log.note || log.coping ? "Edit this entry" : "Add to this entry";
+  $("#ndWhen").textContent =
+    (log.outcome === "slip" ? "Gave in" : "Held out") + " \u00b7 " +
+    d.toLocaleDateString([], {month:"short", day:"numeric"}) + " at " +
+    d.toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
+  $("#ndNote").value = log.note || "";
+  $("#ndCope").value = log.coping || "";
+  // there is nothing to have got you through an urge you gave in to
+  $("#ndCopeField").hidden = log.outcome === "slip";
+  $("#noteDlg").showModal();
+  setTimeout(() => $(focus === "cope" && log.outcome !== "slip" ? "#ndCope" : "#ndNote").focus(), 40);
+}
+
+function saveNote(){
+  const log = S.logs.find(l => l.id === noteFor);
+  if(!log) return;
+  log.note = $("#ndNote").value.trim();
+  if(log.outcome !== "slip") log.coping = $("#ndCope").value.trim();
+  save(); renderAll();
+  if(flow && flow.saved === log.id) renderFlow();
+  $("#noteDlg").close();
+}
+
+function wire(){
+  $("#ndSave").addEventListener("click", saveNote);
+
+  wireAccount();
+
+  $("#seedGrid").addEventListener("click", e => {
+    const b = e.target.closest("[data-sp]");
+    if(b && !b.disabled) plantSeed(b.dataset.sp);
+  });
+
+  for(const b of document.querySelectorAll("#tabBar button"))
+    b.addEventListener("click", () => showTab(b.dataset.tab));
+
+  $("#armBtn").addEventListener("click", toggleArm);
+
+  $("#habitSel").addEventListener("change", e => {
+    S.activeHabit = e.target.value; save(); renderAll();
+  });
+
+  /* dialogs */
+  document.querySelectorAll("[data-close]").forEach(b =>
+    b.addEventListener("click", () => b.closest("dialog").close()));
+  $("#setBtn").addEventListener("click", () => { syncSettings(); $("#setDlg").showModal(); });
+  $("#manageBtn").addEventListener("click", () => { renderHabits(); $("#habDlg").showModal(); });
+
+  /* settings */
+  $("#notifTog").addEventListener("change", async e => {
+    if(e.target.checked){
+      const ok = await askNotify();
+      if(!ok){
+        e.target.checked = false;
+        $("#notifHint").textContent = "This browser context won't grant notification permission. In-page warnings and the chime still fire.";
+        $("#notifHint").style.color = "var(--high)";
+        return;
+      }
+      $("#notifHint").style.color = "";
+      $("#notifHint").textContent = "Fires a system notification ahead of a predicted window.";
+    }
+    S.settings.notify = e.target.checked; save();
+  });
+  $("#soundTog").addEventListener("change", e => { S.settings.sound = e.target.checked; save(); if(e.target.checked) chime(); });
+  $("#leadIn").addEventListener("input", e => {
+    S.settings.lead = +e.target.value; $("#leadVal").textContent = e.target.value + " min";
+    save(); renderArm(); scheduleSync();
+  });
+  $("#sensIn").addEventListener("input", e => {
+    S.settings.sensitivity = +e.target.value;
+    $("#sensVal").textContent = e.target.value < 30 ? "Only sharp peaks" : e.target.value > 70 ? "Warn me often" : "Balanced";
+    save(); renderAll();
+  });
+  $("#quietTog").addEventListener("change", e => { S.settings.quiet = e.target.checked; save(); scheduleSync(); });
+  $("#qFrom").addEventListener("change", e => { S.settings.qFrom = +e.target.value; save(); scheduleSync(); });
+  $("#qTo").addEventListener("change", e => { S.settings.qTo = +e.target.value; save(); scheduleSync(); });
+
+  /* habits */
+  $("#habForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const name = $("#habName").value.trim();
+    if(!name) return;
+    const h = {id: uid(), name, createdAt: Date.now()};
+    S.habits.push(h);
+    if(!S.activeHabit) S.activeHabit = h.id;
+    $("#habName").value = ""; save(); renderHabits(); renderAll(); renderFlow();
+  });
+
+  /* theme */
+  $("#themeBtn").addEventListener("click", () => {
+    const cur = S.settings.theme || "auto";
+    const next = cur === "auto" ? "light" : cur === "light" ? "dark" : "auto";
+    S.settings.theme = next; save(); applyTheme();
+    setTimeout(() => { renderForecast(); renderHeatmap(); renderBars(); renderGauge(); }, 30);
+  });
+
+  /* data */
+  $("#exportBtn").addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(S, null, 2)], {type:"application/json"});
+    const a = el("a", {href: URL.createObjectURL(blob), download: "cravecast-" + new Date().toISOString().slice(0,10) + ".json"});
+    document.body.append(a); a.click(); a.remove();
+  });
+  $("#importBtn").addEventListener("click", () => {
+    const inp = el("input", {type:"file", accept:"application/json"});
+    inp.addEventListener("change", () => {
+      const f = inp.files[0]; if(!f) return;
+      const r = new FileReader();
+      r.onload = () => {
+        try{
+          const p = JSON.parse(r.result);
+          if(!p.logs || !p.habits) throw 0;
+          const dd = DEFAULTS();
+          const gg = {...dd.garden, ...(p.garden||{})};
+          if(!Array.isArray(gg.plot)) gg.plot = [];
+          if(typeof gg.wilted !== "number") gg.wilted = 0;
+          S = {...dd, ...p, settings:{...dd.settings, ...(p.settings||{})}, garden:gg};
+          save(); applyTheme(); renderAll(); resetForm();
+        }catch(e){ alert("That file isn't a CraveCast export."); }
+      };
+      r.readAsText(f);
+    });
+    inp.click();
+  });
+  $("#demoBtn").addEventListener("click", () => {
+    if(S.logs.length && !confirm("This adds three weeks of sample logs alongside what you already have.\n\nTheir timing and triggers are resampled from the phone-survey data, so the shape is real even though the entries aren't yours. Continue?")) return;
+    seedDemo(); save(); renderAll(); resetForm();
+  });
+  $("#wipeBtn").addEventListener("click", () => {
+    if(!confirm("Delete every habit, log and setting on this device? This can't be undone.")) return;
+    S = DEFAULTS(); save(); applyTheme(); renderAll(); resetForm();
+  });
+
+  /* redraw charts on resize */
+  let rt = null;
+  addEventListener("resize", () => {
+    clearTimeout(rt);
+    rt = setTimeout(() => { renderForecast(); renderHeatmap(); }, 140);
+  });
+
+  addEventListener("visibilitychange", () => { if(!document.hidden && armed) tick(); });
+}
+
+function renderHabits(){
+  const host = $("#habList");
+  if(!S.habits.length){ host.innerHTML = `<div class="empty">Nothing tracked yet. Name the first one below.</div>`; return; }
+  host.innerHTML = S.habits.map(h => {
+    const n = S.logs.filter(l => l.habitId === h.id).length;
+    return `<div class="log-row" style="grid-template-columns:1fr auto">
+      <div class="log-main"><div class="log-ttl"><b>${esc(h.name)}</b></div>
+        <div style="font-size:12.5px;color:var(--ink-3)">${n} log${n === 1 ? "" : "s"} · since ${new Date(h.createdAt).toLocaleDateString([], {month:"short", day:"numeric", year:"numeric"})}</div></div>
+      <button class="btn sm ghost" data-habdel="${h.id}">Delete</button>
+    </div>`;
+  }).join("");
+  host.querySelectorAll("[data-habdel]").forEach(b => b.addEventListener("click", () => {
+    const h = S.habits.find(x => x.id === b.dataset.habdel);
+    if(!confirm(`Delete "${h.name}" and its logs?`)) return;
+    S.habits = S.habits.filter(x => x.id !== h.id);
+    S.logs = S.logs.filter(l => l.habitId !== h.id);
+    if(S.activeHabit === h.id) S.activeHabit = S.habits[0]?.id || null;
+    save(); renderHabits(); renderAll();
+  }));
+}
+
+function syncSettings(){
+  $("#notifTog").checked = !!S.settings.notify;
+  $("#soundTog").checked = !!S.settings.sound;
+  $("#leadIn").value = S.settings.lead; $("#leadVal").textContent = S.settings.lead + " min";
+  $("#sensIn").value = S.settings.sensitivity;
+  $("#sensVal").textContent = S.settings.sensitivity < 30 ? "Only sharp peaks" : S.settings.sensitivity > 70 ? "Warn me often" : "Balanced";
+  $("#quietTog").checked = !!S.settings.quiet;
+  $("#qFrom").value = S.settings.qFrom; $("#qTo").value = S.settings.qTo;
+  if(NATIVE){
+    $("#tabHint").textContent =
+      "Warnings are handed to Android's alarm scheduler, so they arrive whether or not CraveCast is open — including after a reboot. " +
+      "They're re-planned every time you log an urge or change these settings.";
+  } else {
+    const nSupported = typeof Notification !== "undefined";
+    $("#tabHint").textContent = nSupported
+      ? "Warnings are computed in this tab, so leave it open (pinning it works well). If the tab is closed, the forecast still updates the moment you come back."
+      : "This browser context blocks system notifications, so warnings appear in the page and as a chime. Leave the tab open.";
+  }
+}
+
+function applyTheme(){
+  const t = S.settings.theme || "auto";
+  if(t === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", t);
+  $("#themeBtn").title = "Theme: " + t + " — click to change";
+}
+
+/* ── sample data ───────────────────────────────────────────────────── */
+function seedDemo(){
+  let habit = S.habits.find(h => h.name === "Vaping");
+  if(!habit){
+    habit = {id: uid(), name: "Vaping", createdAt: Date.now() - 24*86400000};
+    S.habits.push(habit);
+  }
+  S.activeHabit = habit.id;
+
+  // Hours and reasons are drawn from the phone-survey data in PRIOR rather
+  // than invented, so the sample set has the shape people actually reported.
+  // Mood, activity and outcome are still made up: the study never asked.
+  const MOOD_FOR = {
+    "Started thinking about it":"Restless", "Conflict with someone":"Angry",
+    "Money worry":"Anxious", "Unsafe surroundings":"Anxious",
+    "Inconvenienced":"Angry", "Injury or health":"Tired",
+    "Legal problem":"Anxious", "Too much to do":"Stressed", "Something else":"Bored"
+  };
+  const ACT_FOR = {
+    "Started thinking about it":"Alone at home", "Conflict with someone":"With friends",
+    "Money worry":"Winding down", "Unsafe surroundings":"Commuting",
+    "Inconvenienced":"Commuting", "Injury or health":"Alone at home",
+    "Legal problem":"Working", "Too much to do":"Working", "Something else":"Scrolling"
+  };
+  // inverse-transform sampling over the fitted hourly curve
+  const cum = [];
+  PRIOR.hour.reduce((a, v, i) => (cum[i] = a + v, cum[i]), 0);
+  const total = cum[23];
+  const drawHour = () => {
+    const t = Math.random() * total;
+    let i = 0; while(i < 23 && cum[i] < t) i++;
+    return i + Math.random();                       // spread within the hour
+  };
+  const rcum = [];
+  PRIOR.reasons.reduce((a, r, i) => (rcum[i] = a + r.pct, rcum[i]), 0);
+  const rtotal = rcum[rcum.length - 1];
+  const drawReason = () => {
+    const t = Math.random() * rtotal;
+    let i = 0; while(i < PRIOR.reasons.length - 1 && rcum[i] < t) i++;
+    return PRIOR.reasons[i].label;
+  };
+  const copes = [
+    "Walked to the end of the street and back.",
+    "Ten deep breaths and a glass of cold water.",
+    "Texted Sam — talked until it passed.",
+    "Put my hands on something else: dishes.",
+    "Set a 12-minute timer and it faded at 7.",
+    "Chewed gum and moved to another room."
+  ];
+  const now = new Date();
+  for(let k = 0; k < 48; k++){
+    const d = new Date(now.getTime() - Math.floor(Math.random() * 21) * 86400000);
+    const hour = drawHour();
+    d.setHours(Math.floor(hour), Math.round((hour % 1) * 60), 0, 0);
+    if(d > now) continue;
+    const reason = drawReason();
+    const slip = Math.random() < 0.38;
+    S.logs.push({
+      id: uid(), habitId: habit.id, ts: d.getTime(),
+      outcome: slip ? "slip" : "held",
+      intensity: 2 + Math.floor(Math.random() * 4),
+      mood: MOOD_FOR[reason] || "Stressed",
+      activity: ACT_FOR[reason] || "Alone at home",
+      triggers: [reason],
+      note: "", coping: slip ? "" : (Math.random() < .45 ? copes[Math.floor(Math.random()*copes.length)] : "")
+    });
+  }
+  S.logs.sort((a,b) => a.ts - b.ts);
+}
+
+/* ── boot ──────────────────────────────────────────────────────────── */
+function boot(){
+  applyTheme();
+  if(!S.activeHabit && S.habits.length) S.activeHabit = S.habits[0].id;
+  wire(); resetForm(); renderAll();
+  cloudBoot();
+
+  if(NATIVE){
+    document.documentElement.classList.add("native");
+    // an armed app must come back armed — the OS kept the alarms while it was closed
+    if(S.settings.armed){
+      armed = true;
+      if(!tickTimer) tickTimer = setInterval(tick, 30000);
+      renderArm(); syncNativeSchedule();
+    }
+    // refresh the queue whenever the app is brought back to the foreground
+    window.Capacitor?.Plugins?.App?.addListener("appStateChange", ({isActive}) => {
+      if(isActive){ renderAll(); if(armed) syncNativeSchedule(); }
+    });
+    LN()?.addListener("localNotificationActionPerformed", () => {
+      showTab("log"); startFlow();
+      $("#flowBody")?.scrollIntoView({behavior:"smooth", block:"center"});
+    });
+  }
+
+  if(!S.habits.length){
+    const n = pushAlert("info", "Start by naming what you're quitting",
+      "Add a habit, then log urges as they hit — time, mood, what you were doing, what set it off. After about six entries CraveCast starts forecasting your risky hours and warning you before they arrive.",
+      []);
+    n.id = "bootAlert";
+    n.querySelector('[data-act="log"]').replaceWith(
+      el("button", {class:"btn sm", text:"Add a habit", onclick(){ renderHabits(); $("#habDlg").showModal(); }}));
+  }
+  // keep the clock honest even when not armed
+  setInterval(() => { if(!armed){ renderGauge(); renderForecast(); } }, 120000);
+  // the growth bar creeps forward on its own, and blooms while you watch
+  setInterval(() => { gardenTick(); renderGarden(); }, 60000);
+  if(document.fonts && document.fonts.ready)
+    document.fonts.ready.then(() => { renderForecast(); renderHeatmap(); });
+}
+boot();
+</script>
