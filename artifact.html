@@ -24,6 +24,12 @@
 
   --soil-a:#A9D9AE; --soil-b:#B7E2BB;
   --soil-pa:#8FCB93; --soil-pb:#9FD6A3;
+  /* the plot has its own day/night set: sky, soil, and the controls sitting on it */
+  --plot-sky:#DCF2FF; --plot-mid:#E8F7EC; --plot-base:#D5EEDA;
+  --plot-bd:rgba(16,185,129,.28); --plot-ink:#047857; --plot-ink-2:#4B7A6E;
+  --plot-ctl:#fff; --plot-ctl-bd:rgba(16,185,129,.3);
+  --plot-ctl-sh:rgba(4,120,87,.28); --plot-seg:rgba(255,255,255,.75);
+  --plot-stars:0;
 
   --disp:'Baloo 2',system-ui,sans-serif;
   --body:'Plus Jakarta Sans',system-ui,sans-serif;
@@ -51,6 +57,12 @@
   --green-ink:#6EE7B7; --green-chip:rgba(52,211,153,.14);
   --g-head:#ECFDF5; --g-sub:#94A3B8;
   --lift:0 10px 30px -18px rgba(0,0,0,.7);
+  --soil-a:#2B4233; --soil-b:#324D3B; --soil-pa:#3B5C44; --soil-pb:#43684D;
+  --plot-sky:#0E1A2E; --plot-mid:#132A28; --plot-base:#14231D;
+  --plot-bd:rgba(52,211,153,.22); --plot-ink:#6EE7B7; --plot-ink-2:#8FBFA8;
+  --plot-ctl:rgba(255,255,255,.07); --plot-ctl-bd:rgba(110,231,183,.28);
+  --plot-ctl-sh:rgba(0,0,0,.45); --plot-seg:rgba(255,255,255,.06);
+  --plot-stars:1;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]):not([data-theme="dark"]){
@@ -64,6 +76,12 @@
     --green-ink:#6EE7B7; --green-chip:rgba(52,211,153,.14);
     --g-head:#ECFDF5; --g-sub:#94A3B8;
     --lift:0 10px 30px -18px rgba(0,0,0,.7);
+  --soil-a:#2B4233; --soil-b:#324D3B; --soil-pa:#3B5C44; --soil-pb:#43684D;
+  --plot-sky:#0E1A2E; --plot-mid:#132A28; --plot-base:#14231D;
+  --plot-bd:rgba(52,211,153,.22); --plot-ink:#6EE7B7; --plot-ink-2:#8FBFA8;
+  --plot-ctl:rgba(255,255,255,.07); --plot-ctl-bd:rgba(110,231,183,.28);
+  --plot-ctl-sh:rgba(0,0,0,.45); --plot-seg:rgba(255,255,255,.06);
+  --plot-stars:1;
   }
 }
 
@@ -177,8 +195,8 @@ a:hover{color:var(--teal)}
                 animation:sway 4.2s ease-in-out infinite}
 .cc-stages{display:flex; gap:6px}
 .cc-stages i{flex:1; height:8px; border-radius:100px; transition:background .35s}
-.cc-species{position:relative; display:flex; gap:9px; margin-top:20px; flex-wrap:wrap;
-            overflow-x:auto; padding-bottom:4px}
+.cc-species{position:relative; display:flex; gap:9px; margin-top:13px; flex-wrap:wrap;
+            overflow-x:auto; padding:7px 2px 6px}
 .cc-seed{display:flex; flex-direction:column; align-items:center; gap:4px; width:68px;
          padding:10px 4px; cursor:pointer; border-radius:18px; border:1.5px solid;
          transition:all .2s ease; background:transparent}
@@ -234,13 +252,33 @@ a:hover{color:var(--teal)}
 
 /* ── the 3D plot ───────────────────────────────────────────────────── */
 .cc-plot{position:relative; overflow:hidden; border-radius:32px; padding:20px;
-         background:linear-gradient(180deg,#DCF2FF,#E8F7EC 58%,#D5EEDA);
-         border:1.5px solid rgba(16,185,129,.28);
-         box-shadow:0 16px 40px -26px rgba(6,95,70,.6)}
-.cc-plot .sun{position:absolute; top:18px; right:22px; font-size:30px;
+         background:linear-gradient(180deg,var(--plot-sky),var(--plot-mid) 58%,var(--plot-base));
+         border:1.5px solid var(--plot-bd);
+         box-shadow:0 16px 40px -26px rgba(6,95,70,.6);
+         transition:background .4s, border-color .4s}
+/* a few stars, only once the sky is dark */
+.cc-plot::before{
+  content:""; position:absolute; inset:0; pointer-events:none; opacity:var(--plot-stars);
+  transition:opacity .4s;
+  background-image:
+    radial-gradient(1.6px 1.6px at 18% 14%, rgba(255,255,255,.85), transparent),
+    radial-gradient(1.3px 1.3px at 62% 9%,  rgba(255,255,255,.65), transparent),
+    radial-gradient(1.7px 1.7px at 82% 22%, rgba(255,255,255,.75), transparent),
+    radial-gradient(1.2px 1.2px at 35% 27%, rgba(255,255,255,.5),  transparent),
+    radial-gradient(1.4px 1.4px at 8% 33%,  rgba(255,255,255,.55), transparent);
+}
+.cc-plot > *{position:relative}
+.cc-plot .sun{position:absolute; top:18px; right:22px; font-size:30px; line-height:0;
               animation:sway 6s ease-in-out infinite}
+.cc-plot .sun .night{display:none}
+:root[data-theme="dark"] .cc-plot .sun .day{display:none}
+:root[data-theme="dark"] .cc-plot .sun .night{display:inline-block}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .cc-plot .sun .day{display:none}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .cc-plot .sun .night{display:inline-block}
+}
 .cc-plot .eyebrow{position:relative; font:500 11px var(--mono); letter-spacing:.1em;
-                  text-transform:uppercase; color:#047857}
+                  text-transform:uppercase; color:var(--plot-ink)}
 .cc-stage3d{position:relative; height:360px; perspective:1000px; perspective-origin:50% 42%;
             display:grid; place-items:center}
 .cc-plane{position:relative; width:340px; max-width:100%; transform-style:preserve-3d;
@@ -252,19 +290,20 @@ a:hover{color:var(--teal)}
 .cc-tile .e{position:absolute; left:50%; top:50%; line-height:1;
             filter:drop-shadow(0 5px 4px rgba(6,60,40,.35)); transition:transform .4s}
 .cc-plotctl{position:relative; display:flex; align-items:center; gap:10px; flex-wrap:wrap}
-.cc-rot{width:44px; height:44px; border-radius:16px; background:#fff;
-        border:1.5px solid rgba(16,185,129,.3); cursor:pointer; font:700 17px var(--disp);
-        color:#047857; box-shadow:0 3px 0 rgba(4,120,87,.28); transition:transform .12s}
+.cc-rot{width:44px; height:44px; border-radius:16px; background:var(--plot-ctl);
+        border:1.5px solid var(--plot-ctl-bd); cursor:pointer; font:700 17px var(--disp);
+        color:var(--plot-ink); box-shadow:0 3px 0 var(--plot-ctl-sh);
+        transition:transform .12s, background .3s, color .3s}
 .cc-rot:active{transform:translateY(2px)}
 .cc-seg{flex:1; min-width:170px; display:flex; flex-direction:column; gap:5px;
-        background:rgba(255,255,255,.75); border-radius:18px; padding:9px 13px}
+        background:var(--plot-seg); border-radius:18px; padding:9px 13px; transition:background .3s}
 .cc-sizeread{display:flex; align-items:baseline; gap:8px}
-.cc-sizeread b{font:800 15px var(--disp); color:#047857}
-.cc-sizeread span{font:500 11.5px var(--mono); color:#4B7A6E; margin-left:auto}
-.cc-sizebar{height:6px; border-radius:100px; background:rgba(4,120,87,.16); overflow:hidden}
+.cc-sizeread b{font:800 15px var(--disp); color:var(--plot-ink)}
+.cc-sizeread span{font:500 11.5px var(--mono); color:var(--plot-ink-2); margin-left:auto}
+.cc-sizebar{height:6px; border-radius:100px; background:rgba(4,120,87,.22); overflow:hidden}
 .cc-sizebar i{display:block; height:100%; border-radius:100px;
               background:linear-gradient(90deg,#10B981,#F59E0B); transition:width .45s ease}
-.cc-sizehint{font:500 11px var(--body); color:#4B7A6E}
+.cc-sizehint{font:500 11px var(--body); color:var(--plot-ink-2)}
 .cc-seg button{flex:1; border:none; cursor:pointer; border-radius:100px; padding:9px 6px;
                font:700 13px var(--disp); background:transparent; color:#4B7A6E; transition:all .2s}
 .cc-seg button[aria-selected="true"]{background:#10B981; color:#fff; box-shadow:0 2px 6px rgba(4,120,87,.35)}
@@ -1199,6 +1238,11 @@ input:focus-visible, textarea:focus-visible, select:focus-visible{
     <path d="M5 21c0-5.2 4.3-9.4 9.6-9.4 5.9 0 11.4 3.7 11.4 8.9 0 3.7-3.2 5.8-8.4 5.8h-6.7C6.9 26.3 5 24.2 5 21z" fill="#8A94A0"/>
     <path d="M8.6 19.2c1.6-3.2 4.3-5.3 7.5-5.6-2.7 1.7-4.7 3.9-5.7 6.4z" fill="#B7BFC8"/>
   </symbol>
+  <symbol id="i-moon" viewBox="0 0 32 32">
+    <path d="M22.6 19.8c-5.4 0-9.4-3.7-9.4-8.7 0-1.9.6-3.7 1.6-5.1C9.6 7.1 5.8 11.6 5.8 17c0 6.3 5 11.2 11.3 11.2 4.6 0 8.5-2.6 10.2-6.6-1.4.8-3 1.2-4.7 1.2z" fill="#FBBF24"/>
+    <path d="M24.8 6.2l.9 2 2 .9-2 .9-.9 2-.9-2-2-.9 2-.9z" fill="#FDE68A"/>
+    <path d="M9.4 4.6l.6 1.3 1.3.6-1.3.6-.6 1.3-.6-1.3-1.3-.6 1.3-.6z" fill="#FDE68A"/>
+  </symbol>
   <symbol id="i-clear" viewBox="0 0 32 32">
     <path d="M10 10l12 12M22 10L10 22" stroke="#FB7185" stroke-width="4.5" stroke-linecap="round" fill="none"/>
   </symbol>
@@ -1436,7 +1480,10 @@ input:focus-visible, textarea:focus-visible, select:focus-visible{
 
     <div class="cc-grid a320">
       <section class="cc-plot">
-        <div class="sun"><svg class="ico" style="width:30px;height:30px" aria-hidden="true"><use href="#i-sun"></use></svg></div>
+        <div class="sun">
+          <svg class="ico day" style="width:30px;height:30px" aria-hidden="true"><use href="#i-sun"></use></svg>
+          <svg class="ico night" style="width:30px;height:30px" aria-hidden="true"><use href="#i-moon"></use></svg>
+        </div>
         <div class="eyebrow" id="gPlaced">Your plot · 0 planted</div>
         <div class="cc-stage3d"><div class="cc-plane" id="gPlane"></div></div>
         <div class="cc-plotctl">
