@@ -1,50 +1,87 @@
 # CraveCast
 
-Forecasts when a craving is likely to hit, warns you before it does, and turns
-every day you ride one out into something growing in a garden.
+A craving forecasting app. Predicts when an urge is likely to hit, warns you before it, and turns every day you stay clean into something growing in a garden.
 
-One self-contained `index.html`. No framework, no build step, no dependencies —
-open the file and it runs. The same file is the source for four targets: the
-web page, a published Artifact, an Android app and an iOS app.
+No sign-up. No tracking. Everything stays in your browser.
 
----
+## If you're in crisis
 
-## What it does
+- SAMHSA: 1-800-662-4357 (24/7)
+- Crisis Text Line: text HOME to 741741
+- 988 Suicide & Crisis Lifeline: call or text 988
 
-**Forecast.** A recency- and intensity-weighted kernel density estimate over
-time-of-day (circular) × day-of-week, evaluated continuously so risk can be read
-at any instant. On the home page it's shown as weather — ☀️ Clear through
-⛈️ Stormy, twelve hours at a glance. The underlying curve, the alert threshold
-and the predicted windows are in **Patterns** for anyone who wants them.
+CraveCast is a tool to help you notice patterns. It's not therapy.
 
-**Cold start.** The forecast doesn't sit dead waiting for data. It opens on a
-baseline fitted from real phone-survey stress reports and shrinks toward your
-own pattern as you log — half yours by the third entry. See *Where the numbers
-come from* below.
+## How it works
 
-**Early warnings.** Arm it and it fires ahead of a predicted window, with what
-usually drives that window and what has worked for you before. In the Android
-build the schedule is handed to the OS alarm manager so warnings arrive with the
-app closed; in a browser it's an in-page timer.
+**The forecast.** Logs when you get cravings, learns when you're most at risk, shows it as a weather report. Clear skies or stormy — you see what's coming. By your third log it's half your own pattern.
 
-**The garden.** Pick something to grow. Twenty-four hours without logging that
-you gave in and it's yours permanently; log a slip and that one is lost, though
-nothing already grown is ever taken away. Twenty-five species unlock as the
-garden fills — flowers, then trees, then farm animals — with ranks, a clean-day
-streak, and a collection wall.
+**The garden.** Pick something to grow. Stay clean 24 hours and it's yours to plant. Slip and that one's lost, but nothing already grown ever disappears. 28 species unlock as your garden fills, and the plot itself grows a dimension each time you fill it.
 
-**Logging.** One question at a time, everything after the first skippable.
-Notes and "what got you through it" are deliberately not asked mid-urge; you add
-those afterwards, from the confirmation panel or any row in History.
+**Logging.** One short scroll: how strong it is, your mood and stress, where you are, and how it went. The last one is what the forecast learns from. A note is optional and goes in after, so you're not stuck filling forms mid-urge.
 
-**Accounts (optional, off by default).** Empty config = everything stays in the
-browser, no account, no server. Fill it in and you get sign-up, email
-verification, cross-device sync and account deletion. See
-[README-ACCOUNTS.md](README-ACCOUNTS.md).
+## Try it
 
----
+Live: https://ben-silv.github.io/CraveCast/index.html
 
-## Files
+Local: 
+```bash
+git clone https://github.com/ben-silv/CraveCast
+open CraveCast/index.html
+```
+
+## Important stuff
+
+This is beta. Built by a student, based on real research.
+
+**The forecast:**
+- Learns from your logs, gets smarter over time
+- Starts with a population baseline, personalizes as you log
+- By log 16 it's ~84% you
+
+**Your data:**
+- Stays in your browser. No servers, no account needed
+- If you clear browser data it's gone
+- Optional: set up a private account for cross-device sync later
+
+**What it won't do:**
+- Stop all cravings
+- Replace therapy or a support group
+- It's awareness, not a cure
+
+## Running it locally
+
+```bash
+python -m http.server 8000
+# then open http://127.0.0.1:8000/index.html
+```
+
+Or just open `index.html` directly in your browser.
+
+## Deploying
+
+GitHub Pages (free, public):
+1. Settings → Pages
+2. Source: main branch, root directory
+3. Wait a minute
+4. Live at `https://username.github.io/CraveCast/index.html`
+
+## The forecast
+
+Kernel density estimate over time-of-day and day-of-week, weighted by recency (21-day half-life), intensity, and whether it was a slip or held urge.
+
+Starts with a baseline from 99 stress events across 10 people (phone surveys, April 2019 – Feb 2020). Blends toward your own logs as you add them. By your third entry it's half you, by the sixteenth it's ~84% you.
+
+Honest limits:
+- Baseline is stress data, not craving data
+- 6–9 AM is interpolated (fell outside survey windows)
+- No weekday term fitted (tested in 159 participant-days of drink calendars, didn't hold)
+
+## Data
+
+Stays in your browser by default. Optional: enable a Supabase account for cross-device sync. See `README-ACCOUNTS.md`.
+
+## What's in the repo
 
 | Path | What |
 |---|---|
@@ -53,70 +90,24 @@ verification, cross-device sync and account deletion. See
 | `build-artifact.py` | `index.html` → Artifact fragment |
 | `build-native.py` | `index.html` → shared native web assets, with fonts bundled offline |
 | `codemagic.yaml` | the iOS build, on a hosted Mac — signs and ships to TestFlight |
-| `rebuild-ios.sh` | the same build by hand, if you ever have a Mac in front of you |
+| `rebuild-ios.sh` | the same build by hand, if you have a Mac in front of you |
 | `capacitor.config.json`, `package.json` | the Capacitor project; CI clones this repo and reads them |
-| `make-icon.py` | renders `assets/icon.png`, the 1024px App Store icon |
+| `make-icon.py` | renders `assets/icon.png`, the 1024px app icon |
 | `fit-prior.py` | fits the cold-start baseline from the phone-survey workbook |
 | `prior.js` | its output — the `PRIOR` block embedded in `index.html` |
 | `fit-weekday.py` | tests whether the drink calendars support a weekday term |
-| `supabase-schema.sql` | table, row-level-security policies and functions for accounts |
+| `supabase-schema.sql` | tables and row-level-security policies for optional accounts |
+| `design_handoff_cravecast/` | the design this UI was built from, and the icon sprite |
 | `README-ACCOUNTS.md` | how to switch accounts and cloud sync on |
 | `README-ANDROID.md` | installing and rebuilding the Android app |
 | `README-IOS.md` | building the iOS app and submitting it to the App Store |
 
----
+One self-contained `index.html` — no framework, no build step, no dependencies.
+The same file is the source for four targets: the web page, a published Claude
+Artifact, an Android app and an iOS app.
 
-## Where the numbers come from
+## Sources
 
-Two study datasets sit behind the model. **Neither is in this repository** —
-they are human-subjects data and stay local. The scripts that read them are
-here, so the fits are reproducible by anyone who holds the data.
-
-**Phone survey stress events** — 99 stress events from 10 participants
-answering four surveys a day. `fit-prior.py` turns these into the hourly
-cold-start curve. Two honest limits, both carried into the app's own UI:
-
-- These are *stress* events, not cravings. The study never asked about
-  cravings. It's a starting shape, not a prediction about any individual.
-- 06:00–08:59 fell outside every survey window, so those hours are
-  interpolated rather than observed, and are marked as such.
-
-No day-of-week term is fitted from it: across 10 participants enrolled at
-different times, weekday variation isn't separable from who was reporting.
-
-**Timeline Followback calendars** — daily standard drinks for 11 participants
-over 159 monitored days. These contain no time of day, so they cannot inform an
-hour-of-day forecast. `fit-weekday.py` tests the one thing they could support
-and finds it doesn't hold: within-person weekday spread p = 0.27, weekend-minus-
-midweek 95% CI [−0.08, +1.54], which includes zero. No weekday term was fitted.
-
-What they *did* settle is how fast to stop trusting the population and start
-trusting the user. 76% of the variance in daily drinking is between people
-rather than between days (ICC = 0.76). Scaled for the degrees of freedom in a
-24-hour curve, that puts the shrinkage constant at K ≈ 3 — so the forecast is
-half yours by the third log instead of the eighth.
-
----
-
-## Running it
-
-```
-python -m http.server 8000
-```
-
-then open `http://127.0.0.1:8000/index.html`. Or just open the file directly —
-everything except the optional account sync works over `file://`.
-
-To rebuild the Artifact fragment after editing:
-
-```
-python build-artifact.py
-```
-
----
-
-## Privacy
-
-With accounts off, nothing leaves the browser: habits, logs and garden live in
-`localStorage` and there is no server to send them to. Turning accounts on moves
-that data to a database you control, and the footer text changes to say so.
+- Ramesh Kumar Sah et al. (2022). Alcohol and Drug Abuse Research Program (ADARP) Dataset. https://doi.org/10.5281/zenodo.664029
+- Sah et al. (2020). Mobile Health for Alcohol Recovery and Relapse Prevention. CHASE. https://doi.org/10.1145/3384420.3431779
+- Alinia et al. (2021). Associations Between Physiological Signals and Self-reported Outcomes in Alcohol Use Disorder Recovery. JMIR Form Res. https://doi.org/10.2196/27891
