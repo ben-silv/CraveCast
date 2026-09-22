@@ -4,8 +4,8 @@ Forecasts when a craving is likely to hit, warns you before it does, and turns
 every day you ride one out into something growing in a garden.
 
 One self-contained `index.html`. No framework, no build step, no dependencies —
-open the file and it runs. The same file is the source for three targets: the
-web page, a published Artifact, and an Android app.
+open the file and it runs. The same file is the source for four targets: the
+web page, a published Artifact, an Android app and an iOS app.
 
 ---
 
@@ -51,13 +51,18 @@ verification, cross-device sync and account deletion. See
 | `index.html` | the whole app — edit this |
 | `artifact.html` | generated; the fragment published as a Claude Artifact |
 | `build-artifact.py` | `index.html` → Artifact fragment |
-| `build-android.py` | `index.html` → Android web assets, with fonts bundled offline |
+| `build-native.py` | `index.html` → shared native web assets, with fonts bundled offline |
+| `codemagic.yaml` | the iOS build, on a hosted Mac — signs and ships to TestFlight |
+| `rebuild-ios.sh` | the same build by hand, if you ever have a Mac in front of you |
+| `capacitor.config.json`, `package.json` | the Capacitor project; CI clones this repo and reads them |
+| `make-icon.py` | renders `assets/icon.png`, the 1024px App Store icon |
 | `fit-prior.py` | fits the cold-start baseline from the phone-survey workbook |
 | `prior.js` | its output — the `PRIOR` block embedded in `index.html` |
 | `fit-weekday.py` | tests whether the drink calendars support a weekday term |
 | `supabase-schema.sql` | table, row-level-security policies and functions for accounts |
 | `README-ACCOUNTS.md` | how to switch accounts and cloud sync on |
 | `README-ANDROID.md` | installing and rebuilding the Android app |
+| `README-IOS.md` | building the iOS app and submitting it to the App Store |
 
 ---
 

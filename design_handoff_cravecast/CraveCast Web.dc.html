@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#EAF2F1;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#111827}
+a{color:#0891B2;text-decoration:none}a:hover{color:#06B6D4}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes halo{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.09);opacity:.16}}
+@keyframes sheen{from{transform:translateX(-120%)}to{transform:translateX(220%)}}
+@keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+</style></helmet>
+
+<div style="min-height:100vh;background:{{ pageBg }};transition:background .3s">
+  <header style="position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:14px 24px;background:{{ barBg }};backdrop-filter:blur(18px);border-bottom:1px solid {{ hairline }}">
+    <div style="display:flex;align-items:center;gap:9px;font:800 21px 'Baloo 2',sans-serif;color:{{ ink }};letter-spacing:-.01em">
+      <span style="font-size:22px;animation:sway 5s ease-in-out infinite">🌱</span>Crave<span style="color:#06B6D4">Cast</span>
+    </div>
+    <nav style="display:flex;gap:4px;flex-wrap:wrap;margin-left:12px">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="4">
+        <button onClick="{{ n.onClick }}" style="display:flex;align-items:center;gap:7px;border:none;cursor:pointer;border-radius:100px;padding:9px 16px;font:700 14px 'Baloo 2',sans-serif;background:{{ n.bg }};color:{{ n.fg }};transition:all .2s">
+          <span style="font-size:15px">{{ n.i }}</span>{{ n.l }}
+        </button>
+      </sc-for>
+    </nav>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+      <button onClick="{{ toggleTheme }}" style-hover="transform:translateY(-1px)" style="border:1px solid {{ hairline }};background:{{ cardBg }};cursor:pointer;border-radius:100px;padding:9px 14px;font:700 13px 'Baloo 2',sans-serif;color:{{ ink }};transition:transform .15s">{{ themeLabel }}</button>
+      <div style="display:flex;align-items:center;gap:9px;background:{{ cardBg }};border:1px solid {{ hairline }};border-radius:100px;padding:5px 14px 5px 5px">
+        <span style="width:32px;height:32px;border-radius:50%;background:linear-gradient(145deg,#06B6D4,#0E7490);display:grid;place-items:center;color:#fff;font:800 13px 'Baloo 2',sans-serif">B</span>
+        <span style="font:700 13.5px 'Baloo 2',sans-serif;color:{{ ink }}">Ben</span>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width:1240px;margin:0 auto;padding:26px 24px 72px">
+
+    <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:20px">
+        <div>
+          <div style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:{{ muted }};margin-bottom:7px">Thu · Sep 19 · Evening</div>
+          <div style="font:800 34px/1.15 'Baloo 2',sans-serif;color:{{ ink }};letter-spacing:-.02em">Hey Ben 👋 how are you right now?</div>
+        </div>
+        <button onClick="{{ goLog }}" style-active="transform:translateY(3px);box-shadow:0 1px 0 #B45309" style="border:none;cursor:pointer;border-radius:22px;padding:15px 24px;background:linear-gradient(135deg,#F59E0B,#FBBF24);color:#3B2205;font:800 15px 'Baloo 2',sans-serif;box-shadow:0 4px 0 #B45309;transition:transform .12s,box-shadow .12s">Having a craving? Log it 💧</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:18px;align-items:start">
+        <div style="position:relative;overflow:hidden;background:{{ plantCardBg }};border:1.5px solid {{ plantCardBd }};border-radius:30px;padding:26px;box-shadow:0 14px 36px -24px rgba(6,95,70,.6);animation:rise .5s ease both">
+          <div style="position:absolute;top:-70px;right:-50px;width:190px;height:190px;border-radius:50%;background:rgba(16,185,129,.12)"></div>
+          <div style="position:relative;display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+            <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:{{ greenInk }}">Today’s plant</div>
+            <div style="font:700 12px 'Baloo 2',sans-serif;color:{{ greenInk }};background:{{ greenChip }};border-radius:100px;padding:5px 12px">{{ plantClock }}</div>
+          </div>
+          <div style="position:relative;display:flex;align-items:center;gap:22px;flex-wrap:wrap">
+            <div style="position:relative;width:112px;height:112px;flex:none;display:grid;place-items:center">
+              <div style="position:absolute;inset:0;border-radius:50%;background:rgba(16,185,129,.14);animation:halo 3.8s ease-in-out infinite"></div>
+              <div style="position:absolute;inset:10px;border-radius:50%;background:{{ plantWell }}"></div>
+              <span style="position:relative;font-size:{{ plantSize }};line-height:1;transition:font-size .4s cubic-bezier(.2,1.4,.4,1);animation:sway 4.2s ease-in-out infinite">{{ plantEmoji }}</span>
+            </div>
+            <div style="flex:1;min-width:200px">
+              <div style="font:700 22px/1.25 'Baloo 2',sans-serif;color:{{ greenHead }};margin-bottom:7px">{{ plantHeadline }}</div>
+              <div style="font:500 14px/1.55 'Plus Jakarta Sans',sans-serif;color:{{ greenSub }};margin-bottom:14px">{{ plantSub }}</div>
+              <div style="display:flex;gap:6px">
+                <sc-for list="{{ plantStages }}" as="g" hint-placeholder-count="4">
+                  <div style="flex:1;height:8px;border-radius:100px;background:{{ g.c }};transition:background .35s"></div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <div style="position:relative;display:flex;gap:9px;margin-top:20px;flex-wrap:wrap">
+            <sc-for list="{{ species }}" as="p" hint-placeholder-count="6">
+              <button onClick="{{ p.onClick }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;width:68px;padding:10px 4px;cursor:pointer;border-radius:18px;background:{{ p.bg }};border:1.5px solid {{ p.bd }};transition:all .2s ease;transform:scale({{ p.sc }})">
+                <span style="font-size:23px;line-height:1;filter:{{ p.filter }}">{{ p.emoji }}</span>
+                <span style="font:700 10px 'Baloo 2',sans-serif;color:{{ p.fg }};white-space:nowrap">{{ p.name }}</span>
+              </button>
+            </sc-for>
+          </div>
+          <button onClick="{{ plantIt }}" style-active="transform:translateY(4px);box-shadow:0 1px 0 #047857" style="position:relative;overflow:hidden;margin-top:18px;width:100%;border:none;border-radius:26px;padding:19px;background:{{ plantBtnBg }};color:#fff;font:800 18px 'Baloo 2',sans-serif;cursor:pointer;box-shadow:0 5px 0 #047857,0 16px 26px -16px rgba(16,185,129,.9);transition:transform .12s ease,box-shadow .12s ease">
+            {{ plantBtnLabel }}
+            <span style="position:absolute;top:0;left:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:sheen 3.6s ease-in-out infinite"></span>
+          </button>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <div style="position:relative;overflow:hidden;background:{{ cardBg }};border:1px solid {{ hairline }};border-radius:30px;padding:26px;box-shadow:0 12px 32px -24px rgba(9,24,38,.5)">
+            <div style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(120deg,rgba(6,182,212,.07),rgba(245,158,11,.06))"></div>
+            <div style="position:relative;display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+              <div style="position:relative;width:132px;height:132px;flex:none">
+                <div style="position:absolute;inset:-6px;border-radius:50%;background:rgba(245,158,11,.16);animation:halo 3.4s ease-in-out infinite"></div>
+                <div style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(#F59E0B {{ riskPct }}, {{ ringTrack }} 0)"></div>
+                <div style="position:absolute;inset:12px;border-radius:50%;background:{{ cardBg }};display:flex;flex-direction:column;align-items:center;justify-content:center">
+                  <div style="font:800 40px/1 'Baloo 2',sans-serif;color:{{ ink }};letter-spacing:-.03em">{{ risk }}<span style="font-size:19px;color:{{ muted }}">%</span></div>
+                  <div style="font:700 10px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#B45309;margin-top:3px">WATCH</div>
+                </div>
+              </div>
+              <div style="flex:1;min-width:190px">
+                <div style="display:inline-flex;align-items:center;gap:6px;background:#FEF3C7;color:#92400E;border-radius:100px;padding:5px 12px;font:700 12px 'Baloo 2',sans-serif;margin-bottom:10px">▲ Rising</div>
+                <div style="font:700 20px/1.3 'Baloo 2',sans-serif;color:{{ ink }};margin-bottom:7px">A bumpy stretch ahead</div>
+                <div style="font:500 14px/1.55 'Plus Jakarta Sans',sans-serif;color:{{ soft }}">Your usual 6–8 PM wobble starts in about 45 minutes. Nothing you haven’t handled.</div>
+              </div>
+            </div>
+            <button onClick="{{ toggleWhy }}" style="position:relative;margin-top:18px;width:100%;display:flex;align-items:center;justify-content:space-between;background:{{ wellBg }};border:1px solid {{ hairline }};border-radius:18px;padding:13px 16px;cursor:pointer;font:700 14px 'Baloo 2',sans-serif;color:#0E7490">
+              <span>Why this number? 🤔</span><span style="transition:transform .25s;transform:rotate({{ whyRot }})">⌄</span>
+            </button>
+            <div style="position:relative;overflow:hidden;transition:max-height .35s ease,opacity .25s;max-height:{{ whyMax }};opacity:{{ whyOpacity }}">
+              <div style="padding-top:13px;display:flex;flex-direction:column;gap:10px">
+                <sc-for list="{{ whyRows }}" as="w" hint-placeholder-count="3">
+                  <div style="display:flex;gap:10px;align-items:flex-start;font:500 13px/1.5 'Plus Jakarta Sans',sans-serif;color:{{ soft }}">
+                    <span style="color:#06B6D4;font-weight:800">✓</span><span>{{ w.t }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px">
+            <div style="background:{{ cardBg }};border:1px solid {{ hairline }};border-radius:26px;padding:18px 20px">
+              <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;color:{{ muted }};text-transform:uppercase">Clean streak</div>
+              <div style="display:flex;align-items:baseline;gap:6px;margin-top:7px"><span style="font:800 30px 'Baloo 2',sans-serif;color:{{ ink }};letter-spacing:-.02em">{{ streak }}</span><span style="font:600 14px 'Plus Jakarta Sans',sans-serif;color:{{ soft }}">days</span></div>
+              <div style="margin-top:11px;height:7px;border-radius:100px;background:{{ trackBg }};overflow:hidden"><div style="height:100%;border-radius:100px;width:{{ streakPct }};background:linear-gradient(90deg,#06B6D4,#10B981)"></div></div>
+            </div>
+            <div style="background:{{ cardBg }};border:1px solid {{ hairline }};border-radius:26px;padding:18px 20px">
+              <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;color:{{ muted }};text-transform:uppercase">Garden</div>
+              <div style="display:flex;align-items:baseline;gap:6px;margin-top:7px"><span style="font:800 30px 'Baloo 2',sans-serif;color:{{ ink }};letter-spacing:-.02em">{{ grown }}</span><span style="font:600 14px 'Plus Jakarta Sans',sans-serif;color:{{ soft }}">grown</span></div>
+              <div style="font:500 12.5px 'Plus Jakarta Sans',sans-serif;color:{{ soft }};margin-top:9px">{{ unlockLine }}</div>
+            </div>
+            <div style="background:{{ cardBg }};border:1px solid {{ hairline }};border-radius:26px;padding:18px 20px">
+              <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;color:{{ muted }};text-transform:uppercase">This week</div>
+              <div style="display:flex;align-items:baseline;gap:6px;margin-top:7px"><span style="font:800 30px 'Baloo 2',sans-serif;color:{{ ink }};letter-spacing:-.02em">18</span><span style="font:600 14px 'Plus Jakarta Sans',sans-serif;color:{{ soft }}">logs</span></div>
+              <div style="display:flex;align-items:flex-end;gap:4px;height:26px;margin-top:9px">
+                <sc-for list="{{ spark }}" as="s" hint-placeholder-count="7">
+                  <div style="flex:1;border-radius:100px;background:{{ s.c }};height:{{ s.h }}"></div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:{{ cardBg }};border:1px solid {{ hairline }};border-radius:28px;padding:22px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px">
+              <div style="font:700 17px 'Baloo 2',sans-serif;color:{{ ink }}">Next 12 hours</div>
+              <div style="font:500 11.5px 'JetBrains Mono',monospace;color:{{ muted }}">forecast</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:flex-end">
+              <sc-for list="{{ forecast }}" as="f" hint-placeholder-count="8">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:7px">
+                  <div style="width:100%;height:76px;display:flex;align-items:flex-end"><div style="width:100%;border-radius:100px;background:{{ f.c }};height:{{ f.h }};transition:height .4s ease"></div></div>
+                  <span style="font:500 10px 'JetBrains Mono',monospace;color:{{ muted }}">{{ f.l }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isGarden }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px">
+        <div style="font:800 34px 'Baloo 2',sans-serif;color:{{ ink }};letter-spacing:-.02em">My garden 🌷</div>
+        <div style="display:flex;align-items:center;gap:7px;background:#FEF3C7;border-radius:100px;padding:8px 15px;font:700 13.5px 'Baloo 2',sans-serif;color:#92400E">🌻 {{ rankName }} · {{ collectionCount }}</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;align-items:start">
+        <div style="position:relative;overflow:hidden;background:linear-gradient(180deg,#DCF2FF,#E8F7EC 58%,#D5EEDA);border:1.5px solid rgba(16,185,129,.28);border-radius:32px;padding:20px;box-shadow:0 16px 40px -26px rgba(6,95,70,.6)">
+          <div style="position:absolute;top:18px;right:22px;font-size:30px;animation:sway 6s ease-in-out infinite">☀️</div>
+          <div style="position:relative;font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#047857">Your plot · {{ placedCount }} planted</div>
+          <div style="position:relative;height:360px;perspective:1000px;perspective-origin:50% 42%;display:grid;place-items:center">
+            <div style="position:relative;width:340px;max-width:100%;transform-style:preserve-3d;transform:rotateX(58deg) rotateZ({{ rotDeg }}) scale({{ plotScale }});transition:transform .55s cubic-bezier(.3,.9,.3,1);display:grid;grid-template-columns:{{ gridCols }};gap:6px">
+              <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="25">
+                <button onClick="{{ t.onClick }}" style-hover="filter:brightness(1.07)" style="transform-style:preserve-3d;position:relative;aspect-ratio:1;border:none;padding:0;cursor:pointer;border-radius:8px;background:{{ t.bg }};box-shadow:{{ t.sh }};transition:background .2s,box-shadow .2s,filter .15s">
+                  <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) {{ upright }} translateY(-11px);font-size:{{ t.size }};line-height:1;filter:drop-shadow(0 5px 4px rgba(6,60,40,.35));transition:transform .4s">{{ t.e }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+          <div style="position:relative;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <button onClick="{{ rotLeft }}" style-active="transform:translateY(2px)" style="width:44px;height:44px;border-radius:16px;background:#fff;border:1.5px solid rgba(16,185,129,.3);cursor:pointer;font:700 17px 'Baloo 2',sans-serif;color:#047857;box-shadow:0 3px 0 rgba(4,120,87,.28);transition:transform .12s">↺</button>
+            <button onClick="{{ rotRight }}" style-active="transform:translateY(2px)" style="width:44px;height:44px;border-radius:16px;background:#fff;border:1.5px solid rgba(16,185,129,.3);cursor:pointer;font:700 17px 'Baloo 2',sans-serif;color:#047857;box-shadow:0 3px 0 rgba(4,120,87,.28);transition:transform .12s">↻</button>
+            <div style="flex:1;min-width:150px;display:flex;background:rgba(255,255,255,.75);border-radius:100px;padding:4px">
+              <sc-for list="{{ plotSizes }}" as="p" hint-placeholder-count="3">
+                <button onClick="{{ p.onClick }}" style="flex:1;border:none;cursor:pointer;border-radius:100px;padding:9px 6px;font:700 13px 'Baloo 2',sans-serif;background:{{ p.bg }};color:{{ p.fg }};box-shadow:{{ p.sh }};transition:all .2s">{{ p.l }}</button>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <div style="background:{{ cardBg }};border:1px solid {{ hairline }};border-radius:28px;padding:22px">
+            <div style="font:700 17px 'Baloo 2',sans-serif;color:{{ ink }};margin-bottom:3px">{{ trayTitle }}</div>
+            <div style="font:500 13px 'Plus Jakarta Sans',sans-serif;color:{{ muted }};margin-bottom:14px">{{ traySub }}</div>
+            <div style="display:flex;gap:9px;flex-wrap:wrap">
+              <sc-for list="{{ tray }}" as="p" hint-placeholder-count="10">
+                <button onClick="{{ p.onClick }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;width:64px;padding:10px 4px;cursor:pointer;border-radius:18px;background:{{ p.bg }};border:1.5px solid {{ p.bd }};transition:all .2s ease;transform:scale({{ p.sc }})">
+                  <span style="font-size:22px;line-height:1">{{ p.e }}</span>
+                  <span style="font:700 9.5px 'Baloo 2',sans-serif;color:{{ p.fg }};white-space:nowrap">{{ p.l }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="background:linear-gradient(135deg,#FFFBEB,#FFF7ED);border:1px solid rgba(245,158,11,.3);border-radius:28px;padding:20px 22px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px">
+              <div style="font:700 16px 'Baloo 2',sans-serif;color:#92400E">Next unlock · {{ unlockName }} {{ unlockEmoji }}</div>
+              <div style="font:500 12px 'JetBrains Mono',monospace;color:#B45309">{{ unlockCount }}</div>
+            </div>
+            <div style="height:10px;border-radius:100px;background:rgba(245,158,11,.18);overflow:hidden"><div style="height:100%;border-radius:100px;width:{{ unlockPct }};background:linear-gradient(90deg,#F59E0B,#FBBF24);transition:width .5s ease"></div></div>
+            <div style="font:500 13px 'Plus Jakarta Sans',sans-serif;color:#B45309;margin-top:10px">{{ unlockLine }}</div>
+          </div>
+
+          <div style="background:{{ cardBg }};border:1px solid {{ hairline }};border-radius:28px;padding:22px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px"><div style="font:700 17px 'Baloo 2',sans-serif;color:{{ ink }}">Collection</div><div style="font:500 12px 'JetBrains Mono',monospace;color:{{ muted }}">{{ collectionCount }}</div></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:10px">
+              <sc-for list="{{ collection }}" as="c" hint-placeholder-count="24">
+                <div style="aspect-ratio:1;border-radius:22px;background:{{ c.bg }};border:1.5px solid {{ c.bd }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px">
+                  <span style="font-size:26px;line-height:1;filter:{{ c.filter }};opacity:{{ c.op }}">{{ c.e }}</span>
+                  <span style="font:700 9.5px 'Baloo 2',sans-serif;color:{{ c.fg }};text-align:center;padding:0 4px;line-height:1.1">{{ c.l }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="font:500 12.5px 'Plus Jakarta Sans',sans-serif;color:{{ muted }};margin-top:14px;text-align:center">Nothing already grown is ever taken away. 💚</div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isLog }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:720px;margin:0 auto">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="font:800 32px 'Baloo 2',sans-serif;color:{{ ink }};letter-spacing:-.02em">Quick log ✍️</div>
+          <div style="font:500 12px 'JetBrains Mono',monospace;color:{{ muted }}">4 questions · about a minute</div>
+        </div>
+        <div style="height:5px;border-radius:100px;background:{{ trackBg }};overflow:hidden;margin-bottom:20px"><div style="height:100%;border-radius:100px;width:55%;background:linear-gradient(90deg,#06B6D4,#F59E0B)"></div></div>
+
+        <div style="background:{{ cardBg }};border:1px solid {{ hairline }};border-radius:30px;padding:28px">
+          <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;color:{{ muted }};text-transform:uppercase;margin-bottom:12px">Step 1</div>
+          <div style="font:700 24px/1.3 'Baloo 2',sans-serif;color:{{ ink }};margin-bottom:20px">How strong is it right now?</div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:22px">
+            <span style="font-size:46px;line-height:1">{{ cravingFace }}</span>
+            <span style="font:800 66px/1 'Baloo 2',sans-serif;letter-spacing:-.04em;color:{{ cravingColor }};transition:color .3s">{{ craving }}</span>
+          </div>
+          <div style="position:relative;height:46px">
+            <div style="position:absolute;left:0;right:0;top:20px;height:10px;border-radius:100px;background:linear-gradient(90deg,#10B981,#F59E0B,#FB7185);opacity:.22"></div>
+            <div style="position:absolute;left:0;top:20px;height:10px;border-radius:100px;background:linear-gradient(90deg,#10B981,#F59E0B,#FB7185);width:{{ cravingPct }};transition:width .12s"></div>
+            <div style="position:absolute;top:8px;left:{{ cravingPct }};width:34px;height:34px;margin-left:-17px;border-radius:50%;background:#fff;border:3px solid {{ cravingColor }};box-shadow:0 5px 14px -4px rgba(9,24,38,.4);transition:border-color .3s,left .12s"></div>
+            <input type="range" min="1" max="10" value="{{ craving }}" onInput="{{ setCraving }}" style="position:absolute;inset:0;width:100%;opacity:0;cursor:pointer;margin:0">
+          </div>
+          <div style="display:flex;justify-content:space-between;font:500 11.5px 'JetBrains Mono',monospace;color:{{ muted }}"><span>barely there</span><span>overwhelming</span></div>
+        </div>
+
+        <div style="margin-top:16px;background:{{ cardBg }};border:1px solid {{ hairline }};border-radius:30px;padding:28px">
+          <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;color:{{ muted }};text-transform:uppercase;margin-bottom:12px">Step 2</div>
+          <div style="font:700 24px/1.3 'Baloo 2',sans-serif;color:{{ ink }};margin-bottom:8px">How’s your mood?</div>
+          <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:16px"><span style="font:800 38px 'Baloo 2',sans-serif;color:#0891B2;letter-spacing:-.03em">{{ mood }}</span><span style="font:500 14px 'Plus Jakarta Sans',sans-serif;color:{{ soft }}">{{ moodWord }}</span></div>
+          <div style="position:relative;height:40px;margin-bottom:24px">
+            <div style="position:absolute;left:0;right:0;top:17px;height:8px;border-radius:100px;background:{{ trackBg }}"></div>
+            <div style="position:absolute;left:0;top:17px;height:8px;border-radius:100px;background:linear-gradient(90deg,#06B6D4,#10B981);width:{{ moodPct }};transition:width .12s"></div>
+            <div style="position:absolute;top:6px;left:{{ moodPct }};width:30px;height:30px;margin-left:-15px;border-radius:50%;background:#fff;border:3px solid #0891B2;box-shadow:0 5px 14px -4px rgba(9,24,38,.35);transition:left .12s"></div>
+            <input type="range" min="1" max="10" value="{{ mood }}" onInput="{{ setMood }}" style="position:absolute;inset:0;width:100%;opacity:0;cursor:pointer;margin:0">
+          </div>
+          <div style="font:600 14px 'Plus Jakarta Sans',sans-serif;color:{{ soft }};margin-bottom:11px">Stress level</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+            <sc-for list="{{ stressOpts }}" as="s" hint-placeholder-count="3">
+              <button onClick="{{ s.onClick }}" style="border-radius:18px;padding:15px 6px;cursor:pointer;font:700 14.5px 'Baloo 2',sans-serif;background:{{ s.bg }};color:{{ s.fg }};border:1.5px solid {{ s.bd }};transition:all .18s ease;transform:scale({{ s.sc }})">{{ s.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;background:{{ cardBg }};border:1px solid {{ hairline }};border-radius:30px;padding:28px">
+          <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;color:{{ muted }};text-transform:uppercase;margin-bottom:12px">Step 3</div>
+          <div style="font:700 24px/1.3 'Baloo 2',sans-serif;color:{{ ink }};margin-bottom:6px">Where are you, and who’s around?</div>
+          <div style="font:500 13px 'Plus Jakarta Sans',sans-serif;color:{{ muted }};margin-bottom:18px">Tap all that fit — no wrong answers.</div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px">
+            <sc-for list="{{ pills }}" as="p" hint-placeholder-count="8">
+              <button onClick="{{ p.onClick }}" style="border-radius:100px;padding:12px 18px;cursor:pointer;font:700 14px 'Baloo 2',sans-serif;background:{{ p.bg }};color:{{ p.fg }};border:1.5px solid {{ p.bd }};transition:all .18s ease;transform:scale({{ p.sc }})">{{ p.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+
+        <button onClick="{{ goResult }}" style-active="transform:translateY(4px);box-shadow:0 1px 0 #0E7490" style="margin-top:20px;width:100%;border:none;border-radius:26px;padding:21px;background:linear-gradient(135deg,#06B6D4,#0891B2);color:#fff;font:800 18px 'Baloo 2',sans-serif;cursor:pointer;box-shadow:0 5px 0 #0E7490,0 18px 28px -16px rgba(6,182,212,.95);transition:transform .12s">Check my risk 💪</button>
+        <div style="text-align:center;font:500 13px 'Plus Jakarta Sans',sans-serif;color:{{ muted }};margin-top:12px">We’ll save it and read your patterns — takes a second.</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isHistory }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px">
+        <div style="font:800 34px 'Baloo 2',sans-serif;color:{{ ink }};letter-spacing:-.02em">Your patterns</div>
+        <div style="display:flex;background:{{ segBg }};border-radius:100px;padding:4px">
+          <sc-for list="{{ ranges }}" as="r" hint-placeholder-count="2">
+            <button onClick="{{ r.onClick }}" style="border:none;cursor:pointer;border-radius:100px;padding:9px 20px;font:700 13.5px 'Baloo 2',sans-serif;background:{{ r.bg }};color:{{ r.fg }};box-shadow:{{ r.sh }};transition:all .2s">{{ r.l }}</button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:18px;align-items:start">
+        <div style="background:{{ cardBg }};border:1px solid {{ hairline }};border-radius:30px;padding:24px">
+          <div style="font:500 14px/1.55 'Plus Jakarta Sans',sans-serif;color:{{ soft }}">You logged <b style="color:{{ ink }}">18 times</b> this week — your steadiest stretch yet. Nice one. 🎉</div>
+          <div style="display:flex;align-items:flex-end;gap:9px;height:150px;margin-top:22px">
+            <sc-for list="{{ weekBars }}" as="b" hint-placeholder-count="7">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end">
+                <span style="font:700 11px 'JetBrains Mono',monospace;color:{{ b.lc }}">{{ b.v }}</span>
+                <div style="width:100%;border-radius:100px;background:{{ b.c }};height:{{ b.h }};transition:height .5s ease"></div>
+                <span style="font:500 11px 'JetBrains Mono',monospace;color:{{ muted }}">{{ b.d }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="margin-top:16px;display:inline-flex;align-items:center;gap:7px;background:#FEF3C7;color:#92400E;border-radius:100px;padding:7px 14px;font:700 12.5px 'Baloo 2',sans-serif">Peak · Thu 7 PM · 81%</div>
+        </div>
+
+        <div style="background:{{ cardBg }};border:1px solid {{ hairline }};border-radius:30px;padding:24px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px">
+            <div style="font:700 17px 'Baloo 2',sans-serif;color:{{ ink }}">Time of day × risk</div>
+            <div style="font:500 11px 'JetBrains Mono',monospace;color:{{ muted }}">low → high</div>
+          </div>
+          <div style="display:grid;grid-template-columns:30px repeat(6,1fr);gap:6px;align-items:center">
+            <sc-for list="{{ heat }}" as="h" hint-placeholder-count="35">
+              <div style="aspect-ratio:1;border-radius:8px;background:{{ h.c }};display:grid;place-items:center;font:600 10px 'JetBrains Mono',monospace;color:{{ h.fg }}">{{ h.t }}</div>
+            </sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:30px repeat(6,1fr);gap:6px;margin-top:8px">
+            <span></span>
+            <sc-for list="{{ heatCols }}" as="c" hint-placeholder-count="6">
+              <span style="text-align:center;font:500 10px 'JetBrains Mono',monospace;color:{{ muted }}">{{ c.l }}</span>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:18px">
+        <sc-for list="{{ insights }}" as="i" hint-placeholder-count="3">
+          <div style="background:{{ i.bg }};border:1px solid {{ i.bd }};border-radius:26px;padding:20px 22px;animation:rise .5s ease both">
+            <div style="font:500 11px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:{{ i.kc }};margin-bottom:9px">{{ i.k }}</div>
+            <div style="font:600 15px/1.5 'Plus Jakarta Sans',sans-serif;color:#1F2937">{{ i.t }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="font:700 18px 'Baloo 2',sans-serif;color:{{ ink }};margin:26px 0 12px">Recent days 📅</div>
+      <div style="background:{{ cardBg }};border:1px solid {{ hairline }};border-radius:28px;overflow:hidden">
+        <sc-for list="{{ days }}" as="d" hint-placeholder-count="4">
+          <div style-hover="background:{{ wellBg }}" style="display:flex;align-items:center;gap:16px;padding:18px 22px;border-bottom:1px solid {{ hairline }};cursor:pointer;transition:background .15s">
+            <div style="min-width:0;flex:1">
+              <div style="font:700 15px 'Baloo 2',sans-serif;color:{{ ink }}">{{ d.day }}</div>
+              <div style="font:500 13px 'Plus Jakarta Sans',sans-serif;color:{{ muted }};margin-top:2px">{{ d.sub }}</div>
+            </div>
+            <div style="font:700 12.5px 'Baloo 2',sans-serif;padding:6px 13px;border-radius:100px;background:{{ d.bg }};color:{{ d.fg }}">{{ d.peak }}</div>
+            <span style="color:{{ muted }};font-size:17px">›</span>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isResult }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:760px;margin:0 auto">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+          <button onClick="{{ goLog }}" style="width:38px;height:38px;border-radius:14px;background:{{ cardBg }};border:1px solid {{ hairline }};cursor:pointer;font-size:16px;color:{{ soft }}">‹</button>
+          <div style="font:800 28px 'Baloo 2',sans-serif;color:{{ ink }};letter-spacing:-.02em">Your reading ✨</div>
+          <div style="margin-left:auto;font:500 12px 'JetBrains Mono',monospace;color:{{ muted }}">7:15 PM · logged</div>
+        </div>
+        <div style="position:relative;overflow:hidden;background:linear-gradient(160deg,#0E7490,#155E75 55%,#1E3A46);border-radius:32px;padding:34px;box-shadow:0 22px 44px -24px rgba(14,116,144,.9);animation:rise .55s ease both">
+          <div style="position:absolute;top:-80px;right:-60px;width:220px;height:220px;border-radius:50%;background:rgba(245,158,11,.22);filter:blur(6px)"></div>
+          <div style="position:relative;text-align:center">
+            <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(245,158,11,.22);border:1px solid rgba(245,158,11,.5);color:#FCD34D;border-radius:100px;padding:7px 15px;font:700 12.5px 'Baloo 2',sans-serif">Medium-high risk window</div>
+            <div style="font:800 96px/1 'Baloo 2',sans-serif;color:#fff;letter-spacing:-.05em;margin:18px 0 6px">{{ risk }}<span style="font-size:40px;opacity:.6">%</span></div>
+            <div style="font:500 15px/1.5 'Plus Jakarta Sans',sans-serif;color:rgba(255,255,255,.78);max-width:320px;margin:0 auto">Chance a strong urge shows up in the next two hours.</div>
+            <div style="margin-top:22px;height:10px;border-radius:100px;background:rgba(255,255,255,.16);overflow:hidden"><div style="height:100%;border-radius:100px;width:{{ riskPct }};background:linear-gradient(90deg,#22D3EE,#F59E0B);transition:width 1s cubic-bezier(.2,.8,.2,1)"></div></div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:18px;align-items:start">
+          <div style="background:{{ cardBg }};border:1px solid {{ hairline }};border-radius:28px;padding:24px">
+            <div style="font:700 18px 'Baloo 2',sans-serif;color:{{ ink }};margin-bottom:16px">Why we think so</div>
+            <div style="display:flex;flex-direction:column;gap:15px">
+              <sc-for list="{{ reasons }}" as="r" hint-placeholder-count="3">
+                <div style="display:flex;gap:13px;align-items:flex-start">
+                  <div style="width:24px;height:24px;flex:none;border-radius:9px;background:#ECFEFF;color:#0891B2;display:grid;place-items:center;font:800 13px 'Baloo 2',sans-serif">✓</div>
+                  <div style="min-width:0;flex:1">
+                    <div style="font:600 14px/1.45 'Plus Jakarta Sans',sans-serif;color:{{ soft }}">{{ r.t }}</div>
+                    <div style="margin-top:7px;height:6px;border-radius:100px;background:{{ trackBg }};overflow:hidden"><div style="height:100%;border-radius:100px;width:{{ r.w }};background:{{ r.c }}"></div></div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div>
+            <div style="font:700 18px 'Baloo 2',sans-serif;color:{{ ink }};margin-bottom:12px">Things that might help 🌱</div>
+            <div style="display:flex;flex-direction:column;gap:11px">
+              <sc-for list="{{ copes }}" as="c" hint-placeholder-count="3">
+                <button onClick="{{ c.onClick }}" style-hover="border-color:rgba(6,182,212,.55)" style="display:flex;align-items:center;gap:15px;text-align:left;width:100%;background:{{ cardBg }};border:1.5px solid {{ c.bd }};border-radius:22px;padding:16px 18px;cursor:pointer;transition:all .18s ease;transform:scale({{ c.sc }})">
+                  <span style="width:46px;height:46px;flex:none;border-radius:16px;background:{{ c.tint }};display:grid;place-items:center;font-size:21px">{{ c.i }}</span>
+                  <span style="flex:1;min-width:0">
+                    <span style="display:block;font:700 15.5px 'Baloo 2',sans-serif;color:{{ ink }}">{{ c.t }}</span>
+                    <span style="display:block;font:500 13px 'Plus Jakarta Sans',sans-serif;color:{{ muted }};margin-top:2px">{{ c.s }}</span>
+                  </span>
+                  <span style="font:700 14px 'Baloo 2',sans-serif;color:#0891B2">{{ c.cta }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;font:500 13px 'Plus Jakarta Sans',sans-serif;color:{{ muted }};margin-top:20px">Built from your 118 logs. Stays on your device, always. 🔒</div>
+      </div>
+    </sc-if>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;riskScore&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:65,&quot;min&quot;:0,&quot;max&quot;:100,&quot;step&quot;:1,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Data&quot;},&quot;streakDays&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:12,&quot;min&quot;:0,&quot;max&quot;:120,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Data&quot;},&quot;grownCount&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:14,&quot;min&quot;:0,&quot;max&quot;:60,&quot;step&quot;:1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Data&quot;}}">
+class Component extends DCLogic {
+  state = { view: "home", dark: false, craving: 7, mood: 4, stress: "High",
+    picked: ["Alone", "Home", "After work"], why: false, cope: -1, range: "Week",
+    chosen: "tulip", planted: false, stage: 0, plot: 5, rot: 0, brush: "🌻",
+    layouts: {
+      4: ["🌳","","🌷","","","🌻","","🍀","🌸","","🌵","","","🌿","","🌲"],
+      5: ["🌳","","🌷","","🌲","","🌻","","🍀","","🌸","","🪨","","🌵",
+          "","🌼","","🌹","","🌼","","🌿","","🌺"],
+      6: ["🌳","","🌷","","🌲","","","🌻","","🍀","","🌸","🪨","","🌵","","🌼","",
+          "","🌹","","🌼","","🌿","🌺","","🪨","","🌷","","","🌳","","🌻","","🍀"]
+    } };
+
+  face(v) { return v <= 2 ? "😊" : v <= 4 ? "🙂" : v <= 6 ? "😐" : v <= 8 ? "😟" : "😣"; }
+  cravColor(v) { return v <= 3 ? "#10B981" : v <= 6 ? "#F59E0B" : "#F43F5E"; }
+  moodWord(v) { return v <= 2 ? "running on empty 🫠" : v <= 4 ? "a bit flat 😐" : v <= 6 ? "doing okay 🙂" : v <= 8 ? "pretty good 😄" : "great ✨"; }
+  heatColor(v) {
+    if (v < 18) return { c: "#ECFEFF", fg: "#7C8B95" };
+    if (v < 35) return { c: "#CFF5FB", fg: "#0E5766" };
+    if (v < 52) return { c: "#8CE3F2", fg: "#0B4553" };
+    if (v < 68) return { c: "#FCD9A0", fg: "#7A4409" };
+    if (v < 82) return { c: "#F8B454", fg: "#5C3206" };
+    return { c: "#FB7185", fg: "#4C0519" };
+  }
+
+  renderVals() {
+    const s = this.state, d = s.dark;
+    const risk = this.props.riskScore ?? 65;
+    const streak = this.props.streakDays ?? 12;
+
+    const theme = d
+      ? { pageBg: "#0B1220", cardBg: "#131C2B", barBg: "rgba(11,18,32,.88)", hairline: "rgba(255,255,255,.08)",
+          ink: "#F3F4F6", soft: "#CBD5E1", muted: "#64748B", wellBg: "rgba(255,255,255,.04)",
+          trackBg: "rgba(255,255,255,.1)", ringTrack: "rgba(255,255,255,.09)", segBg: "rgba(255,255,255,.07)",
+          plantCardBg: "linear-gradient(160deg,rgba(16,185,129,.14),#131C2B)", plantCardBd: "rgba(52,211,153,.3)",
+          plantWell: "rgba(255,255,255,.05)", greenInk: "#6EE7B7", greenChip: "rgba(52,211,153,.14)",
+          greenHead: "#ECFDF5", greenSub: "#94A3B8" }
+      : { pageBg: "#EAF2F1", cardBg: "#FFFFFF", barBg: "rgba(255,255,255,.85)", hairline: "rgba(17,24,39,.08)",
+          ink: "#111827", soft: "#5B6572", muted: "#8A94A0", wellBg: "#F7FAFB",
+          trackBg: "#EDF1F3", ringTrack: "#E9EEF1", segBg: "#E2E9EA",
+          plantCardBg: "linear-gradient(160deg,#F0FDF4,#ECFEFF)", plantCardBd: "rgba(16,185,129,.28)",
+          plantWell: "#fff", greenInk: "#047857", greenChip: "rgba(16,185,129,.14)",
+          greenHead: "#064E3B", greenSub: "#357266" };
+
+    const nav = [["🏠","Home","home"],["✍️","Log","log"],["🌿","Garden","garden"],["📈","History","history"]].map(([i, l, v]) => {
+      const on = s.view === v || (v === "log" && s.view === "result");
+      return { i, l, bg: on ? "#06B6D4" : "transparent", fg: on ? "#fff" : theme.soft,
+        onClick: () => this.setState({ view: v }) };
+    });
+
+    const CATALOG = [
+      ["🌻","Sunflower",0],["🌷","Tulip",0],["🌿","Herb",0],["🌼","Daisy",0],
+      ["🍀","Clover",2],["🌹","Rose",4],["🌵","Cactus",5],["🌺","Hibiscus",7],
+      ["🌳","Oak",8],["🌲","Pine",10],["🌸","Cherry",12],["🪴","Fern",14],
+      ["🪻","Bluebell",16],["🪷","Lotus",18],["🌾","Wheat",20],["🎋","Bamboo",22],
+      ["🍁","Maple",24],["🌴","Palm",26],["🍄","Toadstool",28],["🌰","Chestnut",30],
+      ["🎄","Spruce",32],["🪵","Log bench",34],["🐝","Beehive",38],["🐔","Chicken",42],
+      ["🐰","Rabbit",46],["🦆","Duck",50],["🐑","Sheep",55],["🐈","Barn cat",60]
+    ];
+    const grown = this.props.grownCount ?? 14;
+    const unlocked = CATALOG.filter(c => grown >= c[2]);
+    const nextLock = CATALOG.find(c => grown < c[2]);
+    const prevAt = unlocked.length ? unlocked[unlocked.length - 1][2] : 0;
+    const unlockPct = nextLock ? Math.round(100 * (grown - prevAt) / Math.max(1, nextLock[2] - prevAt)) : 100;
+    const plantable = unlocked.map(([emoji, name, at]) => ({ id: name.toLowerCase(), name, emoji, at }));
+    const chosen = plantable.find(p => p.id === s.chosen) || plantable[0];
+    const species = plantable.map(p => {
+      const on = p.id === chosen.id;
+      return { ...p, bg: on ? theme.cardBg : (d ? "rgba(255,255,255,.05)" : "rgba(255,255,255,.55)"),
+        bd: on ? "#10B981" : "rgba(16,185,129,.2)", fg: on ? (d ? "#6EE7B7" : "#047857") : theme.muted,
+        sc: on ? "1.05" : "1", filter: on ? "none" : "saturate(.5)",
+        onClick: () => this.setState({ chosen: p.id }) };
+    });
+    const STAGE_E = ["🌱", "🌿", "🪴", chosen.emoji];
+    const stage = s.planted ? s.stage : -1;
+    const plantStages = [0, 1, 2, 3].map(i => ({
+      c: i <= stage ? (i === 3 ? "#F59E0B" : "#10B981") : "rgba(16,185,129,.18)" }));
+
+    const n = s.plot;
+    const plan = s.layouts[n] || [];
+    const tiles = Array.from({ length: n * n }, (_, i) => {
+      const e = plan[i] || "";
+      const dk = (Math.floor(i / n) + i % n) % 2 === 0;
+      const erasing = s.brush === "erase";
+      return { e, size: e ? (i % 3 === 0 ? "30px" : "26px") : "0px",
+        bg: e ? (dk ? "#8FCB93" : "#9FD6A3") : (dk ? "#A9D9AE" : "#B7E2BB"),
+        sh: e ? "0 0 0 1.5px rgba(6,95,70,.22),0 7px 0 -1px rgba(6,95,70,.28)"
+              : (erasing ? "0 0 0 1.5px rgba(244,63,94,.35)" : "0 0 0 1.5px rgba(6,95,70,.12)"),
+        onClick: () => this.setState(st => {
+          const row = (st.layouts[n] || []).slice();
+          row[i] = st.brush === "erase" ? "" : st.brush;
+          return { layouts: { ...st.layouts, [n]: row } };
+        }) };
+    });
+
+    const TRAY = unlocked.map(c => [c[0], c[1]]).concat([["🪨", "Stone"], ["🚿", "Clear"]]);
+    const tray = TRAY.map(([e, l]) => {
+      const key = l === "Clear" ? "erase" : e;
+      const on = s.brush === key;
+      return { e, l, bg: on ? (d ? "rgba(16,185,129,.16)" : "#ECFDF5") : theme.wellBg,
+        bd: on ? "#10B981" : theme.hairline, fg: on ? (d ? "#6EE7B7" : "#047857") : theme.muted,
+        sc: on ? "1.06" : "1", onClick: () => this.setState({ brush: key }) };
+    });
+    const brushName = s.brush === "erase" ? "Clear" : (TRAY.find(t => t[0] === s.brush) || ["", "Sunflower"])[1];
+    const plotSizes = [4, 5, 6].map(v => {
+      const on = s.plot === v;
+      return { l: v + "×" + v, bg: on ? "#10B981" : "transparent", fg: on ? "#fff" : "#4B7A6E",
+        sh: on ? "0 2px 6px rgba(4,120,87,.35)" : "none", onClick: () => this.setState({ plot: v }) };
+    });
+    const a = ((s.rot % 90) + 90) % 90 * Math.PI / 180;
+
+    const pillLabels = ["Alone", "With others", "Work", "Home", "Out", "After work", "Evening", "Late night"];
+    const pills = pillLabels.map(label => {
+      const on = s.picked.includes(label);
+      return { label, bg: on ? "#06B6D4" : theme.wellBg, fg: on ? "#fff" : theme.soft,
+        bd: on ? "#06B6D4" : theme.hairline, sc: on ? "1.03" : "1",
+        onClick: () => this.setState(st => ({ picked: st.picked.includes(label) ? st.picked.filter(x => x !== label) : st.picked.concat(label) })) };
+    });
+    const stressOpts = ["Low", "Medium", "High"].map(label => {
+      const on = s.stress === label;
+      const tint = { Low: "#10B981", Medium: "#F59E0B", High: "#FB7185" }[label];
+      return { label, bg: on ? tint : theme.wellBg, fg: on ? "#fff" : theme.soft,
+        bd: on ? tint : theme.hairline, sc: on ? "1.03" : "1", onClick: () => this.setState({ stress: label }) };
+    });
+
+    const hours = ["8p","9p","10p","11p","12a","1a","2a","8a"], fvals = [64,78,86,62,40,26,18,22];
+    const forecast = fvals.map((v, i) => ({ l: hours[i], h: Math.max(10, v) + "%",
+      c: v >= 70 ? "#F59E0B" : v >= 45 ? (d ? "#22D3EE" : "#67E8F9") : (d ? "rgba(255,255,255,.14)" : "#CBD5E1") }));
+    const sv = [40, 65, 30, 80, 55, 95, 70];
+    const spark = sv.map(v => ({ h: v + "%", c: v >= 80 ? "#F59E0B" : (d ? "#22D3EE" : "#06B6D4") }));
+    const wd = ["M","T","W","T","F","S","S"], wv = [42, 58, 35, 81, 66, 74, 49];
+    const weekBars = wv.map((v, i) => ({ d: wd[i], v, h: v + "%",
+      c: v >= 75 ? "linear-gradient(180deg,#F59E0B,#FBBF24)" : "linear-gradient(180deg,#06B6D4,#67E8F9)",
+      lc: v >= 75 ? "#B45309" : "#0E7490" }));
+
+    const rowLabels = ["M","T","W","T","F"], colLabels = ["6a","10a","2p","6p","8p","11p"];
+    const grid = [[12,20,28,55,44,30],[16,24,34,62,58,26],[10,18,22,48,40,22],[14,26,40,78,88,52],[18,30,46,70,84,60]];
+    const heat = [];
+    grid.forEach((row, r) => {
+      heat.push({ c: "transparent", fg: theme.muted, t: rowLabels[r] });
+      row.forEach(v => { const hc = this.heatColor(v); heat.push({ c: hc.c, fg: hc.fg, t: "" }); });
+    });
+
+    const copeData = [
+      { i: "📞", t: "Call Maya", s: "Worked 4 of the last 5 times", cta: "Call" },
+      { i: "🚶", t: "Walk the block", s: "Changing rooms breaks the loop", cta: "Start" },
+      { i: "🧘", t: "5-minute breathing", s: "Guided, with a timer", cta: "Open" }
+    ];
+    const tints = ["#ECFEFF", "#FFF7ED", "#ECFDF5"];
+    const copes = copeData.map((c, i) => ({ ...c, tint: tints[i],
+      bd: s.cope === i ? "#06B6D4" : theme.hairline, sc: s.cope === i ? "1.015" : "1",
+      onClick: () => this.setState({ cope: i }) }));
+
+    const ranges = ["Week", "Month"].map(l => {
+      const on = s.range === l;
+      return { l, bg: on ? theme.cardBg : "transparent", fg: on ? theme.ink : theme.muted,
+        sh: on ? "0 2px 6px rgba(9,24,38,.12)" : "none", onClick: () => this.setState({ range: l }) };
+    });
+
+    const collection = CATALOG.map(([e, l, at]) => grown >= at
+      ? { e, l, bg: theme.cardBg, bd: "rgba(16,185,129,.28)", fg: d ? "#6EE7B7" : "#0F766E", filter: "none", op: "1" }
+      : { e, l: at + " grown", bg: theme.wellBg, bd: theme.hairline, fg: theme.muted, filter: "grayscale(1)", op: ".38" });
+
+    return {
+      ...theme,
+      isHome: s.view === "home", isGarden: s.view === "garden", isLog: s.view === "log",
+      isHistory: s.view === "history", isResult: s.view === "result",
+      nav, themeLabel: d ? "☀️ Light" : "🌙 Dark",
+      toggleTheme: () => this.setState(st => ({ dark: !st.dark })),
+      goLog: () => this.setState({ view: "log" }),
+      goResult: () => this.setState({ view: "result" }),
+      risk, riskPct: risk + "%", streak, streakPct: Math.min(100, streak / 30 * 100) + "%",
+      why: s.why, whyRot: s.why ? "180deg" : "0deg", whyMax: s.why ? "200px" : "0px", whyOpacity: s.why ? "1" : "0",
+      toggleWhy: () => this.setState(st => ({ why: !st.why })),
+      whyRows: [ { t: "It’s 7:15 PM — your densest craving hour across 118 logs." },
+        { t: "Stress is high and you’re alone; that pair precedes 8 of 10 urges." },
+        { t: "You logged a 7 twenty minutes ago and it’s still climbing." } ],
+      species, plantStages,
+      plantEmoji: s.planted ? STAGE_E[s.stage] : chosen.emoji,
+      plantSize: s.planted ? [30, 38, 44, 52][s.stage] + "px" : "46px",
+      plantClock: s.planted ? ["just planted", "4h in", "growing well", "in bloom"][s.stage] : "not planted yet",
+      plantHeadline: s.planted
+        ? (s.stage >= 3 ? "Your " + chosen.name.toLowerCase() + " is in bloom! 🎉" : "Your " + chosen.name.toLowerCase() + " is growing")
+        : "Pick what you’ll grow today",
+      plantSub: s.planted
+        ? (s.stage >= 3 ? "Stay clean till midnight and it joins the garden." : "Every clean hour nudges it along. Water it to check in.")
+        : "One plant a day. Ride the day out and it’s yours forever.",
+      plantBtnBg: "linear-gradient(135deg,#10B981,#059669)",
+      plantBtnLabel: s.planted ? (s.stage >= 3 ? "Blooming 🌸" : "Water it 💧") : "Plant my " + chosen.name.toLowerCase() + " 🌱",
+      plantIt: () => this.setState(st => st.planted ? { stage: Math.min(3, st.stage + 1) } : { planted: true, stage: 0 }),
+      tiles, tray, plotSizes, collection, grown,
+      rankName: grown >= 40 ? "Master gardener" : grown >= 24 ? "Cultivator" : grown >= 10 ? "Grower" : "Sprout",
+      unlockName: nextLock ? nextLock[1] : "Everything",
+      unlockEmoji: nextLock ? nextLock[0] : "🏆",
+      unlockCount: grown + " / " + (nextLock ? nextLock[2] : grown),
+      unlockPct: unlockPct + "%",
+      unlockLine: nextLock
+        ? (nextLock[2] - grown) + " more " + (nextLock[2] - grown === 1 ? "bloom" : "blooms") + " and the " + nextLock[1].toLowerCase() + " joins your seed tray."
+        : "Every species unlocked. Your garden is complete. 🏆",
+      collectionCount: unlocked.length + " of " + CATALOG.length,
+      placedCount: plan.filter(Boolean).length,
+      gridCols: "repeat(" + n + ",1fr)",
+      rotDeg: s.rot + "deg",
+      plotScale: (1 / (Math.cos(a) + Math.sin(a))).toFixed(3),
+      upright: "rotateZ(" + (-s.rot) + "deg) rotateX(-58deg)",
+      rotLeft: () => this.setState(st => ({ rot: st.rot - 45 })),
+      rotRight: () => this.setState(st => ({ rot: st.rot + 45 })),
+      trayTitle: s.brush === "erase" ? "Clearing squares" : "Planting: " + brushName,
+      traySub: s.brush === "erase" ? "Click a square to dig it up." : "Click any square in the plot to place it.",
+      craving: s.craving, cravingPct: ((s.craving - 1) / 9 * 100) + "%",
+      cravingFace: this.face(s.craving), cravingColor: this.cravColor(s.craving),
+      setCraving: (e) => this.setState({ craving: +e.target.value }),
+      mood: s.mood, moodPct: ((s.mood - 1) / 9 * 100) + "%", moodWord: this.moodWord(s.mood),
+      setMood: (e) => this.setState({ mood: +e.target.value }),
+      stressOpts, pills, copes, ranges, spark, forecast, weekBars, heat,
+      heatCols: colLabels.map(l => ({ l })),
+      reasons: [
+        { t: "7:15 PM is your densest craving hour", w: "86%", c: "#F59E0B" },
+        { t: "High stress + alone — your strongest pair", w: "72%", c: "#06B6D4" },
+        { t: "Thursday runs hotter than your week average", w: "38%", c: "#67E8F9" }
+      ],
+      insights: [
+        { k: "Timing", t: "Your highest-risk stretch is 6–8 PM, five days out of seven.", bg: "#ECFEFF", bd: "rgba(6,182,212,.25)", kc: "#0E7490" },
+        { k: "Combination", t: "Stress plus being alone preceded 82% of your strong cravings.", bg: "#FFF7ED", bd: "rgba(245,158,11,.28)", kc: "#B45309" },
+        { k: "What helps", t: "On days you walked, urges came in 40% lower.", bg: "#ECFDF5", bd: "rgba(16,185,129,.25)", kc: "#047857" }
+      ],
+      days: [
+        { day: "Today · Thu", sub: "4 logs · rode out the 7 PM window", peak: "68%", bg: "#FEF3C7", fg: "#92400E" },
+        { day: "Wed, Sep 18", sub: "3 logs · walked at 6:40", peak: "41%", bg: "#ECFEFF", fg: "#0E7490" },
+        { day: "Tue, Sep 17", sub: "2 logs · quiet evening", peak: "29%", bg: "#ECFDF5", fg: "#047857" },
+        { day: "Mon, Sep 16", sub: "5 logs · rough after work", peak: "81%", bg: "#FFE4E6", fg: "#9F1239" }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

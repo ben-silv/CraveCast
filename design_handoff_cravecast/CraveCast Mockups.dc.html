@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#EAF2F1;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
+a{color:#0891B2}a:hover{color:#06B6D4}
+.dv-turn{padding:44px 48px 36px;border-bottom:1px solid rgba(0,0,0,.08)}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 22px}
+.dv-tid{font:700 10px 'JetBrains Mono',monospace;padding:3px 7px;background:#111827;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font:600 13px/1.2 'Plus Jakarta Sans',sans-serif;color:#111827}
+.dv-opts{display:flex;flex-wrap:wrap;gap:34px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:10px}
+.dv-oid{font:700 10.5px 'JetBrains Mono',monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#111827;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:500 11.5px/1.3 'Plus Jakarta Sans',sans-serif;color:rgba(17,24,39,.55)}
+.dv-opt:target .dv-oid{background:#06B6D4;color:#fff}
+.dv-next{margin:26px 0 0;font:12.5px/1.6 'Plus Jakarta Sans',sans-serif;color:rgba(17,24,39,.5)}
+.ph{width:390px;height:844px;border-radius:46px;background:#0B0F15;padding:10px;box-shadow:0 26px 60px -18px rgba(9,24,38,.45),0 2px 6px rgba(9,24,38,.18)}
+.phi{width:100%;height:100%;border-radius:37px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.scr{flex:1;overflow-y:auto;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+.scr::-webkit-scrollbar{width:0}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes halo{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.09);opacity:.16}}
+@keyframes sheen{from{transform:translateX(-120%)}to{transform:translateX(220%)}}
+@keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+@keyframes pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+</style></helmet>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">CraveCast — core screens</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1a"><div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Dashboard / Home — light</div>
+<div class="ph"><div class="phi" style="background:#F3F8F8">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 26px 4px;font:600 14px 'Plus Jakarta Sans',sans-serif;color:#111827;flex:none">
+    <span>7:15</span><span style="display:flex;gap:5px;align-items:center;font-size:11px;letter-spacing:.06em">●●● ⌁ ▮</span>
+  </div>
+  <div class="scr" onScroll="{{ onHomeScroll }}" style="padding:10px 20px 108px">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:22px">
+      <div>
+        <div style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A94A0;margin-bottom:7px">Thu · Sep 19 · Evening</div>
+        <div style="font:800 27px/1.18 'Baloo 2',sans-serif;color:#111827;letter-spacing:-.02em">Hey Ben 👋<br><span style="font-weight:500;color:#5B6572">how are you right now?</span></div>
+      </div>
+      <div style="width:44px;height:44px;border-radius:50%;flex:none;background:linear-gradient(145deg,#06B6D4,#0E7490);display:grid;place-items:center;color:#fff;font:800 15px 'Baloo 2',sans-serif">B</div>
+    </div>
+
+    <div style="position:relative;overflow:hidden;background:linear-gradient(160deg,#F0FDF4,#ECFEFF);border:1.5px solid rgba(16,185,129,.28);border-radius:30px;padding:20px;box-shadow:0 10px 30px -20px rgba(6,95,70,.5)">
+      <div style="position:absolute;top:-60px;right:-40px;width:150px;height:150px;border-radius:50%;background:rgba(16,185,129,.12)"></div>
+      <div style="position:relative;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#047857">Today’s plant</div>
+        <div style="font:700 11.5px 'Baloo 2',sans-serif;color:#047857;background:rgba(16,185,129,.14);border-radius:100px;padding:4px 10px">{{ plantClock }}</div>
+      </div>
+      <div style="position:relative;display:flex;align-items:center;gap:16px">
+        <div style="position:relative;width:88px;height:88px;flex:none;display:grid;place-items:center">
+          <div style="position:absolute;inset:0;border-radius:50%;background:rgba(16,185,129,.14);animation:halo 3.8s ease-in-out infinite"></div>
+          <div style="position:absolute;inset:8px;border-radius:50%;background:#fff;box-shadow:inset 0 -6px 0 rgba(16,185,129,.1)"></div>
+          <span style="position:relative;font-size:{{ plantSize }};line-height:1;transition:font-size .4s cubic-bezier(.2,1.4,.4,1);animation:sway 4.2s ease-in-out infinite">{{ plantEmoji }}</span>
+        </div>
+        <div style="min-width:0;flex:1">
+          <div style="font:700 17px/1.3 'Baloo 2',sans-serif;color:#064E3B;margin-bottom:5px">{{ plantHeadline }}</div>
+          <div style="font:500 13px/1.5 'Plus Jakarta Sans',sans-serif;color:#357266;margin-bottom:10px">{{ plantSub }}</div>
+          <div style="display:flex;gap:5px">
+            <sc-for list="{{ plantStages }}" as="g" hint-placeholder-count="4">
+              <div style="flex:1;height:7px;border-radius:100px;background:{{ g.c }};transition:background .35s"></div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      <div style="position:relative;display:flex;gap:8px;margin-top:16px;overflow-x:auto;padding-bottom:2px">
+        <sc-for list="{{ species }}" as="p" hint-placeholder-count="5">
+          <button onClick="{{ p.onClick }}" style="flex:none;display:flex;flex-direction:column;align-items:center;gap:3px;width:62px;padding:9px 4px;cursor:pointer;border-radius:18px;background:{{ p.bg }};border:1.5px solid {{ p.bd }};transition:all .2s ease;transform:scale({{ p.sc }})">
+            <span style="font-size:22px;line-height:1;filter:{{ p.filter }}">{{ p.emoji }}</span>
+            <span style="font:700 9.5px 'Baloo 2',sans-serif;color:{{ p.fg }};white-space:nowrap">{{ p.name }}</span>
+          </button>
+        </sc-for>
+      </div>
+      <button onClick="{{ plantIt }}" style-active="transform:translateY(4px);box-shadow:0 1px 0 #047857" style="position:relative;overflow:hidden;margin-top:14px;width:100%;border:none;border-radius:26px;padding:19px;background:{{ plantBtnBg }};color:#fff;font:800 17px 'Baloo 2',sans-serif;cursor:pointer;box-shadow:0 5px 0 #047857,0 16px 26px -16px rgba(16,185,129,.9);transition:transform .12s ease,box-shadow .12s ease">
+        {{ plantBtnLabel }}
+        <span style="position:absolute;top:0;left:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:sheen 3.6s ease-in-out infinite"></span>
+      </button>
+      <button onClick="{{ goLog }}" style-hover="color:#0E7490" style="position:relative;margin-top:9px;width:100%;background:none;border:none;cursor:pointer;font:700 13px 'Baloo 2',sans-serif;color:#5B8B80">Having a craving? Log it 💧</button>
+    </div>
+
+<div style="position:relative;margin-top:16px;background:#fff;border:1px solid rgba(17,24,39,.07);border-radius:30px;padding:22px 20px 18px;box-shadow:0 10px 30px -18px rgba(9,24,38,.38);animation:rise .5s ease both;overflow:hidden">
+      <div style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(120deg,rgba(6,182,212,.07),rgba(245,158,11,.06))"></div>
+      <div style="position:relative;display:flex;align-items:center;gap:20px">
+        <div style="position:relative;width:118px;height:118px;flex:none">
+          <div style="position:absolute;inset:-6px;border-radius:50%;background:rgba(245,158,11,.16);animation:halo 3.4s ease-in-out infinite"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(#F59E0B {{ homeRingPct }}, #E9EEF1 0)"></div>
+          <div style="position:absolute;inset:11px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center">
+            <div style="font:800 34px/1 'Baloo 2',sans-serif;color:#111827;letter-spacing:-.03em">{{ homeRisk }}<span style="font-size:17px;color:#8A94A0">%</span></div>
+            <div style="font:700 9.5px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#B45309;margin-top:3px">WATCH</div>
+          </div>
+        </div>
+        <div style="min-width:0">
+          <div style="display:inline-flex;align-items:center;gap:6px;background:#FEF3C7;color:#92400E;border-radius:100px;padding:5px 11px;font:700 11px 'Baloo 2',sans-serif;margin-bottom:9px">▲ Rising</div>
+          <div style="font:700 17px/1.3 'Baloo 2',sans-serif;color:#111827;margin-bottom:6px">A bumpy stretch ahead</div>
+          <div style="font:500 13.5px/1.5 'Plus Jakarta Sans',sans-serif;color:#5B6572">Your usual 6–8 PM wobble starts in about 45 minutes. Nothing you haven’t handled.</div>
+        </div>
+      </div>
+      <button onClick="{{ toggleWhy }}" style-hover="background:#F1F5F7" style="position:relative;margin-top:16px;width:100%;display:flex;align-items:center;justify-content:space-between;background:#F7FAFB;border:1px solid rgba(17,24,39,.07);border-radius:18px;padding:12px 14px;cursor:pointer;font:700 13px 'Baloo 2',sans-serif;color:#0E7490;transition:background .15s">
+        <span>Why this number? 🤔</span><span style="transition:transform .25s;transform:rotate({{ whyRot }})">⌄</span>
+      </button>
+      <div style="position:relative;overflow:hidden;transition:max-height .35s ease,opacity .25s;max-height:{{ whyMax }};opacity:{{ whyOpacity }}">
+        <div style="padding-top:12px;display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ whyRows }}" as="w" hint-placeholder-count="3">
+            <div style="display:flex;gap:10px;align-items:flex-start;font:500 12.5px/1.45 'Plus Jakarta Sans',sans-serif;color:#374151">
+              <span style="color:#06B6D4;font-weight:800">✓</span><span>{{ w.t }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
+      <div style="background:#fff;border:1px solid rgba(17,24,39,.07);border-radius:24px;padding:15px 16px">
+        <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#8A94A0;text-transform:uppercase">Streak</div>
+        <div style="display:flex;align-items:baseline;gap:6px;margin-top:6px"><span style="font:800 26px 'Baloo 2',sans-serif;color:#111827;letter-spacing:-.02em">{{ streak }}</span><span style="font:600 13px 'Plus Jakarta Sans',sans-serif;color:#5B6572">days</span></div>
+        <div style="margin-top:9px;height:6px;border-radius:100px;background:#EDF1F3;overflow:hidden"><div style="height:100%;border-radius:100px;width:{{ streakPct }};background:linear-gradient(90deg,#06B6D4,#10B981)"></div></div>
+      </div>
+      <div style="background:#fff;border:1px solid rgba(17,24,39,.07);border-radius:24px;padding:15px 16px">
+        <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#8A94A0;text-transform:uppercase">This week</div>
+        <div style="display:flex;align-items:baseline;gap:6px;margin-top:6px"><span style="font:800 26px 'Baloo 2',sans-serif;color:#111827;letter-spacing:-.02em">18</span><span style="font:600 13px 'Plus Jakarta Sans',sans-serif;color:#5B6572">logs</span></div>
+        <div style="display:flex;align-items:flex-end;gap:3px;height:22px;margin-top:6px">
+          <sc-for list="{{ spark }}" as="s" hint-placeholder-count="7">
+            <div style="flex:1;border-radius:3px;background:{{ s.c }};height:{{ s.h }}"></div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;background:#fff;border:1px solid rgba(17,24,39,.07);border-radius:28px;padding:18px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px">
+        <div style="font:700 15px 'Baloo 2',sans-serif;color:#111827">Next 12 hours</div>
+        <div style="font:500 11px 'JetBrains Mono',monospace;color:#8A94A0">forecast</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:flex-end">
+        <sc-for list="{{ forecast }}" as="f" hint-placeholder-count="6">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div style="width:100%;height:58px;display:flex;align-items:flex-end"><div style="width:100%;border-radius:100px;background:{{ f.c }};height:{{ f.h }};transition:height .4s ease"></div></div>
+            <span style="font:500 9.5px 'JetBrains Mono',monospace;color:#8A94A0">{{ f.l }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;background:linear-gradient(135deg,#ECFEFF,#F8FAFB);border:1px solid rgba(6,182,212,.22);border-radius:28px;padding:18px">
+      <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#0E7490;text-transform:uppercase;margin-bottom:8px">From someone in recovery</div>
+      <div style="font:500 14px/1.55 'Plus Jakarta Sans',sans-serif;color:#1F2937">“I caught myself at 6:40 because the app said I would be there. That was the whole thing.”</div>
+      <div style="font:600 12px 'Plus Jakarta Sans',sans-serif;color:#5B6572;margin-top:9px">— Alex, 6 months</div>
+    </div>
+  </div>
+
+  <div style="position:absolute;right:20px;bottom:96px;width:58px;height:58px;border-radius:50%;background:#F59E0B;box-shadow:0 4px 0 #C2760A,0 12px 24px -10px rgba(245,158,11,.85);display:grid;place-items:center;color:#fff;font:700 26px 'Baloo 2',sans-serif;cursor:pointer;transition:transform .12s" style-active="transform:scale(.92)">+</div>
+
+  <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);padding:10px 14px 26px;background:rgba(255,255,255,.88);backdrop-filter:blur(18px);border-top:1px solid rgba(17,24,39,.07)">
+    <sc-for list="{{ navLight }}" as="n" hint-placeholder-count="4">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;cursor:pointer">
+        <span style="font-size:18px;line-height:1;opacity:{{ n.o }}">{{ n.i }}</span>
+        <span style="font:700 10px 'Baloo 2',sans-serif;color:{{ n.c }}">{{ n.l }}</span>
+      </div>
+    </sc-for>
+  </div>
+</div></div></div>
+
+<div class="dv-opt" id="1b"><div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Quick log — one smooth scroll (interactive)</div>
+<div class="ph"><div class="phi" style="background:#F3F8F8">
+  <div style="flex:none;padding:14px 26px 0;display:flex;align-items:center;justify-content:space-between;font:600 14px 'Plus Jakarta Sans',sans-serif;color:#111827">
+    <span>7:16</span><span style="font-size:11px;letter-spacing:.06em">●●● ⌁ ▮</span>
+  </div>
+  <div style="flex:none;padding:12px 20px 10px;background:#F3F8F8">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="font:700 16px 'Baloo 2',sans-serif;color:#111827">Quick log ✍️</div>
+      <div style="font:500 11px 'JetBrains Mono',monospace;color:#8A94A0">{{ logStepLabel }}</div>
+    </div>
+    <div style="height:4px;border-radius:100px;background:#E4EAEE;overflow:hidden"><div style="height:100%;border-radius:100px;background:linear-gradient(90deg,#06B6D4,#F59E0B);width:{{ logProgress }};transition:width .25s ease"></div></div>
+  </div>
+  <div class="scr" onScroll="{{ onLogScroll }}" style="padding:8px 20px 120px">
+
+    <div style="background:#fff;border:1px solid rgba(17,24,39,.07);border-radius:30px;padding:22px 20px">
+      <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#8A94A0;text-transform:uppercase;margin-bottom:10px">Step 1</div>
+      <div style="font:700 20px/1.3 'Baloo 2',sans-serif;color:#111827;margin-bottom:18px">How strong is it right now?</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:18px">
+        <span style="font-size:38px;line-height:1">{{ cravingFace }}</span>
+        <span style="font:800 56px/1 'Baloo 2',sans-serif;letter-spacing:-.04em;color:{{ cravingColor }};transition:color .3s">{{ craving }}</span>
+      </div>
+      <div style="position:relative;height:44px">
+        <div style="position:absolute;left:0;right:0;top:19px;height:10px;border-radius:100px;background:linear-gradient(90deg,#10B981,#F59E0B,#FB7185);opacity:.22"></div>
+        <div style="position:absolute;left:0;top:19px;height:10px;border-radius:100px;background:linear-gradient(90deg,#10B981,#F59E0B,#FB7185);width:{{ cravingPct }};transition:width .12s"></div>
+        <div style="position:absolute;top:8px;left:{{ cravingPct }};width:32px;height:32px;margin-left:-16px;border-radius:50%;background:#fff;border:3px solid {{ cravingColor }};box-shadow:0 5px 14px -4px rgba(9,24,38,.4);transition:border-color .3s,left .12s"></div>
+        <input type="range" min="1" max="10" value="{{ craving }}" onInput="{{ setCraving }}" style="position:absolute;inset:0;width:100%;opacity:0;cursor:pointer;margin:0">
+      </div>
+      <div style="display:flex;justify-content:space-between;font:500 11px 'JetBrains Mono',monospace;color:#8A94A0;margin-top:2px"><span>barely there</span><span>overwhelming</span></div>
+    </div>
+
+    <div style="margin-top:14px;background:#fff;border:1px solid rgba(17,24,39,.07);border-radius:30px;padding:22px 20px">
+      <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#8A94A0;text-transform:uppercase;margin-bottom:10px">Step 2</div>
+      <div style="font:700 20px/1.3 'Baloo 2',sans-serif;color:#111827;margin-bottom:6px">How’s your mood?</div>
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:14px"><span style="font:800 34px 'Baloo 2',sans-serif;color:#0891B2;letter-spacing:-.03em">{{ mood }}</span><span style="font:500 13px 'Plus Jakarta Sans',sans-serif;color:#5B6572">{{ moodWord }}</span></div>
+      <div style="position:relative;height:38px;margin-bottom:22px">
+        <div style="position:absolute;left:0;right:0;top:16px;height:8px;border-radius:100px;background:#E9EEF1"></div>
+        <div style="position:absolute;left:0;top:16px;height:8px;border-radius:100px;background:linear-gradient(90deg,#06B6D4,#10B981);width:{{ moodPct }};transition:width .12s"></div>
+        <div style="position:absolute;top:6px;left:{{ moodPct }};width:28px;height:28px;margin-left:-14px;border-radius:50%;background:#fff;border:3px solid #0891B2;box-shadow:0 5px 14px -4px rgba(9,24,38,.35);transition:left .12s"></div>
+        <input type="range" min="1" max="10" value="{{ mood }}" onInput="{{ setMood }}" style="position:absolute;inset:0;width:100%;opacity:0;cursor:pointer;margin:0">
+      </div>
+      <div style="font:600 13px 'Plus Jakarta Sans',sans-serif;color:#5B6572;margin-bottom:10px">Stress level</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
+        <sc-for list="{{ stressOpts }}" as="s" hint-placeholder-count="3">
+          <button onClick="{{ s.onClick }}" style="border-radius:18px;padding:13px 6px;cursor:pointer;font:700 13.5px 'Baloo 2',sans-serif;background:{{ s.bg }};color:{{ s.fg }};border:1.5px solid {{ s.bd }};transition:all .18s ease;transform:scale({{ s.sc }})">{{ s.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;background:#fff;border:1px solid rgba(17,24,39,.07);border-radius:30px;padding:22px 20px">
+      <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#8A94A0;text-transform:uppercase;margin-bottom:10px">Step 3</div>
+      <div style="font:700 20px/1.3 'Baloo 2',sans-serif;color:#111827;margin-bottom:4px">Where are you, and who’s around?</div>
+      <div style="font:500 12.5px 'Plus Jakarta Sans',sans-serif;color:#8A94A0;margin-bottom:16px">Tap all that fit — no wrong answers.</div>
+      <div style="display:flex;flex-wrap:wrap;gap:9px">
+        <sc-for list="{{ pills }}" as="p" hint-placeholder-count="8">
+          <button onClick="{{ p.onClick }}" style="border-radius:100px;padding:11px 16px;cursor:pointer;font:700 13px 'Baloo 2',sans-serif;background:{{ p.bg }};color:{{ p.fg }};border:1.5px solid {{ p.bd }};transition:all .18s ease;transform:scale({{ p.sc }})">{{ p.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;background:#fff;border:1px solid rgba(17,24,39,.07);border-radius:30px;padding:22px 20px">
+      <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#8A94A0;text-transform:uppercase;margin-bottom:10px">Step 4 · optional</div>
+      <div style="font:700 20px/1.3 'Baloo 2',sans-serif;color:#111827;margin-bottom:14px">Anything else on your mind?</div>
+      <div style="background:#F7FAFB;border:1.5px solid rgba(17,24,39,.08);border-radius:22px;padding:14px 15px;font:500 14px/1.5 'Plus Jakarta Sans',sans-serif;color:#9AA4AF;min-height:76px">Had a tough meeting, feeling triggered…</div>
+    </div>
+
+    <button onClick="{{ submitLog }}" style-active="transform:translateY(4px);box-shadow:0 1px 0 #0E7490" style="margin-top:18px;width:100%;border:none;border-radius:26px;padding:20px;background:linear-gradient(135deg,#06B6D4,#0891B2);color:#fff;font:800 17px 'Baloo 2',sans-serif;cursor:pointer;box-shadow:0 5px 0 #0E7490,0 18px 28px -16px rgba(6,182,212,.95);transition:transform .12s">Check my risk 💪</button>
+    <div style="text-align:center;font:500 12.5px 'Plus Jakarta Sans',sans-serif;color:#8A94A0;margin-top:11px">We’ll save it and read your patterns — takes a second.</div>
+  </div>
+</div></div></div>
+
+<div class="dv-opt" id="1c"><div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Prediction result</div>
+<div class="ph"><div class="phi" style="background:#F3F8F8">
+  <div style="flex:none;padding:14px 26px 0;display:flex;align-items:center;justify-content:space-between;font:600 14px 'Plus Jakarta Sans',sans-serif;color:#111827">
+    <span>7:17</span><span style="font-size:11px;letter-spacing:.06em">●●● ⌁ ▮</span>
+  </div>
+  <div class="scr" style="padding:14px 20px 40px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div style="width:34px;height:34px;border-radius:16px;background:#fff;border:1px solid rgba(17,24,39,.08);display:grid;place-items:center;font-size:15px;color:#5B6572">‹</div>
+      <div style="font:700 15px 'Baloo 2',sans-serif;color:#111827">Your reading ✨</div>
+      <div style="margin-left:auto;font:500 11px 'JetBrains Mono',monospace;color:#8A94A0">7:15 PM · logged</div>
+    </div>
+
+    <div style="position:relative;overflow:hidden;background:linear-gradient(160deg,#0E7490,#155E75 55%,#1E3A46);border-radius:28px;padding:26px 22px 24px;box-shadow:0 22px 44px -22px rgba(14,116,144,.9);animation:rise .55s ease both">
+      <div style="position:absolute;top:-70px;right:-50px;width:190px;height:190px;border-radius:50%;background:rgba(245,158,11,.22);filter:blur(6px)"></div>
+      <div style="position:relative;text-align:center">
+        <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(245,158,11,.22);border:1px solid rgba(245,158,11,.5);color:#FCD34D;border-radius:100px;padding:6px 13px;font:700 11.5px 'Baloo 2',sans-serif">Medium-high risk window</div>
+        <div style="font:800 86px/1 'Baloo 2',sans-serif;color:#fff;letter-spacing:-.05em;margin:16px 0 4px">{{ predRisk }}<span style="font-size:36px;opacity:.6">%</span></div>
+        <div style="font:500 14.5px/1.5 'Plus Jakarta Sans',sans-serif;color:rgba(255,255,255,.78);max-width:260px;margin:0 auto">Chance a strong urge shows up in the next two hours.</div>
+        <div style="margin-top:20px;height:9px;border-radius:100px;background:rgba(255,255,255,.16);overflow:hidden"><div style="height:100%;border-radius:100px;width:{{ predPct }};background:linear-gradient(90deg,#22D3EE,#F59E0B);transition:width 1s cubic-bezier(.2,.8,.2,1)"></div></div>
+        <div style="display:flex;justify-content:space-between;font:500 10.5px 'JetBrains Mono',monospace;color:rgba(255,255,255,.5);margin-top:7px"><span>calm</span><span>your usual peak · 74%</span></div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;background:#fff;border:1px solid rgba(17,24,39,.07);border-radius:30px;padding:20px">
+      <div style="font:700 16px 'Baloo 2',sans-serif;color:#111827;margin-bottom:14px">Why we think so</div>
+      <div style="display:flex;flex-direction:column;gap:13px">
+        <sc-for list="{{ reasons }}" as="r" hint-placeholder-count="3">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div style="width:22px;height:22px;flex:none;border-radius:8px;background:#ECFEFF;color:#0891B2;display:grid;place-items:center;font:800 12px 'Baloo 2',sans-serif">✓</div>
+            <div style="min-width:0">
+              <div style="font:600 13.5px/1.45 'Plus Jakarta Sans',sans-serif;color:#1F2937">{{ r.t }}</div>
+              <div style="margin-top:6px;height:5px;border-radius:100px;background:#EDF1F3;overflow:hidden"><div style="height:100%;border-radius:100px;width:{{ r.w }};background:{{ r.c }}"></div></div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="margin-top:14px">
+      <div style="font:700 16px 'Baloo 2',sans-serif;color:#111827;margin-bottom:10px">Things that might help 🌱</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ copes }}" as="c" hint-placeholder-count="3">
+          <button onClick="{{ c.onClick }}" style-hover="border-color:rgba(6,182,212,.55)" style="display:flex;align-items:center;gap:14px;text-align:left;width:100%;background:#fff;border:1.5px solid {{ c.bd }};border-radius:24px;padding:15px 16px;cursor:pointer;transition:all .18s ease;transform:scale({{ c.sc }})">
+            <span style="width:42px;height:42px;flex:none;border-radius:18px;background:{{ c.tint }};display:grid;place-items:center;font-size:19px">{{ c.i }}</span>
+            <span style="flex:1;min-width:0">
+              <span style="display:block;font:700 14.5px 'Baloo 2',sans-serif;color:#111827">{{ c.t }}</span>
+              <span style="display:block;font:500 12.5px 'Plus Jakarta Sans',sans-serif;color:#6B7280;margin-top:2px">{{ c.s }}</span>
+            </span>
+            <span style="font:700 13px 'Baloo 2',sans-serif;color:#0891B2">{{ c.cta }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px">
+      <button style-active="transform:scale(.97)" style="border-radius:22px;padding:15px 8px;background:#EEF2F4;border:1px solid rgba(17,24,39,.07);color:#374151;font:700 13.5px 'Baloo 2',sans-serif;cursor:pointer;transition:transform .12s">I’ve got this</button>
+      <button style-active="transform:scale(.97)" style="border-radius:22px;padding:15px 8px;background:#FFF7ED;border:1px solid rgba(245,158,11,.35);color:#B45309;font:700 13.5px 'Baloo 2',sans-serif;cursor:pointer;transition:transform .12s">Remind me in 30 min</button>
+    </div>
+    <div style="text-align:center;font:500 12px/1.5 'Plus Jakarta Sans',sans-serif;color:#9AA4AF;margin-top:14px">Built from your 118 logs. Stays on your phone, always. 🔒</div>
+  </div>
+</div></div></div>
+
+<div class="dv-opt" id="1d"><div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>History &amp; trends</div>
+<div class="ph"><div class="phi" style="background:#F3F8F8">
+  <div style="flex:none;padding:14px 26px 0;display:flex;align-items:center;justify-content:space-between;font:600 14px 'Plus Jakarta Sans',sans-serif;color:#111827">
+    <span>9:02</span><span style="font-size:11px;letter-spacing:.06em">●●● ⌁ ▮</span>
+  </div>
+  <div class="scr" style="padding:12px 20px 108px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font:800 24px 'Baloo 2',sans-serif;color:#111827;letter-spacing:-.02em">Your patterns</div>
+      <div style="display:flex;background:#E7ECEF;border-radius:100px;padding:3px">
+        <sc-for list="{{ ranges }}" as="r" hint-placeholder-count="2">
+          <button onClick="{{ r.onClick }}" style="border:none;cursor:pointer;border-radius:100px;padding:7px 15px;font:700 12.5px 'Baloo 2',sans-serif;background:{{ r.bg }};color:{{ r.fg }};box-shadow:{{ r.sh }};transition:all .2s">{{ r.l }}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="background:#fff;border:1px solid rgba(17,24,39,.07);border-radius:30px;padding:20px">
+      <div style="font:500 13.5px/1.5 'Plus Jakarta Sans',sans-serif;color:#5B6572">You logged <b style="color:#111827">18 times</b> this week — your steadiest stretch yet. Nice one. 🎉</div>
+      <div style="display:flex;align-items:flex-end;gap:7px;height:96px;margin-top:18px">
+        <sc-for list="{{ weekBars }}" as="b" hint-placeholder-count="7">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;height:100%;justify-content:flex-end">
+            <span style="font:700 10.5px 'JetBrains Mono',monospace;color:{{ b.lc }}">{{ b.v }}</span>
+            <div style="width:100%;border-radius:100px;background:{{ b.c }};height:{{ b.h }};transition:height .5s ease"></div>
+            <span style="font:500 10.5px 'JetBrains Mono',monospace;color:#8A94A0">{{ b.d }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top:14px;display:inline-flex;align-items:center;gap:7px;background:#FEF3C7;color:#92400E;border-radius:100px;padding:6px 12px;font:700 11.5px 'Baloo 2',sans-serif">Peak · Thu 7 PM · 81%</div>
+    </div>
+
+    <div style="margin-top:14px;background:#fff;border:1px solid rgba(17,24,39,.07);border-radius:30px;padding:20px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px">
+        <div style="font:700 15px 'Baloo 2',sans-serif;color:#111827">Time of day × risk</div>
+        <div style="font:500 10.5px 'JetBrains Mono',monospace;color:#8A94A0">low → high</div>
+      </div>
+      <div style="display:grid;grid-template-columns:26px repeat(6,1fr);gap:5px;align-items:center">
+        <sc-for list="{{ heat }}" as="h" hint-placeholder-count="35">
+          <div style="aspect-ratio:1;border-radius:6px;background:{{ h.c }};display:grid;place-items:center;font:600 9px 'JetBrains Mono',monospace;color:{{ h.fg }}">{{ h.t }}</div>
+        </sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:26px repeat(6,1fr);gap:5px;margin-top:7px">
+        <span></span>
+        <sc-for list="{{ heatCols }}" as="c" hint-placeholder-count="6">
+          <span style="text-align:center;font:500 9px 'JetBrains Mono',monospace;color:#8A94A0">{{ c.l }}</span>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
+      <sc-for list="{{ insights }}" as="i" hint-placeholder-count="3">
+        <div style="background:{{ i.bg }};border:1px solid {{ i.bd }};border-radius:26px;padding:16px 18px;animation:rise .5s ease both">
+          <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:{{ i.kc }};margin-bottom:7px">{{ i.k }}</div>
+          <div style="font:600 14.5px/1.45 'Plus Jakarta Sans',sans-serif;color:#1F2937">{{ i.t }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="margin-top:18px;font:700 15px 'Baloo 2',sans-serif;color:#111827;margin-bottom:10px">Recent days 📅</div>
+    <div style="background:#fff;border:1px solid rgba(17,24,39,.07);border-radius:28px;overflow:hidden">
+      <sc-for list="{{ days }}" as="d" hint-placeholder-count="4">
+        <div style="display:flex;align-items:center;gap:14px;padding:15px 18px;border-bottom:1px solid rgba(17,24,39,.06)">
+          <div style="min-width:0;flex:1">
+            <div style="font:700 13.5px 'Baloo 2',sans-serif;color:#111827">{{ d.day }}</div>
+            <div style="font:500 12px 'Plus Jakarta Sans',sans-serif;color:#8A94A0;margin-top:2px">{{ d.sub }}</div>
+          </div>
+          <div style="font:700 11.5px 'Baloo 2',sans-serif;padding:5px 11px;border-radius:100px;background:{{ d.bg }};color:{{ d.fg }}">{{ d.peak }}</div>
+          <span style="color:#C3CBD2;font-size:15px">›</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);padding:10px 14px 26px;background:rgba(255,255,255,.88);backdrop-filter:blur(18px);border-top:1px solid rgba(17,24,39,.07)">
+    <sc-for list="{{ navHistory }}" as="n" hint-placeholder-count="4">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;cursor:pointer">
+        <span style="font-size:18px;line-height:1;opacity:{{ n.o }}">{{ n.i }}</span>
+        <span style="font:700 10px 'Baloo 2',sans-serif;color:{{ n.c }}">{{ n.l }}</span>
+      </div>
+    </sc-for>
+  </div>
+</div></div></div>
+
+<div class="dv-opt" id="1e"><div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Dashboard — dark</div>
+<div class="ph"><div class="phi" style="background:#0B1220">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 26px 4px;font:600 14px 'Plus Jakarta Sans',sans-serif;color:#E5E7EB;flex:none">
+    <span>10:42</span><span style="font-size:11px;letter-spacing:.06em">●●● ⌁ ▮</span>
+  </div>
+  <div class="scr" style="padding:10px 20px 108px">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:22px">
+      <div>
+        <div style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#64748B;margin-bottom:7px">Thu · Sep 19 · Late</div>
+        <div style="font:800 27px/1.18 'Baloo 2',sans-serif;color:#F3F4F6;letter-spacing:-.02em">Hey Ben 🌙<br><span style="font-weight:500;color:#94A3B8">how are you right now?</span></div>
+      </div>
+      <div style="width:44px;height:44px;border-radius:50%;flex:none;background:linear-gradient(145deg,#22D3EE,#0E7490);display:grid;place-items:center;color:#06232B;font:800 15px 'Baloo 2',sans-serif">B</div>
+    </div>
+
+    <div style="position:relative;overflow:hidden;background:linear-gradient(160deg,rgba(16,185,129,.14),#131C2B);border:1.5px solid rgba(52,211,153,.28);border-radius:30px;padding:20px">
+      <div style="position:absolute;top:-60px;right:-40px;width:150px;height:150px;border-radius:50%;background:rgba(52,211,153,.12)"></div>
+      <div style="position:relative;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#6EE7B7">Today’s plant</div>
+        <div style="font:700 11.5px 'Baloo 2',sans-serif;color:#6EE7B7;background:rgba(52,211,153,.14);border-radius:100px;padding:4px 10px">1h 18m to bloom</div>
+      </div>
+      <div style="position:relative;display:flex;align-items:center;gap:16px">
+        <div style="position:relative;width:88px;height:88px;flex:none;display:grid;place-items:center">
+          <div style="position:absolute;inset:0;border-radius:50%;background:rgba(52,211,153,.14);animation:halo 3.8s ease-in-out infinite"></div>
+          <div style="position:absolute;inset:8px;border-radius:50%;background:rgba(255,255,255,.05)"></div>
+          <span style="position:relative;font-size:40px;line-height:1;animation:sway 4.2s ease-in-out infinite">🌷</span>
+        </div>
+        <div style="min-width:0;flex:1">
+          <div style="font:700 17px/1.3 'Baloo 2',sans-serif;color:#ECFDF5;margin-bottom:5px">Your tulip is almost open</div>
+          <div style="font:500 13px/1.5 'Plus Jakarta Sans',sans-serif;color:#94A3B8;margin-bottom:10px">Make it to midnight and it’s yours for good.</div>
+          <div style="display:flex;gap:5px">
+            <sc-for list="{{ darkStages }}" as="g" hint-placeholder-count="4">
+              <div style="flex:1;height:7px;border-radius:100px;background:{{ g.c }}"></div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      <button style-active="transform:translateY(4px);box-shadow:0 1px 0 #047857" style="position:relative;margin-top:16px;width:100%;border:none;border-radius:26px;padding:19px;background:linear-gradient(135deg,#34D399,#10B981);color:#052E22;font:800 17px 'Baloo 2',sans-serif;cursor:pointer;box-shadow:0 5px 0 #047857,0 18px 30px -20px rgba(52,211,153,.9);transition:transform .12s">Water it 💧</button>
+      <button style="margin-top:9px;width:100%;background:none;border:none;cursor:pointer;font:700 13px 'Baloo 2',sans-serif;color:#64748B">Having a craving? Log it</button>
+    </div>
+
+<div style="position:relative;margin-top:16px;background:#131C2B;border:1px solid rgba(255,255,255,.08);border-radius:30px;padding:22px 20px 18px;overflow:hidden;box-shadow:0 18px 40px -22px rgba(0,0,0,.9)">
+      <div style="position:absolute;top:-80px;right:-60px;width:200px;height:200px;border-radius:50%;background:rgba(34,211,238,.16);filter:blur(4px)"></div>
+      <div style="position:relative;display:flex;align-items:center;gap:20px">
+        <div style="position:relative;width:118px;height:118px;flex:none">
+          <div style="position:absolute;inset:-6px;border-radius:50%;background:rgba(34,211,238,.14);animation:halo 3.4s ease-in-out infinite"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;background:conic-gradient(#22D3EE {{ darkRingPct }}, rgba(255,255,255,.09) 0)"></div>
+          <div style="position:absolute;inset:11px;border-radius:50%;background:#131C2B;display:flex;flex-direction:column;align-items:center;justify-content:center">
+            <div style="font:800 34px/1 'Baloo 2',sans-serif;color:#F3F4F6;letter-spacing:-.03em">{{ darkRisk }}<span style="font-size:17px;color:#64748B">%</span></div>
+            <div style="font:700 9.5px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#22D3EE;margin-top:3px">EASING</div>
+          </div>
+        </div>
+        <div style="min-width:0">
+          <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(34,211,238,.14);color:#67E8F9;border-radius:100px;padding:5px 11px;font:700 11px 'Baloo 2',sans-serif;margin-bottom:9px">▼ Falling</div>
+          <div style="font:700 17px/1.3 'Baloo 2',sans-serif;color:#F3F4F6;margin-bottom:6px">You rode out the peak 🌤️</div>
+          <div style="font:500 13.5px/1.5 'Plus Jakarta Sans',sans-serif;color:#94A3B8">Risk has been falling for three hours straight. Good night ahead.</div>
+        </div>
+      </div>
+      <div style="position:relative;margin-top:16px;width:100%;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:12px 14px;font:700 13px 'Baloo 2',sans-serif;color:#67E8F9;cursor:pointer">
+        <span>Why this number? 🤔</span><span>⌄</span>
+      </div>
+    </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
+      <div style="background:#131C2B;border:1px solid rgba(255,255,255,.07);border-radius:24px;padding:15px 16px">
+        <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#64748B;text-transform:uppercase">Streak</div>
+        <div style="display:flex;align-items:baseline;gap:6px;margin-top:6px"><span style="font:800 26px 'Baloo 2',sans-serif;color:#F3F4F6;letter-spacing:-.02em">{{ streak }}</span><span style="font:600 13px 'Plus Jakarta Sans',sans-serif;color:#94A3B8">days</span></div>
+        <div style="margin-top:9px;height:6px;border-radius:100px;background:rgba(255,255,255,.08);overflow:hidden"><div style="height:100%;border-radius:100px;width:{{ streakPct }};background:linear-gradient(90deg,#22D3EE,#34D399)"></div></div>
+      </div>
+      <div style="background:#131C2B;border:1px solid rgba(255,255,255,.07);border-radius:24px;padding:15px 16px">
+        <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#64748B;text-transform:uppercase">This week</div>
+        <div style="display:flex;align-items:baseline;gap:6px;margin-top:6px"><span style="font:800 26px 'Baloo 2',sans-serif;color:#F3F4F6;letter-spacing:-.02em">18</span><span style="font:600 13px 'Plus Jakarta Sans',sans-serif;color:#94A3B8">logs</span></div>
+        <div style="display:flex;align-items:flex-end;gap:3px;height:22px;margin-top:6px">
+          <sc-for list="{{ sparkDark }}" as="s" hint-placeholder-count="7">
+            <div style="flex:1;border-radius:3px;background:{{ s.c }};height:{{ s.h }}"></div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;background:#131C2B;border:1px solid rgba(255,255,255,.07);border-radius:28px;padding:18px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px">
+        <div style="font:700 15px 'Baloo 2',sans-serif;color:#F3F4F6">Next 12 hours</div>
+        <div style="font:500 11px 'JetBrains Mono',monospace;color:#64748B">forecast</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:flex-end">
+        <sc-for list="{{ forecastDark }}" as="f" hint-placeholder-count="6">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div style="width:100%;height:58px;display:flex;align-items:flex-end"><div style="width:100%;border-radius:100px;background:{{ f.c }};height:{{ f.h }}"></div></div>
+            <span style="font:500 9.5px 'JetBrains Mono',monospace;color:#64748B">{{ f.l }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;background:linear-gradient(135deg,rgba(34,211,238,.10),rgba(19,28,43,.9));border:1px solid rgba(34,211,238,.22);border-radius:28px;padding:18px">
+      <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#67E8F9;text-transform:uppercase;margin-bottom:8px">Tonight</div>
+      <div style="font:500 14px/1.55 'Plus Jakarta Sans',sans-serif;color:#E2E8F0">Early warning is armed for tomorrow 6:15 PM — we’ll tap you 45 minutes ahead. Sleep well. 💤</div>
+    </div>
+  </div>
+
+  <div style="position:absolute;right:20px;bottom:96px;width:58px;height:58px;border-radius:50%;background:#F59E0B;box-shadow:0 4px 0 #C2760A,0 14px 26px -10px rgba(245,158,11,.7);display:grid;place-items:center;color:#20140A;font:700 26px 'Baloo 2',sans-serif;cursor:pointer">+</div>
+
+  <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);padding:10px 14px 26px;background:rgba(11,18,32,.9);backdrop-filter:blur(18px);border-top:1px solid rgba(255,255,255,.07)">
+    <sc-for list="{{ navDark }}" as="n" hint-placeholder-count="4">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;cursor:pointer">
+        <span style="font-size:18px;line-height:1;opacity:{{ n.o }}">{{ n.i }}</span>
+        <span style="font:700 10px 'Baloo 2',sans-serif;color:{{ n.c }}">{{ n.l }}</span>
+      </div>
+    </sc-for>
+  </div>
+</div></div></div>
+
+<div class="dv-opt" id="1f"><div class="dv-olabel"><a class="dv-oid" href="#1f">1f</a>My garden</div>
+<div class="ph"><div class="phi" style="background:#F3F8F8">
+  <div style="flex:none;padding:14px 26px 0;display:flex;align-items:center;justify-content:space-between;font:600 14px 'Plus Jakarta Sans',sans-serif;color:#111827">
+    <span>9:04</span><span style="font-size:11px;letter-spacing:.06em">●●● ⌁ ▮</span>
+  </div>
+  <div class="scr" style="padding:12px 20px 108px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div style="font:800 24px 'Baloo 2',sans-serif;color:#111827;letter-spacing:-.02em">My garden 🌷</div>
+      <div style="display:flex;align-items:center;gap:6px;background:#FEF3C7;border-radius:100px;padding:6px 12px;font:700 12px 'Baloo 2',sans-serif;color:#92400E">🌻 {{ rankName }}</div>
+    </div>
+
+    <div style="position:relative;overflow:hidden;background:linear-gradient(180deg,#DCF2FF,#E8F7EC 58%,#D5EEDA);border:1.5px solid rgba(16,185,129,.25);border-radius:30px;padding:16px 16px 14px;box-shadow:0 12px 32px -20px rgba(6,95,70,.55)">
+      <div style="position:absolute;top:14px;right:18px;font-size:24px;animation:sway 6s ease-in-out infinite">☀️</div>
+      <div style="position:relative;display:flex;align-items:center;justify-content:space-between">
+        <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#047857">Your plot · {{ placedCount }} planted</div>
+      </div>
+
+      <div style="position:relative;height:250px;perspective:820px;perspective-origin:50% 42%;display:grid;place-items:center;margin-top:4px">
+        <div style="position:relative;width:266px;transform-style:preserve-3d;transform:rotateX(60deg) rotateZ({{ rotDeg }}) scale({{ plotScale }});transition:transform .55s cubic-bezier(.3,.9,.3,1);display:grid;grid-template-columns:{{ gridCols }};gap:5px">
+          <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="25">
+            <button onClick="{{ t.onClick }}" style="transform-style:preserve-3d;position:relative;aspect-ratio:1;border:none;padding:0;cursor:pointer;border-radius:7px;background:{{ t.bg }};box-shadow:{{ t.sh }};transition:background .2s,box-shadow .2s">
+              <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) {{ upright }} translateY(-9px);font-size:{{ t.size }};line-height:1;filter:drop-shadow(0 4px 3px rgba(6,60,40,.35));transition:transform .4s">{{ t.e }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="position:relative;display:flex;align-items:center;gap:8px;margin-top:2px">
+        <button onClick="{{ rotLeft }}" style-active="transform:translateY(2px)" style="flex:none;width:40px;height:40px;border-radius:16px;background:#fff;border:1.5px solid rgba(16,185,129,.28);cursor:pointer;font:700 15px 'Baloo 2',sans-serif;color:#047857;box-shadow:0 3px 0 rgba(4,120,87,.28);transition:transform .12s">↺</button>
+        <button onClick="{{ rotRight }}" style-active="transform:translateY(2px)" style="flex:none;width:40px;height:40px;border-radius:16px;background:#fff;border:1.5px solid rgba(16,185,129,.28);cursor:pointer;font:700 15px 'Baloo 2',sans-serif;color:#047857;box-shadow:0 3px 0 rgba(4,120,87,.28);transition:transform .12s">↻</button>
+        <div style="flex:1;display:flex;background:rgba(255,255,255,.7);border-radius:100px;padding:3px">
+          <sc-for list="{{ plotSizes }}" as="p" hint-placeholder-count="3">
+            <button onClick="{{ p.onClick }}" style="flex:1;border:none;cursor:pointer;border-radius:100px;padding:8px 4px;font:700 12px 'Baloo 2',sans-serif;background:{{ p.bg }};color:{{ p.fg }};box-shadow:{{ p.sh }};transition:all .2s">{{ p.l }}</button>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;background:#fff;border:1px solid rgba(17,24,39,.07);border-radius:26px;padding:14px 16px">
+      <div style="font:700 13.5px 'Baloo 2',sans-serif;color:#111827;margin-bottom:3px">{{ trayTitle }}</div>
+      <div style="font:500 12px 'Plus Jakarta Sans',sans-serif;color:#8A94A0;margin-bottom:11px">{{ traySub }}</div>
+      <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:2px">
+        <sc-for list="{{ tray }}" as="p" hint-placeholder-count="8">
+          <button onClick="{{ p.onClick }}" style="flex:none;display:flex;flex-direction:column;align-items:center;gap:3px;width:58px;padding:9px 4px;cursor:pointer;border-radius:18px;background:{{ p.bg }};border:1.5px solid {{ p.bd }};transition:all .2s ease;transform:scale({{ p.sc }})">
+            <span style="font-size:21px;line-height:1">{{ p.e }}</span>
+            <span style="font:700 9px 'Baloo 2',sans-serif;color:{{ p.fg }};white-space:nowrap">{{ p.l }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px">
+      <sc-for list="{{ gardenStats }}" as="s" hint-placeholder-count="3">
+        <div style="background:#fff;border:1px solid rgba(17,24,39,.07);border-radius:24px;padding:14px 12px;text-align:center">
+          <div style="font:800 24px 'Baloo 2',sans-serif;color:#111827;letter-spacing:-.02em">{{ s.v }}</div>
+          <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.07em;text-transform:uppercase;color:#8A94A0;margin-top:3px">{{ s.l }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="margin-top:14px;background:#fff;border:1.5px solid rgba(16,185,129,.3);border-radius:30px;padding:18px;display:flex;align-items:center;gap:16px">
+      <div style="position:relative;width:74px;height:74px;flex:none;display:grid;place-items:center">
+        <div style="position:absolute;inset:0;border-radius:50%;background:rgba(16,185,129,.12);animation:halo 3.8s ease-in-out infinite"></div>
+        <span style="position:relative;font-size:{{ plantSize }};line-height:1;animation:sway 4.2s ease-in-out infinite">{{ plantEmoji }}</span>
+      </div>
+      <div style="min-width:0;flex:1">
+        <div style="font:500 10.5px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#047857;margin-bottom:5px">Growing today</div>
+        <div style="font:700 16px/1.25 'Baloo 2',sans-serif;color:#064E3B;margin-bottom:8px">{{ plantHeadline }}</div>
+        <div style="display:flex;gap:5px">
+          <sc-for list="{{ plantStages }}" as="g" hint-placeholder-count="4">
+            <div style="flex:1;height:7px;border-radius:100px;background:{{ g.c }};transition:background .35s"></div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;background:linear-gradient(135deg,#FFFBEB,#FFF7ED);border:1px solid rgba(245,158,11,.3);border-radius:26px;padding:16px 18px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px">
+        <div style="font:700 14px 'Baloo 2',sans-serif;color:#92400E">Next unlock · {{ unlockName }} {{ unlockEmoji }}</div>
+        <div style="font:500 11px 'JetBrains Mono',monospace;color:#B45309">{{ unlockCount }}</div>
+      </div>
+      <div style="height:9px;border-radius:100px;background:rgba(245,158,11,.18);overflow:hidden"><div style="height:100%;border-radius:100px;width:{{ unlockPct }};background:linear-gradient(90deg,#F59E0B,#FBBF24);transition:width .5s ease"></div></div>
+      <div style="font:500 12.5px 'Plus Jakarta Sans',sans-serif;color:#B45309;margin-top:9px">{{ unlockLine }}</div>
+    </div>
+
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin:20px 0 10px">
+      <div style="font:700 16px 'Baloo 2',sans-serif;color:#111827">Collection</div>
+      <div style="font:500 11px 'JetBrains Mono',monospace;color:#8A94A0">{{ collectionCount }}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:9px">
+      <sc-for list="{{ collection }}" as="c" hint-placeholder-count="20">
+        <div style="aspect-ratio:1;border-radius:22px;background:{{ c.bg }};border:1.5px solid {{ c.bd }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+          <span style="font-size:24px;line-height:1;filter:{{ c.filter }};opacity:{{ c.op }}">{{ c.e }}</span>
+          <span style="font:700 8.5px 'Baloo 2',sans-serif;color:{{ c.fg }};text-align:center;padding:0 3px;line-height:1.1">{{ c.l }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="text-align:center;font:500 12px/1.5 'Plus Jakarta Sans',sans-serif;color:#9AA4AF;margin-top:14px">Nothing already grown is ever taken away. 💚</div>
+  </div>
+  <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);padding:10px 14px 26px;background:rgba(255,255,255,.88);backdrop-filter:blur(18px);border-top:1px solid rgba(17,24,39,.07)">
+    <sc-for list="{{ navGarden }}" as="n" hint-placeholder-count="4">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;cursor:pointer">
+        <span style="font-size:18px;line-height:1;opacity:{{ n.o }}">{{ n.i }}</span>
+        <span style="font:700 10px 'Baloo 2',sans-serif;color:{{ n.c }}">{{ n.l }}</span>
+      </div>
+    </sc-for>
+  </div>
+</div></div></div>
+
+</div>
+<p class="dv-next">Try next: “make <a class="dv-oid" href="#1a">1a</a> feel calmer — drop the forecast strip” · “show the coping-strategy timer screen” · “new directions for the risk display”</p>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;riskScore&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:65,&quot;min&quot;:0,&quot;max&quot;:100,&quot;step&quot;:1,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Data&quot;},&quot;streakDays&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:12,&quot;min&quot;:0,&quot;max&quot;:120,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Data&quot;},&quot;grownCount&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:14,&quot;min&quot;:0,&quot;max&quot;:60,&quot;step&quot;:1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Data&quot;}}">
+class Component extends DCLogic {
+  state = { craving: 7, mood: 4, stress: "High", picked: ["Alone", "Home", "After work"],
+    chosen: "tulip", planted: false, stage: 0,
+    plot: 5, rot: 0, brush: "🌻",
+    layouts: {
+      4: ["🌳","","🌷","","","🌻","","🍀","🌸","","🌵","","","🌿","","🌲"],
+      5: ["🌳","","🌷","","🌲","","🌻","","🍀","","🌸","","🪨","","🌵",
+          "","🌼","","🌹","","🌼","","🌿","","🌺"],
+      6: ["🌳","","🌷","","🌲","","","🌻","","🍀","","🌸","🪨","","🌵","","🌼","",
+          "","🌹","","🌼","","🌿","🌺","","🪨","","🌷","","","🌳","","🌻","","🍀"]
+    },
+    ramped: false, homeRisk: null, predRisk: 68, darkRisk: 28, why: false, logProgress: 8, cope: -1, range: "Week" };
+
+  componentDidMount() {
+    if (document.visibilityState === "visible") this.runRamps();
+    else {
+      this._onVis = () => { if (document.visibilityState === "visible") this.runRamps(); };
+      document.addEventListener("visibilitychange", this._onVis);
+    }
+  }
+  componentWillUnmount() {
+    if (this._onVis) document.removeEventListener("visibilitychange", this._onVis);
+  }
+  runRamps() {
+    if (this.state.ramped) return;
+    this.setState({ ramped: true });
+    if (this._onVis) { document.removeEventListener("visibilitychange", this._onVis); this._onVis = null; }
+    this.ramp("homeRisk", this.props.riskScore ?? 65, 900);
+    this.ramp("predRisk", 68, 1100);
+    this.ramp("darkRisk", 28, 900);
+    setTimeout(() => this.setState({ rampDone: true }), 1100);
+  }
+  ramp(key, target, ms) {
+    const t0 = performance.now();
+    const step = (t) => {
+      const p = Math.min(1, (t - t0) / ms);
+      const e = 1 - Math.pow(1 - p, 3);
+      this.setState({ [key]: Math.round(target * e) });
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+    setTimeout(() => this.setState({ [key]: target }), ms + 120);
+  }
+  face(v) { return v <= 2 ? "😊" : v <= 4 ? "🙂" : v <= 6 ? "😐" : v <= 8 ? "😟" : "😣"; }
+  cravColor(v) { return v <= 3 ? "#10B981" : v <= 6 ? "#F59E0B" : "#F43F5E"; }
+  moodWord(v) { return v <= 2 ? "running on empty 🫠" : v <= 4 ? "a bit flat 😐" : v <= 6 ? "doing okay 🙂" : v <= 8 ? "pretty good 😄" : "great ✨"; }
+  heatColor(v) {
+    if (v < 18) return { c: "#ECFEFF", fg: "#7C8B95" };
+    if (v < 35) return { c: "#CFF5FB", fg: "#0E5766" };
+    if (v < 52) return { c: "#8CE3F2", fg: "#0B4553" };
+    if (v < 68) return { c: "#FCD9A0", fg: "#7A4409" };
+    if (v < 82) return { c: "#F8B454", fg: "#5C3206" };
+    return { c: "#FB7185", fg: "#4C0519" };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const streak = this.props.streakDays ?? 12;
+    const target = this.props.riskScore ?? 65;
+    const homeRisk = (s.homeRisk === null || s.rampDone) ? target : Math.min(s.homeRisk, target);
+
+    const pillLabels = ["Alone", "With others", "Work", "Home", "Out", "After work", "Evening", "Late night"];
+    const pills = pillLabels.map(label => {
+      const on = s.picked.includes(label);
+      return { label, bg: on ? "#06B6D4" : "#F7FAFB", fg: on ? "#fff" : "#374151",
+        bd: on ? "#06B6D4" : "rgba(17,24,39,.12)", sc: on ? "1.03" : "1",
+        onClick: () => this.setState(st => ({ picked: st.picked.includes(label) ? st.picked.filter(x => x !== label) : st.picked.concat(label) })) };
+    });
+
+    const stressOpts = ["Low", "Medium", "High"].map(label => {
+      const on = s.stress === label;
+      const tint = { Low: "#10B981", Medium: "#F59E0B", High: "#FB7185" }[label];
+      return { label, bg: on ? tint : "#F7FAFB", fg: on ? "#fff" : "#374151",
+        bd: on ? tint : "rgba(17,24,39,.12)", sc: on ? "1.03" : "1",
+        onClick: () => this.setState({ stress: label }) };
+    });
+
+    const fdata = [[8,22],[10,34],[12,30],[2,46],[4,58],[6,86],[8,74],[10,40]];
+    const flabels = ["8p","10p","12a","2a","4a","6p","8p","10p"];
+    const hours = ["8p","9p","10p","11p","12a","1a","2a","8a"];
+    const fvals = [64,78,86,62,40,26,18,22];
+    const forecast = fvals.map((v, i) => ({ l: hours[i], h: Math.max(10, v) + "%",
+      c: v >= 70 ? "#F59E0B" : v >= 45 ? "#67E8F9" : "#CBD5E1" }));
+    const forecastDark = fvals.map((v, i) => ({ l: hours[i], h: Math.max(10, v) + "%",
+      c: v >= 70 ? "#F59E0B" : v >= 45 ? "#22D3EE" : "rgba(255,255,255,.14)" }));
+
+    const sv = [40, 65, 30, 80, 55, 95, 70];
+    const spark = sv.map(v => ({ h: v + "%", c: v >= 80 ? "#F59E0B" : "#06B6D4" }));
+    const sparkDark = sv.map(v => ({ h: v + "%", c: v >= 80 ? "#F59E0B" : "#22D3EE" }));
+
+    const wd = ["M","T","W","T","F","S","S"], wv = [42, 58, 35, 81, 66, 74, 49];
+    const weekBars = wv.map((v, i) => ({ d: wd[i], v: v, h: v + "%",
+      c: v >= 75 ? "linear-gradient(180deg,#F59E0B,#FBBF24)" : "linear-gradient(180deg,#06B6D4,#67E8F9)",
+      lc: v >= 75 ? "#B45309" : "#0E7490" }));
+
+    const rowLabels = ["M","T","W","T","F"];
+    const colLabels = ["6a","10a","2p","6p","8p","11p"];
+    const grid = [[12,20,28,55,44,30],[16,24,34,62,58,26],[10,18,22,48,40,22],[14,26,40,78,88,52],[18,30,46,70,84,60]];
+    const heat = [];
+    grid.forEach((row, r) => {
+      heat.push({ c: "transparent", fg: "#8A94A0", t: rowLabels[r] });
+      row.forEach(v => { const h = this.heatColor(v); heat.push({ c: h.c, fg: h.fg, t: "" }); });
+    });
+
+    const copeData = [
+      { i: "📞", t: "Call Maya", s: "Worked 4 of the last 5 times", cta: "Call" },
+      { i: "🚶", t: "Walk the block", s: "Changing rooms breaks the loop", cta: "Start" },
+      { i: "🧘", t: "5-minute breathing", s: "Guided, with a timer", cta: "Open" }
+    ];
+    const tints = ["#ECFEFF", "#FFF7ED", "#ECFDF5"];
+    const copes = copeData.map((c, i) => ({ ...c, tint: tints[i],
+      bd: s.cope === i ? "#06B6D4" : "rgba(17,24,39,.09)", sc: s.cope === i ? "1.015" : "1",
+      onClick: () => this.setState({ cope: i }) }));
+
+    const ranges = ["Week", "Month"].map(l => {
+      const on = s.range === l;
+      return { l, bg: on ? "#fff" : "transparent", fg: on ? "#111827" : "#6B7280",
+        sh: on ? "0 2px 6px rgba(9,24,38,.12)" : "none", onClick: () => this.setState({ range: l }) };
+    });
+
+    const NAV = [["🏠","Home"],["✍️","Log"],["🌿","Garden"],["📈","History"]];
+    const nav = (active) => NAV.map(([i, l]) => ({
+      i, l, o: l === active ? "1" : ".45", c: l === active ? "#0891B2" : "#9AA4AF" }));
+    const navDark = NAV.map(([i, l]) => ({
+      i, l, o: l === "Home" ? "1" : ".4", c: l === "Home" ? "#22D3EE" : "#64748B" }));
+
+    const CATALOG = [
+      ["🌻","Sunflower",0],["🌷","Tulip",0],["🌿","Herb",0],["🌼","Daisy",0],
+      ["🍀","Clover",2],["🌹","Rose",4],["🌵","Cactus",5],["🌺","Hibiscus",7],
+      ["🌳","Oak",8],["🌲","Pine",10],["🌸","Cherry",12],["🪴","Fern",14],
+      ["🪻","Bluebell",16],["🪷","Lotus",18],["🌾","Wheat",20],["🎋","Bamboo",22],
+      ["🍁","Maple",24],["🌴","Palm",26],["🍄","Toadstool",28],["🌰","Chestnut",30],
+      ["🎄","Spruce",32],["🪵","Log bench",34],["🐝","Beehive",38],["🐔","Chicken",42],
+      ["🐰","Rabbit",46],["🦆","Duck",50],["🐑","Sheep",55],["🐈","Barn cat",60]
+    ];
+    const grown = this.props.grownCount ?? 14;
+    const unlocked = CATALOG.filter(c => grown >= c[2]);
+    const nextLock = CATALOG.find(c => grown < c[2]);
+    const prevAt = unlocked.length ? unlocked[unlocked.length - 1][2] : 0;
+    const unlockPct = nextLock ? Math.round(100 * (grown - prevAt) / Math.max(1, nextLock[2] - prevAt)) : 100;
+    const plantable = unlocked.map(([emoji, name, at]) => ({ id: name.toLowerCase(), name, emoji, at }));
+    const chosen = plantable.find(p => p.id === s.chosen) || plantable[0];
+    const species = plantable.map(p => {
+      const on = p.id === chosen.id;
+      return { ...p, bg: on ? "#fff" : "rgba(255,255,255,.55)", bd: on ? "#10B981" : "rgba(16,185,129,.2)",
+        fg: on ? "#047857" : "#6B8B82", sc: on ? "1.05" : "1", filter: on ? "none" : "saturate(.5)",
+        onClick: () => this.setState({ chosen: p.id }) };
+    });
+
+    const STAGE_E = ["🌱", "🌿", "🪴", chosen.emoji];
+    const stage = s.planted ? s.stage : -1;
+    const plantStages = [0, 1, 2, 3].map(i => ({
+      c: i <= stage ? (i === 3 ? "#F59E0B" : "#10B981") : "rgba(16,185,129,.18)" }));
+    const darkStages = [0, 1, 2, 3].map(i => ({ c: i <= 2 ? "#34D399" : "rgba(52,211,153,.2)" }));
+
+    const n = s.plot, total = n * n;
+    const plan = s.layouts[n] || [];
+    const tiles = Array.from({ length: total }, (_, i) => {
+      const e = plan[i] || "";
+      const dark = (Math.floor(i / n) + i % n) % 2 === 0;
+      const sel = s.brush === "erase";
+      return { e, size: e ? (i % 3 === 0 ? "26px" : "23px") : "0px",
+        bg: e ? (dark ? "#8FCB93" : "#9FD6A3") : (dark ? "#A9D9AE" : "#B7E2BB"),
+        sh: e ? "0 0 0 1.5px rgba(6,95,70,.22),0 6px 0 -1px rgba(6,95,70,.28)"
+              : (sel ? "0 0 0 1.5px rgba(244,63,94,.35)" : "0 0 0 1.5px rgba(6,95,70,.12)"),
+        onClick: () => this.setState(st => {
+          const row = (st.layouts[n] || []).slice();
+          row[i] = st.brush === "erase" ? "" : st.brush;
+          return { layouts: { ...st.layouts, [n]: row } };
+        }) };
+    });
+    const placedCount = plan.filter(Boolean).length;
+
+    const TRAY = unlocked.map(c => [c[0], c[1]]).concat([["🪨", "Stone"], ["🚿", "Clear"]]);
+    const tray = TRAY.map(([e, l]) => {
+      const key = l === "Clear" ? "erase" : e;
+      const on = s.brush === key;
+      return { e, l, bg: on ? "#ECFDF5" : "#F7FAFB", bd: on ? "#10B981" : "rgba(17,24,39,.1)",
+        fg: on ? "#047857" : "#6B7280", sc: on ? "1.06" : "1",
+        onClick: () => this.setState({ brush: key }) };
+    });
+    const brushName = s.brush === "erase" ? "Clear" : (TRAY.find(t => t[0] === s.brush) || ["", "Sunflower"])[1];
+
+    const plotSizes = [4, 5, 6].map(v => {
+      const on = s.plot === v;
+      return { l: v + "×" + v, bg: on ? "#10B981" : "transparent", fg: on ? "#fff" : "#4B7A6E",
+        sh: on ? "0 2px 6px rgba(4,120,87,.35)" : "none", onClick: () => this.setState({ plot: v }) };
+    });
+
+    const collection = CATALOG.map(([e, l, at]) => grown >= at
+      ? { e, l, bg: "#fff", bd: "rgba(16,185,129,.28)", fg: "#0F766E", filter: "none", op: "1" }
+      : { e, l: at + " grown", bg: "#EEF3F3", bd: "rgba(17,24,39,.07)", fg: "#AAB5BC", filter: "grayscale(1)", op: ".38" });
+
+    return {
+      streak, streakPct: Math.min(100, streak / 30 * 100) + "%",
+      homeRisk, homeRingPct: homeRisk + "%",
+      darkRisk: s.darkRisk, darkRingPct: s.darkRisk + "%",
+      predRisk: s.predRisk, predPct: s.predRisk + "%",
+      why: s.why, whyRot: s.why ? "180deg" : "0deg", whyMax: s.why ? "180px" : "0px", whyOpacity: s.why ? "1" : "0",
+      whyRows: [ { t: "It’s 7:15 PM — your densest craving hour across 118 logs." },
+        { t: "Stress is high and you’re alone; that pair precedes 8 of 10 urges." },
+        { t: "You logged a 7 twenty minutes ago and it’s still climbing." } ],
+      toggleWhy: () => this.setState(st => ({ why: !st.why })),
+      goLog: () => {}, submitLog: () => {},
+      onHomeScroll: () => {}, 
+      onLogScroll: (e) => {
+        const el = e.target;
+        const p = Math.round(8 + 92 * (el.scrollTop / Math.max(1, el.scrollHeight - el.clientHeight)));
+        if (p !== s.logProgress) this.setState({ logProgress: p });
+      },
+      logProgress: s.logProgress + "%",
+      logStepLabel: "Step " + Math.min(4, Math.max(1, Math.ceil(s.logProgress / 25))) + " of 4",
+      craving: s.craving, cravingPct: ((s.craving - 1) / 9 * 100) + "%",
+      cravingFace: this.face(s.craving), cravingColor: this.cravColor(s.craving),
+      setCraving: (e) => this.setState({ craving: +e.target.value }),
+      mood: s.mood, moodPct: ((s.mood - 1) / 9 * 100) + "%", moodWord: this.moodWord(s.mood),
+      setMood: (e) => this.setState({ mood: +e.target.value }),
+      stressOpts, pills, copes, ranges, spark, sparkDark, forecast, forecastDark, weekBars, heat,
+      heatCols: colLabels.map(l => ({ l })),
+      reasons: [
+        { t: "7:15 PM is your densest craving hour", w: "86%", c: "#F59E0B" },
+        { t: "High stress + alone — your strongest pair", w: "72%", c: "#06B6D4" },
+        { t: "Thursday runs hotter than your week average", w: "38%", c: "#67E8F9" }
+      ],
+      insights: [
+        { k: "Timing", t: "Your highest-risk stretch is 6–8 PM, five days out of seven.", bg: "#ECFEFF", bd: "rgba(6,182,212,.25)", kc: "#0E7490" },
+        { k: "Combination", t: "Stress plus being alone preceded 82% of your strong cravings.", bg: "#FFF7ED", bd: "rgba(245,158,11,.28)", kc: "#B45309" },
+        { k: "What helps", t: "On days you walked, urges came in 40% lower.", bg: "#ECFDF5", bd: "rgba(16,185,129,.25)", kc: "#047857" }
+      ],
+      days: [
+        { day: "Today · Thu", sub: "4 logs · rode out the 7 PM window", peak: "68%", bg: "#FEF3C7", fg: "#92400E" },
+        { day: "Wed, Sep 18", sub: "3 logs · walked at 6:40", peak: "41%", bg: "#ECFEFF", fg: "#0E7490" },
+        { day: "Tue, Sep 17", sub: "2 logs · quiet evening", peak: "29%", bg: "#ECFDF5", fg: "#047857" },
+        { day: "Mon, Sep 16", sub: "5 logs · rough after work", peak: "81%", bg: "#FFE4E6", fg: "#9F1239" }
+      ],
+      navLight: nav("Home"), navHistory: nav("History"), navGarden: nav("Garden"), navDark,
+      species, collection, plantStages, darkStages, tiles, tray, plotSizes, placedCount,
+      gridCols: "repeat(" + n + ",1fr)",
+      rotDeg: s.rot + "deg",
+      plotScale: (() => { const a = ((s.rot % 90) + 90) % 90 * Math.PI / 180;
+        return (1 / (Math.cos(a) + Math.sin(a))).toFixed(3); })(),
+      upright: "rotateZ(" + (-s.rot) + "deg) rotateX(-60deg)",
+      rotLeft: () => this.setState(st => ({ rot: st.rot - 45 })),
+      rotRight: () => this.setState(st => ({ rot: st.rot + 45 })),
+      trayTitle: s.brush === "erase" ? "Clearing squares" : "Planting: " + brushName,
+      traySub: s.brush === "erase" ? "Tap a square to dig it up." : "Tap any square in the plot to place it.",
+      gardenStats: [{ v: grown, l: "Grown" }, { v: streak, l: "Clean days" }, { v: "3", l: "Lost" }],
+      unlockName: nextLock ? nextLock[1] : "Everything",
+      unlockEmoji: nextLock ? nextLock[0] : "🏆",
+      unlockCount: grown + " / " + (nextLock ? nextLock[2] : grown),
+      unlockPct: unlockPct + "%",
+      unlockLine: nextLock
+        ? (nextLock[2] - grown) + " more " + (nextLock[2] - grown === 1 ? "bloom" : "blooms") + " and the " + nextLock[1].toLowerCase() + " joins your seed tray."
+        : "Every species unlocked. Your garden is complete. 🏆",
+      unlockedCount: unlocked.length, catalogCount: CATALOG.length,
+      rankName: grown >= 40 ? "Master gardener" : grown >= 24 ? "Cultivator" : grown >= 10 ? "Grower" : "Sprout",
+      collectionCount: unlocked.length + " of " + CATALOG.length,
+      plantEmoji: s.planted ? STAGE_E[s.stage] : chosen.emoji,
+      plantSize: s.planted ? [26, 32, 38, 44][s.stage] + "px" : "38px",
+      plantClock: s.planted ? ["just planted", "4h in", "growing well", "in bloom"][s.stage] : "not planted yet",
+      plantHeadline: s.planted
+        ? (s.stage >= 3 ? "Your " + chosen.name.toLowerCase() + " is in bloom! 🎉" : "Your " + chosen.name.toLowerCase() + " is growing")
+        : "Pick what you’ll grow today",
+      plantSub: s.planted
+        ? (s.stage >= 3 ? "Stay clean till midnight and it joins the garden." : "Every clean hour nudges it along. Tap to water.")
+        : "One plant a day. Ride the day out and it’s yours forever.",
+      plantBtnBg: s.planted ? "linear-gradient(135deg,#34D399,#10B981)" : "linear-gradient(135deg,#10B981,#059669)",
+      plantBtnLabel: s.planted ? (s.stage >= 3 ? "Blooming 🌸" : "Water it 💧") : "Plant my " + chosen.name.toLowerCase() + " 🌱",
+      plantIt: () => this.setState(st => st.planted
+        ? { stage: Math.min(3, st.stage + 1) }
+        : { planted: true, stage: 0 })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -2,867 +2,1332 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- added to an iPhone home screen this runs standalone, under the status bar,
+     which is the same geometry the Capacitor shell gets. -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CraveCast">
 <title>CraveCast</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400..800;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
 <style>
-/* ── tokens — a warm paper-and-garden palette ───────────────────────── */
+/* ── CraveCast — design tokens ─────────────────────────────────────────
+   Ported from design_handoff_cravecast/README.md. Every hex, size and easing
+   below is quoted from that handoff; where the handoff gives a mobile and a
+   web value, the web value is used and the mobile one appears at the 700px
+   breakpoint. */
 :root{
-  --bg:#FBF4E3; --surface:#FFFCF5; --surface-2:#F6EEDC; --raised:#FFFFFF;
-  --ink:#33291D; --ink-2:#6B5B45; --ink-3:#9C8B76;
-  --line:#EADFC6; --line-2:#DCCCAC;
-  --accent:#3F8F52; --accent-ink:#2E6C3D; --accent-soft:#DEF0DE; --on-accent:#FFFFFF;
-  --good:#3F8F52; --watch:#CE8A1C; --high:#D4553F;
-  --good-soft:#E1F1E1; --watch-soft:#FBEBCC; --high-soft:#FBE1D8;
-  --r0:#F3EBD6; --r1:#F8DFAE; --r2:#F6C77E; --r3:#F0A45D; --r4:#E27649; --r5:#C64F36;
-  --soil:#EFE3C9; --sky:#E8F1F7;
-  --grid:rgba(51,41,29,.08);
-  --shadow:0 2px 0 rgba(51,41,29,.04), 0 16px 32px -22px rgba(51,41,29,.5);
-  --focus:#2F7DD1;
-  --sans:"Nunito",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
-  --disp:"Baloo 2","Nunito",-apple-system,"Segoe UI",Helvetica,sans-serif;
-  --mono:"Nunito",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
-}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-  --bg:#161A13; --surface:#1E241B; --surface-2:#252C21; --raised:#2A3226;
-  --ink:#F1EBDA; --ink-2:#BDB5A0; --ink-3:#8B8472;
-  --line:#333B2E; --line-2:#46503D;
-  --accent:#7CC86A; --accent-ink:#98DA88; --accent-soft:#25331F; --on-accent:#11200D;
-  --good:#7CC86A; --watch:#E3B15C; --high:#E97B5E;
-  --good-soft:#22301D; --watch-soft:#332818; --high-soft:#35211A;
-  --r0:#2A3125; --r1:#3F3A24; --r2:#6B5527; --r3:#9C7434; --r4:#CE9A45; --r5:#F2C46E;
-  --soil:#2B331F; --sky:#1B2530;
-  --grid:rgba(241,235,218,.09);
-  --shadow:0 2px 0 rgba(0,0,0,.25), 0 18px 36px -22px rgba(0,0,0,.95);
-  --focus:#7FB6F0;
-  }
+  --teal:#06B6D4; --teal-deep:#0891B2; --teal-shadow:#0E7490; --teal-light:#22D3EE;
+  --teal-pale:#67E8F9; --teal-tint:#ECFEFF;
+  --orange:#F59E0B; --orange-light:#FBBF24; --orange-shadow:#C2760A;
+  --orange-deep:#B45309; --orange-deeper:#92400E;
+  --amber-chip:#FEF3C7;
+  --green:#10B981; --green-deep:#059669; --green-shadow:#047857;
+  --green-light:#34D399; --green-lighter:#6EE7B7;
+  --green-head:#064E3B; --green-sub:#357266; --green-tint:#ECFDF5;
+  --rose:#FB7185; --rose-deep:#F43F5E; --rose-bg:#FFE4E6; --rose-ink:#9F1239;
+
+  --soil-a:#A9D9AE; --soil-b:#B7E2BB;
+  --soil-pa:#8FCB93; --soil-pb:#9FD6A3;
+
+  --disp:'Baloo 2',system-ui,sans-serif;
+  --body:'Plus Jakarta Sans',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+
+  /* light surfaces */
+  --page:#EAF2F1; --card:#FFFFFF; --bar:rgba(255,255,255,.85);
+  --hair:rgba(17,24,39,.08); --hair-card:rgba(17,24,39,.07);
+  --ink:#111827; --soft:#5B6572; --muted:#8A94A0;
+  --well:#F7FAFB; --track:#EDF1F3; --ring-track:#E9EEF1; --seg:#E2E9EA;
+  --plant-card:linear-gradient(160deg,#F0FDF4,#ECFEFF);
+  --plant-bd:rgba(16,185,129,.28); --plant-well:#fff;
+  --green-ink:#047857; --green-chip:rgba(16,185,129,.14);
+  --g-head:#064E3B; --g-sub:#357266;
+  --lift:0 10px 30px -18px rgba(9,24,38,.38);
 }
 :root[data-theme="dark"]{
-  --bg:#161A13; --surface:#1E241B; --surface-2:#252C21; --raised:#2A3226;
-  --ink:#F1EBDA; --ink-2:#BDB5A0; --ink-3:#8B8472;
-  --line:#333B2E; --line-2:#46503D;
-  --accent:#7CC86A; --accent-ink:#98DA88; --accent-soft:#25331F; --on-accent:#11200D;
-  --good:#7CC86A; --watch:#E3B15C; --high:#E97B5E;
-  --good-soft:#22301D; --watch-soft:#332818; --high-soft:#35211A;
-  --r0:#2A3125; --r1:#3F3A24; --r2:#6B5527; --r3:#9C7434; --r4:#CE9A45; --r5:#F2C46E;
-  --soil:#2B331F; --sky:#1B2530;
-  --grid:rgba(241,235,218,.09);
-  --shadow:0 2px 0 rgba(0,0,0,.25), 0 18px 36px -22px rgba(0,0,0,.95);
-  --focus:#7FB6F0;
+  --page:#0B1220; --card:#131C2B; --bar:rgba(11,18,32,.88);
+  --hair:rgba(255,255,255,.08); --hair-card:rgba(255,255,255,.08);
+  --ink:#F3F4F6; --soft:#CBD5E1; --muted:#64748B;
+  --well:rgba(255,255,255,.04); --track:rgba(255,255,255,.1);
+  --ring-track:rgba(255,255,255,.09); --seg:rgba(255,255,255,.07);
+  --plant-card:linear-gradient(160deg,rgba(16,185,129,.14),#131C2B);
+  --plant-bd:rgba(52,211,153,.3); --plant-well:rgba(255,255,255,.05);
+  --green-ink:#6EE7B7; --green-chip:rgba(52,211,153,.14);
+  --g-head:#ECFDF5; --g-sub:#94A3B8;
+  --lift:0 10px 30px -18px rgba(0,0,0,.7);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]):not([data-theme="dark"]){
+    --page:#0B1220; --card:#131C2B; --bar:rgba(11,18,32,.88);
+    --hair:rgba(255,255,255,.08); --hair-card:rgba(255,255,255,.08);
+    --ink:#F3F4F6; --soft:#CBD5E1; --muted:#64748B;
+    --well:rgba(255,255,255,.04); --track:rgba(255,255,255,.1);
+    --ring-track:rgba(255,255,255,.09); --seg:rgba(255,255,255,.07);
+    --plant-card:linear-gradient(160deg,rgba(16,185,129,.14),#131C2B);
+    --plant-bd:rgba(52,211,153,.3); --plant-well:rgba(255,255,255,.05);
+    --green-ink:#6EE7B7; --green-chip:rgba(52,211,153,.14);
+    --g-head:#ECFDF5; --g-sub:#94A3B8;
+    --lift:0 10px 30px -18px rgba(0,0,0,.7);
+  }
 }
 
-/* ── base ───────────────────────────────────────────────────────────── */
-*,*::before,*::after{box-sizing:border-box}
-/* .btn and friends set display, which outranks the UA rule for [hidden] */
-[hidden]{display:none !important}
-html{-webkit-text-size-adjust:100%}
-body{
-  margin:0; color:var(--ink);
-  background:var(--bg);
-  background-image:
-    radial-gradient(1100px 520px at 12% -8%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 70%),
-    radial-gradient(900px 460px at 92% 2%, color-mix(in srgb, var(--watch) 12%, transparent), transparent 68%);
-  background-attachment:fixed;
-  font-family:var(--sans); font-size:15.5px; line-height:1.58;
-  font-variant-numeric:tabular-nums;
-  -webkit-font-smoothing:antialiased;
-}
-h1,h2,h3{margin:0; font-family:var(--disp); text-wrap:balance; letter-spacing:-.005em; font-weight:700}
-p{margin:0}
-button,input,select,textarea{font:inherit; color:inherit}
-:focus-visible{outline:2.5px solid var(--focus); outline-offset:2px; border-radius:8px}
-::selection{background:var(--accent-soft); color:var(--ink)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--page); font-family:var(--body); color:var(--ink);
+     transition:background .3s; -webkit-font-smoothing:antialiased}
+a{color:var(--teal-deep); text-decoration:none}
+a:hover{color:var(--teal)}
 
-.wrap{max-width:1080px; margin:0 auto; padding:0 20px 72px}
-/* inside the Android shell the page runs under the status and nav bars */
-.native .masthead{padding-top:calc(26px + env(safe-area-inset-top, 0px))}
-.native .wrap{padding-bottom:calc(72px + env(safe-area-inset-bottom, 0px))}
-.native #notifRow{display:none}
-
-/* ── masthead ───────────────────────────────────────────────────────── */
-.masthead{
-  display:flex; flex-wrap:wrap; align-items:flex-end; gap:16px;
-  padding:26px 0 18px; border-bottom:2px dashed var(--line-2);
-}
-.brand{display:flex; flex-direction:column; gap:2px; margin-right:auto}
-.wordmark{
-  font-family:var(--disp); font-size:31px; font-weight:800;
-  letter-spacing:-.015em; line-height:1.05;
-}
-.wordmark .leaf{
-  font-size:27px; transform:rotate(-8deg); display:inline-block;
-  margin-right:7px; vertical-align:-2px;
-}
-.wordmark span{color:var(--accent)}
-.tagline{font-size:13.5px; color:var(--ink-2)}
-.mast-tools{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
-
-/* ── controls ───────────────────────────────────────────────────────── */
-.btn{
-  display:inline-flex; align-items:center; gap:7px;
-  background:var(--surface); color:var(--ink); border:1px solid var(--line-2);
-  border-radius:100px; padding:8px 16px; font-size:14px; font-weight:700;
-  cursor:pointer; transition:background .13s, border-color .13s, transform .13s, box-shadow .13s;
-}
-.btn:hover{background:var(--surface-2); border-color:var(--ink-3)}
-.btn:active{transform:translateY(1px)}
-.btn.primary{
-  background:var(--accent); border-color:var(--accent); color:var(--on-accent);
-  font-weight:800; box-shadow:0 3px 0 color-mix(in srgb, var(--accent) 62%, #000);
-}
-.btn.primary:active{box-shadow:0 1px 0 color-mix(in srgb, var(--accent) 62%, #000)}
-.btn.primary:hover{filter:brightness(1.07)}
-.btn.ghost{background:transparent; border-color:transparent; color:var(--ink-2)}
-.btn.ghost:hover{background:var(--surface-2); color:var(--ink)}
-.btn.sm{padding:5px 12px; font-size:12.5px}
-.btn[aria-pressed="true"]{background:var(--accent-soft); border-color:var(--accent); color:var(--accent-ink)}
-.btn:disabled{opacity:.45; cursor:not-allowed}
-
-select,input[type=text],input[type=number],input[type=datetime-local],textarea{
-  background:var(--raised); border:1.5px solid var(--line-2); border-radius:13px;
-  padding:9px 12px; font-size:14.5px; width:100%;
-}
-textarea{resize:vertical; min-height:60px; font-family:inherit}
-select{cursor:pointer}
-
-/* ── card ───────────────────────────────────────────────────────────── */
-.card{
-  background:var(--surface); border:1.5px solid var(--line); border-radius:22px;
-  box-shadow:var(--shadow); overflow:hidden;
-}
-.card-hd{
-  display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
-  padding:17px 20px 0;
-}
-.card-hd h2{font-size:19px; font-weight:700; color:var(--ink)}
-.card-hd .sub{font-size:13px; color:var(--ink-3); margin-left:auto}
-.card-bd{padding:14px 20px 20px}
-
-.stack{display:flex; flex-direction:column; gap:18px; padding-top:18px}
-.grid-2{display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:start}
-@media (max-width:820px){.grid-2{grid-template-columns:1fr}}
-
-/* ── alert rail ─────────────────────────────────────────────────────── */
-#alertRail{display:flex; flex-direction:column; gap:10px}
-#alertRail:not(:empty){padding-top:18px}
-.alarm{
-  display:flex; gap:13px; align-items:flex-start;
-  border:2px solid var(--high); background:var(--high-soft);
-  border-radius:18px; padding:14px 16px; box-shadow:var(--shadow);
-  animation:rise .35s cubic-bezier(.2,.7,.3,1) both;
-}
-.alarm.watch{border-color:var(--watch); background:var(--watch-soft)}
-.alarm.info{border-color:var(--line-2); background:var(--surface)}
-.alarm.grow{border-color:var(--good); background:var(--good-soft)}
-.alarm.grow .alarm-ico{color:var(--good); border-color:var(--good)}
-.alarm-ico{
-  flex:none; width:40px; height:40px; border-radius:50%; border:2px solid currentColor;
-  display:grid; place-items:center; font-size:20px; font-weight:700;
-  background:var(--surface); color:var(--high); font-family:var(--disp);
-}
-.alarm.watch .alarm-ico{color:var(--watch)}
-.alarm.info .alarm-ico{color:var(--ink-3); border-color:var(--line-2)}
-.alarm-bd{flex:1; min-width:0}
-.alarm-ttl{font-family:var(--disp); font-weight:700; font-size:17px}
-.alarm-msg{font-size:13.5px; color:var(--ink-2); margin-top:2px}
-.alarm-acts{display:flex; gap:7px; margin-top:10px; flex-wrap:wrap}
-@keyframes rise{from{opacity:0; transform:translateY(-7px)}to{opacity:1; transform:none}}
-@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important; transition-duration:.01ms !important}}
-
-/* ── forecast ───────────────────────────────────────────────────────── */
-.fc{display:grid; grid-template-columns:246px 1fr; gap:0}
-@media (max-width:820px){.fc{grid-template-columns:1fr}}
-.fc-read{
-  padding:18px; border-right:1px solid var(--line);
-  display:flex; flex-direction:column; gap:14px;
-}
-@media (max-width:820px){.fc-read{border-right:0; border-bottom:1px solid var(--line)}}
-.gauge{display:flex; align-items:flex-start; gap:12px}
-.gauge-num{
-  font-family:var(--disp); font-size:60px; font-weight:800;
-  line-height:.86; letter-spacing:-.035em;
-}
-.gauge-meta{display:flex; flex-direction:column; gap:5px; padding-top:4px}
-.eyebrow{font-family:var(--disp); font-size:13.5px; font-weight:600; color:var(--ink-3)}
-.pill{
-  display:inline-flex; align-items:center; gap:5px; align-self:flex-start;
-  border-radius:100px; padding:3px 12px 4px; font-size:13px; font-weight:700;
-  font-family:var(--disp); border:1.5px solid currentColor;
-}
-.pill .dot{width:6px; height:6px; border-radius:50%; background:currentColor}
-.pill.calm{color:var(--good); background:var(--good-soft)}
-.pill.watch{color:var(--watch); background:var(--watch-soft)}
-.pill.high{color:var(--high); background:var(--high-soft)}
-
-.next-win{
-  border-top:1px dashed var(--line-2); padding-top:13px;
-  display:flex; flex-direction:column; gap:3px;
-}
-.next-when{font-family:var(--mono); font-size:20px; font-weight:600; letter-spacing:-.02em}
-.next-in{font-size:12.5px; color:var(--ink-3)}
-.next-why{font-size:12.5px; color:var(--ink-2); margin-top:4px; line-height:1.45}
-
-.armbar{margin-top:auto; display:flex; flex-direction:column; gap:8px}
-.armstate{
-  display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink-3);
-}
-.armstate .led{
-  width:8px; height:8px; border-radius:50%; background:var(--ink-3); flex:none;
-}
-.armstate.on .led{background:var(--good); box-shadow:0 0 0 3px var(--good-soft)}
-.armstate.on{color:var(--good)}
-
-.fc-chart{padding:16px 18px 12px; min-width:0; display:flex; flex-direction:column}
-/* the plot owns the leftover height; the svg is taken out of flow so it can't
-   feed its own height back into the flex row */
-.fc-chart .plot{flex:1; min-height:180px; display:flex}
-.fc-chart .plot .empty{margin:auto; width:100%}
-.fc-chart .plot svg{position:absolute; inset:0; height:100%; overflow:hidden}
-.chart-cap{
-  display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:8px;
-}
-.chart-cap h3{font-size:16px; font-weight:700}
-.chart-cap .note{font-size:12px; color:var(--ink-3); margin-left:auto; font-family:var(--mono)}
-.plot{position:relative; width:100%}
-.plot svg{display:block; width:100%; overflow:visible}
-.axlab{font-family:var(--mono); font-size:10px; fill:var(--ink-3)}
-/* knock a halo out of the surface so a label stays legible over gridlines */
-.axlab.halo{paint-order:stroke; stroke:var(--surface); stroke-width:3px; stroke-linejoin:round}
-
-/* ── tooltip ────────────────────────────────────────────────────────── */
-#tip{
-  position:fixed; z-index:80; pointer-events:none; opacity:0;
-  background:var(--raised); border:1px solid var(--line-2); border-radius:8px;
-  padding:8px 11px; box-shadow:var(--shadow); font-size:12.5px; max-width:230px;
-  transition:opacity .1s;
-}
-#tip.on{opacity:1}
-#tip .t-h{font-family:var(--mono); font-size:11px; color:var(--ink-3); letter-spacing:.02em}
-#tip .t-v{font-family:var(--disp); font-weight:700; font-size:15px; margin-top:1px}
-#tip .t-d{color:var(--ink-2); margin-top:3px; line-height:1.4}
-
-/* ── log form ───────────────────────────────────────────────────────── */
-.field{display:flex; flex-direction:column; gap:6px}
-.field > label, .flabel{font-family:var(--disp); font-size:14.5px; font-weight:600; color:var(--ink-2)}
-.form-grid{display:grid; grid-template-columns:1fr 1fr; gap:15px}
-@media (max-width:640px){.form-grid{grid-template-columns:1fr}}
-.chips{display:flex; flex-wrap:wrap; gap:6px}
-.chip{
-  border:1.5px solid var(--line-2); background:var(--raised); color:var(--ink-2);
-  border-radius:100px; padding:6px 14px; font-size:13.5px; font-weight:600; cursor:pointer;
-  transition:background .12s, border-color .12s, color .12s;
-}
-.chip:hover{border-color:var(--ink-3); color:var(--ink)}
-.chip[aria-pressed="true"]{
-  background:var(--accent); border-color:var(--accent); color:var(--on-accent); font-weight:500;
-}
-.chip.add{border-style:dashed; color:var(--ink-3)}
-
-.seg{display:inline-flex; align-self:flex-start; border:1.5px solid var(--line-2); border-radius:100px; overflow:hidden}
-.seg button{
-  background:var(--raised); border:0; padding:8px 18px; font-size:14px; font-weight:600; cursor:pointer;
-  color:var(--ink-2); border-right:1.5px solid var(--line-2);
-}
-.seg button:last-child{border-right:0}
-.seg button[aria-pressed="true"]{background:var(--accent); color:var(--on-accent); font-weight:600}
-
-.range-row{display:flex; align-items:center; gap:12px}
-input[type=range]{flex:1; accent-color:var(--accent); height:22px}
-.range-val{
-  font-family:var(--mono); font-size:13px; min-width:96px; color:var(--ink-2);
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes halo{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.09);opacity:.16}}
+@keyframes sheen{from{transform:translateX(-120%)}to{transform:translateX(220%)}}
+@keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important}
+  .cc-halo,.cc-sheen{display:none}
 }
 
-/* ── heatmap ────────────────────────────────────────────────────────── */
-.hm-legend{
-  display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--ink-3);
-  font-family:var(--mono);
-}
-.hm-legend .sw{display:flex; gap:2px}
-.hm-legend .sw i{width:17px; height:9px; border-radius:2px; display:block}
+/* ── shell ─────────────────────────────────────────────────────────── */
+.cc-top{position:sticky; top:env(safe-area-inset-top,0px); z-index:20; display:flex;
+        align-items:center; gap:16px; flex-wrap:wrap; padding:14px 24px;
+        background:var(--bar); backdrop-filter:blur(18px); border-bottom:1px solid var(--hair)}
+.cc-logo{display:flex; align-items:center; gap:9px; font:800 21px var(--disp);
+         color:var(--ink); letter-spacing:-.01em}
+.cc-logo .leaf{font-size:22px; animation:sway 5s ease-in-out infinite; display:inline-block}
+.cc-logo em{color:var(--teal); font-style:normal}
+.cc-nav{display:flex; gap:4px; flex-wrap:wrap; margin-left:12px}
+.cc-navbtn{display:flex; align-items:center; gap:7px; border:none; cursor:pointer;
+           border-radius:100px; padding:9px 16px; font:700 14px var(--disp);
+           background:transparent; color:var(--soft); transition:all .2s}
+.cc-navbtn .i{font-size:15px}
+.cc-navbtn:hover{background:var(--well)}
+.cc-navbtn[aria-selected="true"]{background:var(--teal); color:#fff}
+.cc-topright{margin-left:auto; display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.cc-pillbtn{border:1px solid var(--hair); background:var(--card); cursor:pointer;
+            border-radius:100px; padding:9px 14px; font:700 13px var(--disp);
+            color:var(--ink); transition:transform .15s}
+.cc-pillbtn:hover{transform:translateY(-1px)}
+.cc-chip-user{display:flex; align-items:center; gap:9px; background:var(--card);
+              border:1px solid var(--hair); border-radius:100px; padding:5px 14px 5px 5px}
+.cc-avatar{width:32px; height:32px; border-radius:50%; display:grid; place-items:center;
+           background:linear-gradient(145deg,#06B6D4,#0E7490); color:#fff; font:800 13px var(--disp)}
+:root[data-theme="dark"] .cc-avatar{background:linear-gradient(145deg,#22D3EE,#0E7490); color:#06232B}
+.cc-main{max-width:1240px; margin:0 auto; padding:26px 24px 72px}
+.cc-habit{border:1px solid var(--hair); background:var(--card); color:var(--ink);
+          border-radius:100px; padding:9px 14px; font:700 13px var(--disp); cursor:pointer}
 
-/* ── bars ───────────────────────────────────────────────────────────── */
-.barlist{display:flex; flex-direction:column; gap:11px}
-.bar-row{display:grid; grid-template-columns:1fr; gap:4px}
-.bar-top{display:flex; align-items:baseline; gap:8px; font-size:13.5px}
-.bar-top .nm{font-weight:500}
-.bar-top .vl{margin-left:auto; font-family:var(--mono); font-size:12px; color:var(--ink-2)}
-.bar-track{height:12px; background:var(--surface-2); border:1px solid var(--line); border-radius:100px; overflow:hidden}
-.bar-fill{height:100%; border-radius:100px; transition:width .4s cubic-bezier(.2,.7,.3,1)}
+/* ── generic pieces ────────────────────────────────────────────────── */
+.cc-card{background:var(--card); border:1px solid var(--hair); border-radius:28px;
+         padding:22px; box-shadow:var(--lift)}
+.cc-card.r30{border-radius:30px; padding:24px}
+.cc-eyebrow{font:500 11px var(--mono); letter-spacing:.1em; text-transform:uppercase; color:var(--muted)}
+.cc-h{font:700 17px var(--disp); color:var(--ink)}
+.cc-h.lg{font:800 34px var(--disp); letter-spacing:-.02em}
+.cc-sub{font:500 14px/1.55 var(--body); color:var(--soft)}
+.cc-mono{font:500 12px var(--mono); color:var(--muted)}
+.cc-grid{display:grid; gap:18px; align-items:start}
+.cc-grid.a340{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.cc-grid.a330{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+.cc-grid.a320{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.cc-grid.a300{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.cc-grid.a260{grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px}
+.cc-grid.a150{grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px}
+.cc-col{display:flex; flex-direction:column; gap:18px}
+.cc-rise{animation:rise .5s ease both}
 
-/* ── stat tiles ─────────────────────────────────────────────────────── */
-.tiles{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; padding:16px}
-@media (max-width:700px){.tiles{grid-template-columns:repeat(2,1fr)}}
-.tile{
-  background:var(--surface-2); border:1.5px solid var(--line); border-radius:16px;
-  padding:14px 16px; display:flex; flex-direction:column; gap:2px;
-}
-.tile .v{font-family:var(--disp); font-size:30px; font-weight:800; line-height:1.05; letter-spacing:-.02em}
-.tile .k{font-size:12.5px; color:var(--ink-3); line-height:1.35}
+/* the signature chunky button */
+.cc-chunk{position:relative; overflow:hidden; border:none; cursor:pointer;
+          border-radius:26px; padding:19px; width:100%; color:#fff;
+          font:800 18px var(--disp); transition:transform .12s ease, box-shadow .12s ease}
+.cc-chunk:active{transform:translateY(4px)}
+.cc-chunk.teal{background:linear-gradient(135deg,#06B6D4,#0891B2);
+               box-shadow:0 5px 0 #0E7490, 0 18px 28px -16px rgba(6,182,212,.95)}
+.cc-chunk.teal:active{box-shadow:0 1px 0 #0E7490}
+.cc-chunk.green{background:linear-gradient(135deg,#10B981,#059669);
+                box-shadow:0 5px 0 #047857, 0 16px 26px -16px rgba(16,185,129,.9)}
+.cc-chunk.green:active{box-shadow:0 1px 0 #047857}
+.cc-chunk.amber{background:linear-gradient(135deg,#F59E0B,#FBBF24); color:#3B2205;
+                border-radius:22px; padding:15px 24px; width:auto; font-size:15px;
+                box-shadow:0 4px 0 #B45309}
+.cc-chunk.amber:active{transform:translateY(3px); box-shadow:0 1px 0 #B45309}
+.cc-sheen{position:absolute; top:0; left:0; width:40%; height:100%; pointer-events:none;
+          background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+          animation:sheen 3.6s ease-in-out infinite}
 
-/* ── history ────────────────────────────────────────────────────────── */
-.log-list{display:flex; flex-direction:column}
-.log-row{
-  display:grid; grid-template-columns:64px 1fr auto; gap:12px; align-items:start;
-  padding:11px 0; border-top:1px solid var(--line);
-}
-.log-row:first-child{border-top:0}
-.log-time{font-family:var(--mono); font-size:12px; color:var(--ink-3); line-height:1.35}
-.log-time b{display:block; color:var(--ink-2); font-weight:600; font-size:13px}
-.log-main{min-width:0}
-.log-ttl{display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:14px}
-.log-tags{display:flex; flex-wrap:wrap; gap:5px; margin-top:5px}
-.tag{
-  font-size:12.5px; color:var(--ink-2); background:var(--surface-2);
-  border:1px solid var(--line); border-radius:100px; padding:1px 10px;
-}
-.log-note{font-size:13px; color:var(--ink-2); margin-top:5px; font-style:italic}
-.outcome{
-  font-family:var(--disp); font-size:12.5px; font-weight:700;
-  padding:1px 10px 2px; border-radius:100px; border:1.5px solid currentColor;
-}
-.outcome.held{color:var(--good); background:var(--good-soft)}
-.outcome.slip{color:var(--high); background:var(--high-soft)}
-.intensity{display:inline-flex; gap:2px; align-items:center}
-.intensity i{width:5px; height:12px; border-radius:1.5px; background:var(--line-2); display:block}
+.cc-tag{display:inline-flex; align-items:center; gap:6px; border-radius:100px;
+        padding:5px 12px; font:700 12px var(--disp)}
+.cc-tag.amber{background:var(--amber-chip); color:var(--orange-deeper)}
+.cc-tag.teal{background:var(--teal-tint); color:var(--teal-shadow)}
+.cc-tag.green{background:var(--green-tint); color:var(--green-shadow)}
+.cc-tag.rose{background:var(--rose-bg); color:var(--rose-ink)}
 
-/* ── misc ───────────────────────────────────────────────────────────── */
-.empty{
-  text-align:center; padding:28px 20px; color:var(--ink-3); font-size:14px;
-  border:2px dashed var(--line-2); border-radius:18px; background:var(--surface-2);
+/* ── plant card ────────────────────────────────────────────────────── */
+.cc-plantcard{position:relative; overflow:hidden; background:var(--plant-card);
+              border:1.5px solid var(--plant-bd); border-radius:30px; padding:26px;
+              box-shadow:0 14px 36px -24px rgba(6,95,70,.6)}
+.cc-plantcard .orb{position:absolute; top:-70px; right:-50px; width:190px; height:190px;
+                   border-radius:50%; background:rgba(16,185,129,.12)}
+.cc-well{position:relative; width:112px; height:112px; flex:none; display:grid; place-items:center}
+.cc-well .halo{position:absolute; inset:0; border-radius:50%;
+               background:rgba(16,185,129,.14); animation:halo 3.8s ease-in-out infinite}
+.cc-well .disc{position:absolute; inset:10px; border-radius:50%; background:var(--plant-well)}
+.cc-well .glyph{position:relative; line-height:1; transition:font-size .4s cubic-bezier(.2,1.4,.4,1);
+                animation:sway 4.2s ease-in-out infinite}
+.cc-stages{display:flex; gap:6px}
+.cc-stages i{flex:1; height:8px; border-radius:100px; transition:background .35s}
+.cc-species{position:relative; display:flex; gap:9px; margin-top:20px; flex-wrap:wrap;
+            overflow-x:auto; padding-bottom:4px}
+.cc-seed{display:flex; flex-direction:column; align-items:center; gap:4px; width:68px;
+         padding:10px 4px; cursor:pointer; border-radius:18px; border:1.5px solid;
+         transition:all .2s ease; background:transparent}
+.cc-seed .e{font-size:23px; line-height:1}
+.cc-seed .n{font:700 10px var(--disp); white-space:nowrap}
+
+/* ── risk ring ─────────────────────────────────────────────────────── */
+.cc-risk{position:relative; overflow:hidden; background:var(--card); border:1px solid var(--hair);
+         border-radius:30px; padding:26px; box-shadow:0 12px 32px -24px rgba(9,24,38,.5)}
+.cc-risk .irid{position:absolute; inset:0; pointer-events:none;
+               background:linear-gradient(120deg,rgba(6,182,212,.07),rgba(245,158,11,.06))}
+.cc-ring{position:relative; width:132px; height:132px; flex:none}
+.cc-ring .halo{position:absolute; inset:-6px; border-radius:50%;
+               background:rgba(245,158,11,.16); animation:halo 3.4s ease-in-out infinite}
+.cc-ring .arc{position:absolute; inset:0; border-radius:50%}
+.cc-ring .hub{position:absolute; inset:12px; border-radius:50%; background:var(--card);
+              display:flex; flex-direction:column; align-items:center; justify-content:center}
+.cc-ring .num{font:800 40px/1 var(--disp); color:var(--ink); letter-spacing:-.03em}
+.cc-ring .num span{font-size:19px; color:var(--muted)}
+.cc-ring .lab{font:700 10px var(--mono); letter-spacing:.12em; margin-top:3px}
+.cc-why{position:relative; margin-top:18px; width:100%; display:flex; align-items:center;
+        justify-content:space-between; background:var(--well); border:1px solid var(--hair);
+        border-radius:18px; padding:13px 16px; cursor:pointer;
+        font:700 14px var(--disp); color:var(--teal-shadow)}
+.cc-why .chev{transition:transform .25s}
+.cc-whybody{position:relative; overflow:hidden; max-height:0; opacity:0;
+            transition:max-height .35s ease, opacity .25s}
+.cc-whybody.open{max-height:240px; opacity:1}
+.cc-whyrow{display:flex; gap:10px; align-items:flex-start; font:500 13px/1.5 var(--body); color:var(--soft)}
+.cc-whyrow b{color:var(--teal); font-weight:800}
+
+/* ── bars, sparks, forecast ────────────────────────────────────────── */
+.cc-bars{display:flex; gap:8px; align-items:flex-end}
+.cc-bars .col{flex:1; display:flex; flex-direction:column; align-items:center; gap:7px}
+.cc-bars .slot{width:100%; height:76px; display:flex; align-items:flex-end}
+.cc-bars .bar{width:100%; border-radius:100px; transition:height .4s ease}
+.cc-bars .tick{font:500 10px var(--mono); color:var(--muted)}
+.cc-spark{display:flex; align-items:flex-end; gap:4px; height:26px; margin-top:9px}
+.cc-spark i{flex:1; border-radius:100px}
+.cc-weekbars{display:flex; align-items:flex-end; gap:9px; height:150px; margin-top:22px}
+.cc-weekbars .col{flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;
+                  height:100%; justify-content:flex-end}
+.cc-weekbars .v{font:700 11px var(--mono)}
+.cc-weekbars .bar{width:100%; border-radius:100px; transition:height .5s ease}
+.cc-weekbars .d{font:500 11px var(--mono); color:var(--muted)}
+
+/* ── heatmap ───────────────────────────────────────────────────────── */
+.cc-heat{display:grid; grid-template-columns:30px repeat(6,1fr); gap:6px; align-items:center}
+.cc-heat .cell{aspect-ratio:1; border-radius:8px; display:grid; place-items:center;
+               font:600 10px var(--mono)}
+.cc-heatcols{display:grid; grid-template-columns:30px repeat(6,1fr); gap:6px; margin-top:8px}
+.cc-heatcols span{text-align:center; font:500 10px var(--mono); color:var(--muted)}
+
+/* ── the 3D plot ───────────────────────────────────────────────────── */
+.cc-plot{position:relative; overflow:hidden; border-radius:32px; padding:20px;
+         background:linear-gradient(180deg,#DCF2FF,#E8F7EC 58%,#D5EEDA);
+         border:1.5px solid rgba(16,185,129,.28);
+         box-shadow:0 16px 40px -26px rgba(6,95,70,.6)}
+.cc-plot .sun{position:absolute; top:18px; right:22px; font-size:30px;
+              animation:sway 6s ease-in-out infinite}
+.cc-plot .eyebrow{position:relative; font:500 11px var(--mono); letter-spacing:.1em;
+                  text-transform:uppercase; color:#047857}
+.cc-stage3d{position:relative; height:360px; perspective:1000px; perspective-origin:50% 42%;
+            display:grid; place-items:center}
+.cc-plane{position:relative; width:340px; max-width:100%; transform-style:preserve-3d;
+          transition:transform .55s cubic-bezier(.3,.9,.3,1); display:grid; gap:6px}
+.cc-tile{transform-style:preserve-3d; position:relative; aspect-ratio:1; border:none;
+         padding:0; cursor:pointer; border-radius:8px;
+         transition:background .2s, box-shadow .2s, filter .15s}
+.cc-tile:hover{filter:brightness(1.07)}
+.cc-tile .e{position:absolute; left:50%; top:50%; line-height:1;
+            filter:drop-shadow(0 5px 4px rgba(6,60,40,.35)); transition:transform .4s}
+.cc-plotctl{position:relative; display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.cc-rot{width:44px; height:44px; border-radius:16px; background:#fff;
+        border:1.5px solid rgba(16,185,129,.3); cursor:pointer; font:700 17px var(--disp);
+        color:#047857; box-shadow:0 3px 0 rgba(4,120,87,.28); transition:transform .12s}
+.cc-rot:active{transform:translateY(2px)}
+.cc-seg{flex:1; min-width:150px; display:flex; background:rgba(255,255,255,.75);
+        border-radius:100px; padding:4px}
+.cc-seg button{flex:1; border:none; cursor:pointer; border-radius:100px; padding:9px 6px;
+               font:700 13px var(--disp); background:transparent; color:#4B7A6E; transition:all .2s}
+.cc-seg button[aria-selected="true"]{background:#10B981; color:#fff; box-shadow:0 2px 6px rgba(4,120,87,.35)}
+
+.cc-tray{display:flex; gap:9px; flex-wrap:wrap}
+.cc-trayitem{display:flex; flex-direction:column; align-items:center; gap:4px; width:64px;
+             padding:10px 4px; cursor:pointer; border-radius:18px; border:1.5px solid;
+             transition:all .2s ease}
+.cc-trayitem .e{font-size:22px; line-height:1}
+.cc-trayitem .l{font:700 9.5px var(--disp); white-space:nowrap}
+.cc-unlock{background:linear-gradient(135deg,#FFFBEB,#FFF7ED);
+           border:1px solid rgba(245,158,11,.3); border-radius:28px; padding:20px 22px}
+.cc-unlock .bar{height:10px; border-radius:100px; background:rgba(245,158,11,.18); overflow:hidden}
+.cc-unlock .fill{height:100%; border-radius:100px;
+                 background:linear-gradient(90deg,#F59E0B,#FBBF24); transition:width .5s ease}
+.cc-coll{display:grid; grid-template-columns:repeat(auto-fill,minmax(86px,1fr)); gap:10px}
+.cc-collcell{aspect-ratio:1; border-radius:22px; border:1.5px solid; display:flex;
+             flex-direction:column; align-items:center; justify-content:center; gap:5px}
+.cc-collcell .e{font-size:26px; line-height:1}
+.cc-collcell .l{font:700 9.5px var(--disp); text-align:center; padding:0 4px; line-height:1.1}
+
+/* ── log flow ──────────────────────────────────────────────────────── */
+.cc-logwrap{max-width:720px; margin:0 auto}
+.cc-rail{height:5px; border-radius:100px; background:var(--track); overflow:hidden; margin-bottom:20px}
+.cc-rail i{display:block; height:100%; border-radius:100px;
+           background:linear-gradient(90deg,#06B6D4,#F59E0B); transition:width .25s ease}
+.cc-step{margin-top:16px; background:var(--card); border:1px solid var(--hair);
+         border-radius:30px; padding:28px}
+.cc-step:first-of-type{margin-top:0}
+.cc-q{font:700 24px/1.3 var(--disp); color:var(--ink); margin-bottom:20px}
+.cc-slider{position:relative; height:46px}
+.cc-slider .trk{position:absolute; left:0; right:0; top:20px; height:10px; border-radius:100px}
+.cc-slider .fill{position:absolute; left:0; top:20px; height:10px; border-radius:100px; transition:width .12s}
+.cc-slider .thumb{position:absolute; top:8px; width:34px; height:34px; margin-left:-17px;
+                  border-radius:50%; background:#fff; border:3px solid;
+                  box-shadow:0 5px 14px -4px rgba(9,24,38,.4);
+                  transition:border-color .3s, left .12s}
+.cc-slider input{position:absolute; inset:0; width:100%; opacity:0; cursor:pointer; margin:0}
+.cc-ends{display:flex; justify-content:space-between; font:500 11.5px var(--mono); color:var(--muted)}
+.cc-3up{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+.cc-opt{border-radius:18px; padding:15px 6px; cursor:pointer; font:700 14.5px var(--disp);
+        border:1.5px solid; transition:all .18s ease}
+.cc-pills{display:flex; flex-wrap:wrap; gap:10px}
+.cc-pill{border-radius:100px; padding:12px 18px; cursor:pointer; font:700 14px var(--disp);
+         border:1.5px solid; transition:all .18s ease}
+.cc-note{width:100%; border-radius:18px; border:1px solid var(--hair); background:var(--well);
+         color:var(--ink); font:500 14px/1.55 var(--body); padding:14px 16px; min-height:96px;
+         resize:vertical}
+
+/* ── result ────────────────────────────────────────────────────────── */
+.cc-hero{position:relative; overflow:hidden; border-radius:32px; padding:34px;
+         background:linear-gradient(160deg,#0E7490,#155E75 55%,#1E3A46);
+         box-shadow:0 22px 44px -24px rgba(14,116,144,.9); animation:rise .55s ease both}
+.cc-hero .orb{position:absolute; top:-80px; right:-60px; width:220px; height:220px;
+              border-radius:50%; background:rgba(245,158,11,.22); filter:blur(6px)}
+.cc-hero .big{font:800 96px/1 var(--disp); color:#fff; letter-spacing:-.05em; margin:18px 0 6px}
+.cc-hero .big span{font-size:40px; opacity:.6}
+.cc-hero .bar{margin-top:22px; height:10px; border-radius:100px;
+              background:rgba(255,255,255,.16); overflow:hidden}
+.cc-hero .fill{height:100%; border-radius:100px;
+               background:linear-gradient(90deg,#22D3EE,#F59E0B);
+               transition:width 1s cubic-bezier(.2,.8,.2,1)}
+.cc-reason{display:flex; gap:13px; align-items:flex-start}
+.cc-reason .tick{width:24px; height:24px; flex:none; border-radius:9px; background:var(--teal-tint);
+                 color:var(--teal-deep); display:grid; place-items:center; font:800 13px var(--disp)}
+.cc-reason .trk{margin-top:7px; height:6px; border-radius:100px; background:var(--track); overflow:hidden}
+.cc-cope{display:flex; align-items:center; gap:15px; text-align:left; width:100%;
+         background:var(--card); border:1.5px solid var(--hair); border-radius:22px;
+         padding:16px 18px; cursor:pointer; transition:all .18s ease}
+.cc-cope:hover{border-color:rgba(6,182,212,.55)}
+.cc-cope .icon{width:46px; height:46px; flex:none; border-radius:16px;
+               display:grid; place-items:center; font-size:21px}
+.cc-cope .t{display:block; font:700 15.5px var(--disp); color:var(--ink)}
+.cc-cope .s{display:block; font:500 13px var(--body); color:var(--muted); margin-top:2px}
+.cc-cope .cta{font:700 14px var(--disp); color:var(--teal-deep)}
+
+/* ── history list ──────────────────────────────────────────────────── */
+.cc-days{background:var(--card); border:1px solid var(--hair); border-radius:28px; overflow:hidden}
+.cc-day{display:flex; align-items:center; gap:16px; padding:18px 22px;
+        border-bottom:1px solid var(--hair); cursor:pointer; transition:background .15s}
+.cc-day:last-child{border-bottom:none}
+.cc-day:hover{background:var(--well)}
+.cc-insight{border-radius:26px; padding:20px 22px; border:1px solid; animation:rise .5s ease both}
+.cc-insight .k{font:500 11px var(--mono); letter-spacing:.1em; text-transform:uppercase; margin-bottom:9px}
+.cc-insight .t{font:600 15px/1.5 var(--body); color:#1F2937}
+:root[data-theme="dark"] .cc-insight .t{color:#E5E7EB}
+
+.cc-view[hidden]{display:none!important}
+
+@media (max-width:700px){
+  .cc-main{padding:20px 16px 96px}
+  .cc-top{padding:12px 16px; gap:10px}
+  .cc-nav{margin-left:0; order:3; width:100%}
+  .cc-navbtn{flex:1; justify-content:center; padding:9px 8px; font-size:13px}
+  .cc-h.lg{font-size:26px}
+  .cc-card,.cc-card.r30,.cc-step,.cc-plantcard,.cc-risk{padding:18px; border-radius:24px}
+  .cc-hero{padding:24px}
+  .cc-hero .big{font-size:66px}
+  .cc-hero .big span{font-size:28px}
+  .cc-q{font-size:20px}
+  .cc-stage3d{height:250px}
+  .cc-plane{width:266px}
 }
-.empty b{display:block; color:var(--ink-2); font-family:var(--disp); font-size:17px; margin-bottom:4px}
-details.tablefold{margin-top:14px; border-top:1px solid var(--line); padding-top:10px}
-details.tablefold summary{
-  cursor:pointer; font-size:14px; color:var(--ink-3); font-family:var(--disp); font-weight:600;
-}
+
+/* ── the icon sprite (design_handoff_cravecast, cartoon variant B) ──── */
+.ico{display:inline-block; flex:none; vertical-align:-.15em; line-height:0}
+.ico use{transform-origin:50% 50%}
+
+/* armed-state line — driven by the kept renderArm() */
+.armstate{display:flex; align-items:center; gap:8px; margin-top:14px;
+          font:500 12.5px var(--body); color:var(--muted)}
+.armstate .led{width:8px; height:8px; border-radius:50%; background:var(--muted); flex:none}
+.armstate.on .led{background:var(--green); box-shadow:0 0 0 4px rgba(16,185,129,.18)}
+.cc-pillbtn.primary{background:var(--teal); color:#fff; border-color:var(--teal)}
+
+/* the deep fold reuses the old chart classes; give them the new skin */
+.plot svg{display:block; width:100%; height:auto}
+.hm-legend{display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+           font:500 11px var(--mono); color:var(--muted)}
+.hm-legend .sw{flex:1; min-width:60px; height:8px; border-radius:100px}
+.hint{font:500 12.5px/1.6 var(--body); color:var(--muted)}
+.flabel{font:500 11px var(--mono); letter-spacing:.1em; text-transform:uppercase; color:var(--muted)}
+.tablefold summary{cursor:pointer; font:700 13px var(--disp); color:var(--teal-deep); margin-top:12px}
 .tablescroll{overflow-x:auto; margin-top:10px}
-table{border-collapse:collapse; width:100%; font-size:12.5px; font-family:var(--mono)}
-th,td{text-align:left; padding:5px 10px 5px 0; border-bottom:1px solid var(--line); white-space:nowrap}
-th{color:var(--ink-3); font-weight:700; font-size:12px}
+.tablescroll table{border-collapse:collapse; font:500 12px var(--mono)}
+.tablescroll th,.tablescroll td{border:1px solid var(--hair); padding:4px 7px; text-align:center}
+.log-list{display:flex; flex-direction:column}
 
-dialog{
-  border:2px solid var(--line-2); border-radius:24px; background:var(--surface);
-  color:var(--ink); padding:0; max-width:560px; width:calc(100% - 34px); box-shadow:var(--shadow);
-}
-dialog::backdrop{background:rgba(10,14,18,.5); backdrop-filter:blur(2px)}
-.dlg-hd{
-  display:flex; align-items:center; gap:10px; padding:16px 18px;
-  border-bottom:1px solid var(--line);
-}
-.dlg-hd h2{font-size:21px; font-weight:700; margin-right:auto}
-.dlg-bd{padding:18px; display:flex; flex-direction:column; gap:17px; max-height:66vh; overflow-y:auto}
-.dlg-ft{padding:13px 18px; border-top:1px solid var(--line); display:flex; gap:8px; justify-content:flex-end}
-.hint{font-size:12.5px; color:var(--ink-3); line-height:1.5}
-.row-between{display:flex; align-items:center; gap:12px}
-.row-between .grow{flex:1}
-.sw-toggle{position:relative; width:40px; height:23px; flex:none}
-.sw-toggle input{position:absolute; inset:0; opacity:0; margin:0; cursor:pointer; width:100%; height:100%; z-index:2}
-.sw-toggle span{
-  position:absolute; inset:0; background:var(--line-2); border-radius:100px; transition:background .16s;
-}
-.sw-toggle span::after{
-  content:""; position:absolute; top:3px; left:3px; width:17px; height:17px;
-  background:var(--raised); border-radius:50%; transition:transform .16s; box-shadow:0 1px 3px rgba(0,0,0,.3);
-}
-.sw-toggle input:checked + span{background:var(--good)}
-.sw-toggle input:checked + span::after{transform:translateX(17px)}
-.sw-toggle input:focus-visible + span{outline:2px solid var(--focus); outline-offset:2px}
-
-footer{
-  margin-top:32px; padding-top:16px; border-top:2px dashed var(--line-2);
-  font-size:12px; color:var(--ink-3); display:flex; gap:14px; flex-wrap:wrap; align-items:center;
-}
-footer .grow{flex:1}
-.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
-/* ── the garden ─────────────────────────────────────────────────────── */
-.wordmark .leaf{font-style:normal}
-.garden{display:grid; grid-template-columns:296px 1fr; gap:0}
-@media (max-width:820px){.garden{grid-template-columns:1fr}}
-
-.garden-grow{
-  padding:16px 20px 20px; border-right:2px dashed var(--line-2);
-  display:flex; flex-direction:column; gap:11px;
-}
-@media (max-width:820px){.garden-grow{border-right:0; border-bottom:2px dashed var(--line-2)}}
-
-.sprout{
-  display:grid; place-items:center; width:106px; height:106px; margin:0 auto;
-  font-size:54px; line-height:1; border-radius:50%;
-  background:radial-gradient(circle at 50% 64%, var(--good-soft), var(--surface-2) 74%);
-  border:2px solid var(--line);
-}
-.sprout em{font-style:normal; display:block; animation:sway 5s ease-in-out infinite}
-@keyframes sway{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
-.sprout.ready{border-color:var(--good); box-shadow:0 0 0 6px var(--good-soft)}
-
-.grow-name{font-family:var(--disp); font-size:21px; font-weight:700; text-align:center; line-height:1.2}
-.grow-when{font-size:13.5px; color:var(--ink-3); text-align:center; margin-top:-8px}
-.growbar{
-  height:14px; background:var(--surface-2); border:1.5px solid var(--line);
-  border-radius:100px; overflow:hidden;
-}
-.growbar i{
-  display:block; height:100%; border-radius:100px; min-width:3px;
-  background:linear-gradient(90deg, var(--watch), var(--good));
-  transition:width .8s cubic-bezier(.2,.7,.3,1);
-}
-.grow-note{font-size:13px; color:var(--ink-2); text-align:center; line-height:1.45}
-
-.garden-plot{padding:16px 20px 20px; display:flex; flex-direction:column; gap:11px; min-width:0}
-.gplot{
-  display:flex; flex-wrap:wrap; gap:9px; align-content:flex-start;
-  background:var(--soil); border:2px dashed var(--line-2); border-radius:18px;
-  padding:14px; min-height:136px;
-}
-.grown{
-  position:relative; width:52px; height:52px; display:grid; place-items:center;
-  font-size:27px; line-height:1; border-radius:16px;
-  background:var(--surface); border:1.5px solid var(--line);
-}
-.grown b{
-  position:absolute; right:-5px; bottom:-5px; min-width:21px; height:21px; padding:0 5px;
-  display:grid; place-items:center; border-radius:100px;
-  background:var(--accent); color:var(--on-accent);
-  font-family:var(--disp); font-size:11.5px; font-weight:800; line-height:1;
-}
-.plot-foot{
-  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
-  font-size:13px; color:var(--ink-3);
-}
-.plot-foot b{color:var(--ink-2)}
-/* the plot already draws the dashed bed, so its empty state should not */
-.gplot .empty{border:0; background:transparent; align-self:center}
-
-.seedgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(124px,1fr)); gap:10px}
-.seed{
-  display:flex; flex-direction:column; align-items:center; gap:1px;
-  padding:13px 8px 11px; border-radius:18px; cursor:pointer; text-align:center;
-  background:var(--surface-2); border:1.5px solid var(--line); color:inherit;
-  transition:transform .13s, border-color .13s, background .13s;
-}
-.seed:hover:not(:disabled){transform:translateY(-3px); border-color:var(--accent); background:var(--accent-soft)}
-.seed:disabled{cursor:not-allowed; opacity:.55}
-.seed:disabled .seed-emo{filter:grayscale(1)}
-.seed-emo{font-size:31px; line-height:1.2}
-.seed-nm{font-family:var(--disp); font-weight:700; font-size:14.5px; line-height:1.2}
-.seed-sub{font-size:12px; color:var(--ink-3)}
-/* ── accounts ───────────────────────────────────────────────────────── */
-.acct-msg{
-  font-size:13.5px; line-height:1.5; border-radius:14px; padding:11px 14px;
-  border:1.5px solid var(--line-2); background:var(--surface-2); color:var(--ink-2);
-}
-.acct-msg.ok{border-color:var(--good); background:var(--good-soft); color:var(--ink)}
-.acct-msg.bad{border-color:var(--high); background:var(--high-soft); color:var(--ink)}
-.acct-msg:empty{display:none}
-
-.acct-who{
-  display:flex; align-items:center; gap:11px; padding:13px 15px;
-  border:1.5px solid var(--line); border-radius:16px; background:var(--surface-2);
-}
-.acct-who .avatar{
-  flex:none; width:42px; height:42px; border-radius:50%; display:grid;
-  place-items:center; font-size:21px; background:var(--accent-soft);
-}
-.acct-who .mail{font-family:var(--disp); font-weight:700; font-size:15.5px; word-break:break-all; line-height:1.25}
-.acct-who .sub{font-size:12.5px; color:var(--ink-3)}
-.acct-danger{border-top:2px dashed var(--line-2); padding-top:15px}
-.acct-danger .btn{border-color:var(--high); color:var(--high)}
-.acct-danger .btn:hover{background:var(--high-soft); border-color:var(--high)}
-/* ── tabs ───────────────────────────────────────────────────────────── */
-.tabs{
-  display:flex; gap:6px; flex-wrap:wrap; padding-top:16px;
-  border-bottom:2px dashed var(--line-2); margin-bottom:2px;
-}
-.tabs button{
-  border:1.5px solid transparent; border-bottom:0; background:transparent;
-  color:var(--ink-3); font-family:var(--disp); font-size:15.5px; font-weight:600;
-  padding:9px 17px 8px; border-radius:14px 14px 0 0; cursor:pointer;
-  display:flex; align-items:center; gap:7px;
-  transition:background .13s, color .13s;
-}
-.tabs button:hover{color:var(--ink); background:var(--surface-2)}
-.tabs button[aria-selected="true"]{
-  background:var(--surface); border-color:var(--line); color:var(--ink);
-  margin-bottom:-2px; padding-bottom:10px;
-}
-.tabs .badge{
-  font-size:12px; font-weight:800; min-width:20px; height:20px; padding:0 6px;
-  border-radius:100px; display:grid; place-items:center;
-  background:var(--accent-soft); color:var(--accent-ink);
-}
-.tabpanel{display:flex; flex-direction:column; gap:18px}
-
-/* ── the study behind the baseline ──────────────────────────────────── */
-.prior-bars{display:flex; align-items:flex-end; gap:2px; height:96px; margin-top:4px}
-.prior-bars i{
-  flex:1; border-radius:3px 3px 0 0; background:var(--accent); display:block;
-  min-height:2px; position:relative;
-}
-.prior-bars i.gap{background:repeating-linear-gradient(45deg,var(--line-2) 0 3px,transparent 3px 6px)}
-.prior-ax{display:flex; gap:2px; margin-top:5px; font-size:10.5px; color:var(--ink-3)}
-.prior-ax span{flex:1; text-align:center}
-.prior-reasons{display:flex; flex-direction:column; gap:7px; margin-top:4px}
-.prior-reasons .r{display:flex; align-items:center; gap:9px; font-size:13.5px}
-.prior-reasons .r .n{
-  font-family:var(--disp); font-weight:700; min-width:38px; color:var(--ink-2);
-}
-.prior-reasons .r .t{flex:1; height:9px; border-radius:100px; background:var(--surface-2);
-  border:1px solid var(--line); overflow:hidden}
-.prior-reasons .r .t i{display:block; height:100%; background:var(--accent); border-radius:100px}
-/* ── one question at a time ─────────────────────────────────────────── */
-.flow-dots{display:flex; gap:6px; align-items:center; margin-bottom:18px}
-.flow-dots i{
-  height:6px; flex:1; border-radius:100px; background:var(--surface-2);
-  border:1px solid var(--line); display:block; transition:background .25s;
-}
-.flow-dots i.on{background:var(--accent); border-color:var(--accent)}
-.flow-dots i.at{background:var(--accent); border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
-
-.flow-q{
-  font-family:var(--disp); font-size:26px; font-weight:700; line-height:1.2;
-  text-wrap:balance; margin-bottom:5px;
-}
-.flow-hint{font-size:14px; color:var(--ink-3); margin-bottom:17px; line-height:1.5}
-.flow-body{animation:flowin .22s cubic-bezier(.2,.7,.3,1) both}
-@keyframes flowin{from{opacity:0; transform:translateX(10px)}to{opacity:1; transform:none}}
-
-.opts{display:flex; flex-wrap:wrap; gap:9px}
-.opts.two{display:grid; grid-template-columns:1fr 1fr; gap:11px}
-@media (max-width:560px){.opts.two{grid-template-columns:1fr}}
-.opt{
-  display:flex; align-items:center; gap:11px; text-align:left;
-  background:var(--raised); border:2px solid var(--line-2); border-radius:18px;
-  padding:15px 17px; font-size:16px; font-weight:600; cursor:pointer; color:var(--ink);
-  transition:transform .12s, border-color .12s, background .12s;
-}
-.opt:hover{transform:translateY(-2px); border-color:var(--accent); background:var(--accent-soft)}
-.opt .emo{font-size:26px; line-height:1}
-.opt[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
-.opt.pill{padding:11px 16px; font-size:15px; border-radius:100px; font-weight:600}
-
-.scale{display:grid; grid-template-columns:repeat(5,1fr); gap:9px}
-@media (max-width:560px){.scale{grid-template-columns:repeat(3,1fr)}}
-.scale button{
-  display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer;
-  background:var(--raised); border:2px solid var(--line-2); border-radius:18px;
-  padding:14px 8px; color:var(--ink); transition:transform .12s, border-color .12s, background .12s;
-}
-.scale button:hover{transform:translateY(-2px); border-color:var(--accent); background:var(--accent-soft)}
-.scale button b{font-family:var(--disp); font-size:24px; font-weight:800; line-height:1}
-.scale button span{font-size:12.5px; color:var(--ink-3); text-align:center; line-height:1.25}
-
-.flow-ft{
-  display:flex; align-items:center; gap:9px; flex-wrap:wrap;
-  margin-top:20px; padding-top:15px; border-top:2px dashed var(--line-2);
-}
-.flow-ft .spacer{flex:1}
-
-.flow-done{text-align:center; padding:6px 0 2px}
-.flow-done .tick{
-  width:66px; height:66px; margin:0 auto 13px; border-radius:50%;
-  display:grid; place-items:center; font-size:32px;
-  background:var(--good-soft); border:2px solid var(--good);
-  animation:pop .45s cubic-bezier(.2,1.5,.4,1) both;
-}
-@keyframes pop{0%{transform:scale(.5)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
-.flow-done h3{font-family:var(--disp); font-size:23px; font-weight:700}
-.flow-done .recap{
-  display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin:13px 0 19px;
-}
-.flow-done .acts{display:flex; gap:9px; flex-wrap:wrap; justify-content:center}
-
-.log-row .rowacts{display:flex; gap:6px; align-items:flex-start}
-/* ── the garden, as the thing you came for ──────────────────────────── */
-.hero{overflow:hidden; position:relative}
-.hero-top{
-  display:flex; gap:8px; flex-wrap:wrap; align-items:center;
-  padding:14px 18px; border-bottom:1.5px solid var(--line); background:var(--surface-2);
-}
-.chip-stat{
-  display:inline-flex; align-items:center; gap:6px; border-radius:100px;
-  padding:5px 13px 6px; font-family:var(--disp); font-weight:700; font-size:14px;
-  background:var(--raised); border:1.5px solid var(--line-2);
-}
-.chip-stat .n{font-size:16px}
-.chip-stat.rank{background:var(--accent-soft); border-color:var(--accent); color:var(--accent-ink)}
-.chip-stat.fire{background:var(--watch-soft); border-color:var(--watch); color:var(--ink)}
-
-.scene{
-  position:relative; min-height:326px; display:grid; place-items:center;
-  background:
-    linear-gradient(180deg,
-      var(--sky) 0%,
-      color-mix(in srgb, var(--sky) 45%, var(--surface)) 58%,
-      var(--soil) 58%, var(--soil) 100%);
-}
-.scene .sun{
-  position:absolute; top:26px; right:38px; width:46px; height:46px; border-radius:50%;
-  background:#FFD34D;
-  box-shadow:0 0 0 10px rgba(255,211,77,.22), 0 0 0 22px rgba(255,211,77,.12);
-}
-:root[data-theme="dark"] .scene .sun,
-:root:not([data-theme="light"]) .scene .sun{background:#F2C46E}
-.scene .cloud{
-  position:absolute; height:16px; border-radius:100px; background:var(--surface);
-  opacity:.85;
-}
-.scene .cloud::before, .scene .cloud::after{
-  content:""; position:absolute; background:inherit; border-radius:50%;
-}
-.scene .cloud::before{width:22px; height:22px; left:12px; top:-9px}
-.scene .cloud::after{width:15px; height:15px; left:34px; top:-6px}
-.scene .c1{width:64px; top:52px; left:12%}
-.scene .c2{width:48px; top:30px; left:56%; opacity:.6}
-.scene .hill{
-  position:absolute; left:-8%; right:-8%; top:44%; height:34%; border-radius:50% 50% 0 0;
-  background:color-mix(in srgb, var(--good) 24%, var(--soil));
-}
-.stage{position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:12px}
-.ringwrap{position:relative; width:190px; height:190px; display:grid; place-items:center}
-.ringwrap svg{position:absolute; inset:0; width:100%; height:100%; transform:rotate(-90deg)}
-.ringwrap .bg{fill:none; stroke:color-mix(in srgb,var(--ink) 12%, transparent); stroke-width:9}
-.ringwrap .fg{
-  fill:none; stroke:var(--good); stroke-width:9; stroke-linecap:round;
-  transition:stroke-dashoffset .9s cubic-bezier(.2,.7,.3,1);
-}
-.ringwrap .disc{
-  width:150px; height:150px; border-radius:50%; display:grid; place-items:center;
-  background:var(--raised); box-shadow:0 8px 22px -12px rgba(0,0,0,.45);
-}
-.ringwrap .disc em{font-style:normal; font-size:74px; line-height:1; display:block;
-  animation:sway 5s ease-in-out infinite}
-.ringwrap.ready .fg{stroke:var(--accent)}
-.ringwrap .pct{
-  position:absolute; bottom:-4px; left:50%; transform:translateX(-50%);
-  background:var(--raised); border:1.5px solid var(--line-2); border-radius:100px;
-  padding:2px 12px 3px; font-family:var(--disp); font-weight:800; font-size:14px;
-}
-.stage h3{font-family:var(--disp); font-size:27px; font-weight:800; text-align:center}
-.stage .when{font-size:15px; color:var(--ink-2); text-align:center; margin-top:-6px}
-.stage .btn{font-size:16px; padding:12px 26px}
-
-.quest{padding:15px 18px; border-top:1.5px solid var(--line); background:var(--surface)}
-.quest-row{display:flex; align-items:center; gap:10px; font-size:14.5px; flex-wrap:wrap}
-.quest-row .goal{font-family:var(--disp); font-weight:700}
-.quest-row .left{margin-left:auto; color:var(--ink-3); font-size:13.5px}
-.quest-bar{
-  height:12px; margin-top:9px; border-radius:100px; background:var(--surface-2);
-  border:1.5px solid var(--line); overflow:hidden;
-}
-.quest-bar i{display:block; height:100%; border-radius:100px;
-  background:linear-gradient(90deg, var(--watch), var(--good)); transition:width .8s cubic-bezier(.2,.7,.3,1)}
-
-/* ── the collection ─────────────────────────────────────────────────── */
-.coll{display:grid; grid-template-columns:repeat(auto-fill,minmax(72px,1fr)); gap:10px}
-.slot{
-  position:relative; aspect-ratio:1; border-radius:18px; display:grid; place-items:center;
-  font-size:31px; background:var(--surface-2); border:1.5px solid var(--line);
-}
-.slot.have{background:var(--good-soft); border-color:var(--good)}
-.slot.locked{opacity:.42; font-size:22px}
-.slot.locked .lk{filter:grayscale(1)}
-.slot b{
-  position:absolute; right:-4px; bottom:-4px; min-width:22px; height:22px; padding:0 6px;
-  display:grid; place-items:center; border-radius:100px; background:var(--accent);
-  color:var(--on-accent); font-family:var(--disp); font-size:12px; font-weight:800; line-height:1;
-}
-.slot .need{
-  position:absolute; bottom:5px; left:0; right:0; text-align:center;
-  font-size:10.5px; color:var(--ink-3); font-family:var(--disp); font-weight:700;
-}
-
-/* ── craving weather ────────────────────────────────────────────────── */
-.wx-now{display:flex; align-items:center; gap:15px; margin-bottom:15px}
-.wx-now .big{
-  width:76px; height:76px; flex:none; border-radius:22px; display:grid; place-items:center;
-  font-size:40px; background:var(--surface-2); border:1.5px solid var(--line);
-}
-.wx-now .word{font-family:var(--disp); font-size:25px; font-weight:800; line-height:1.15}
-.wx-now .sub{font-size:14px; color:var(--ink-2); margin-top:2px; line-height:1.45}
-.wx{display:flex; gap:7px; overflow-x:auto; padding-bottom:4px}
-.wx-h{
-  flex:1 0 58px; display:flex; flex-direction:column; align-items:center; gap:6px;
-  border-radius:16px; padding:11px 4px 9px; background:var(--surface-2);
-  border:1.5px solid var(--line);
-}
-.wx-h .ico{font-size:21px; line-height:1}
-.wx-h .hr{font-size:11.5px; color:var(--ink-3); font-family:var(--disp); font-weight:700}
-.wx-h .lvl{height:6px; width:64%; border-radius:100px}
-.wx-h.now{border-color:var(--accent); border-width:2.5px; background:var(--accent-soft)}
-.wx-h.peak{border-color:var(--high)}
-
-/* ── a little celebration ───────────────────────────────────────────── */
-.confetti{position:fixed; inset:0; pointer-events:none; z-index:90; overflow:hidden}
-.confetti i{
-  position:absolute; top:-24px; font-size:20px; font-style:normal;
-  animation:fall linear forwards;
-}
-@keyframes fall{to{transform:translateY(105vh) rotate(540deg); opacity:0}}
 </style>
 </head>
+
 <body>
+<svg width="0" height="0" style="position:absolute;opacity:0;pointer-events:none" aria-hidden="true">
 
-<div class="wrap">
+  <!-- ---------- SPECIES ---------- -->
+  <symbol id="i-sunflower" viewBox="0 0 32 32">
+    <path d="M15.4 17h3.2c.4 4.6.3 8.7-.3 12.3-1.4.5-2.6.5-3.6 0-.4-3.8-.5-7.9.7-12.3z" fill="#047857"></path>
+    <path d="M14.8 22.3c-3.6-.5-5.8-2.4-6.4-5.7 4.1-.6 6.4 1.2 6.4 5.7z" fill="#10B981"></path>
+    <g style="animation:bob 3.4s ease-in-out infinite;transform-origin:17px 13px">
+      <g fill="#FBBF24">
+        <ellipse cx="17" cy="3.9" rx="3.1" ry="4"></ellipse>
+        <ellipse cx="23.6" cy="6.6" rx="3" ry="4" transform="rotate(42 23.6 6.6)"></ellipse>
+        <ellipse cx="26.4" cy="13" rx="3" ry="4" transform="rotate(84 26.4 13)"></ellipse>
+        <ellipse cx="23.7" cy="19.2" rx="3" ry="4" transform="rotate(130 23.7 19.2)"></ellipse>
+        <ellipse cx="17.2" cy="21.9" rx="3.1" ry="4" transform="rotate(176 17.2 21.9)"></ellipse>
+        <ellipse cx="10.6" cy="19.1" rx="3" ry="4" transform="rotate(220 10.6 19.1)"></ellipse>
+        <ellipse cx="7.8" cy="12.8" rx="3" ry="4" transform="rotate(264 7.8 12.8)"></ellipse>
+        <ellipse cx="10.5" cy="6.5" rx="3" ry="4" transform="rotate(308 10.5 6.5)"></ellipse>
+      </g>
+      <ellipse cx="17" cy="12.9" rx="6.6" ry="6.2" fill="#F59E0B"></ellipse>
+      <ellipse cx="15.3" cy="11.3" rx="3" ry="2.6" fill="#FBBF24" opacity=".75"></ellipse>
+    </g>
+  </symbol>
 
-  <header class="masthead">
-    <div class="brand">
-      <div class="wordmark"><i class="leaf">🌱</i>Crave<span>Cast</span></div>
-      <div class="tagline">See the urge coming — and grow something for every day you ride it out.</div>
-    </div>
-    <div class="mast-tools">
-      <label class="sr" for="habitSel">Tracked habit</label>
-      <select id="habitSel" style="width:auto; min-width:150px"></select>
-      <button class="btn sm" id="manageBtn" title="Add or remove tracked habits">Habits</button>
-      <button class="btn sm" id="setBtn" title="Alert settings">Settings</button>
-      <button class="btn sm" id="acctBtn" title="Account and sync" hidden>Account</button>
-      <button class="btn sm ghost" id="themeBtn" title="Switch light / dark" aria-label="Switch theme">◐</button>
-    </div>
-  </header>
+  <symbol id="i-tulip" viewBox="0 0 32 32">
+    <path d="M14.8 16.6h3.3c.5 4.7.3 8.9-.4 12.6-1.3.4-2.4.4-3.4 0-.4-4-.5-8.2.5-12.6z" fill="#047857"></path>
+    <path d="M14.4 23.1c-3.5-.6-5.6-2.6-6.1-5.9 4.1-.4 6.3 1.5 6.1 5.9z" fill="#10B981"></path>
+    <path d="M19.2 21.2c3.1-.7 4.8-2.6 5.1-5.5-3.7-.1-5.5 1.7-5.1 5.5z" fill="#047857"></path>
+    <g style="animation:wobble 3.6s ease-in-out infinite;transform-origin:16px 17px">
+      <path d="M8.6 9.4c2.1-2.7 4.6-4.3 7.6-4.8 3.2.5 5.8 2.1 7.8 4.9.8 6-1.8 9.1-7.6 9.2C10.4 18.8 7.8 15.6 8.6 9.4z" fill="#FB7185"></path>
+      <path d="M12.6 6.4c1 3.9 1.3 8 .9 12.2-1.6-.5-2.9-1.5-3.8-3-.6-3.9.4-6.9 2.9-9.2z" fill="#FFC2CC"></path>
+      <path d="M16.4 4.8c.9 4.4 1 9 .2 13.9" fill="none" stroke="#111827" stroke-width="1.6" opacity=".18"></path>
+    </g>
+  </symbol>
+
+  <symbol id="i-herb" viewBox="0 0 32 32">
+    <path d="M14.6 12h3.2c.9 6 1 11.7.3 17-1.3.4-2.5.4-3.6 0-.9-5.5-.9-11.2.1-17z" fill="#047857"></path>
+    <g style="animation:bob 3.2s ease-in-out infinite;transform-origin:16px 26px">
+      <path d="M17.6 16.4c2.4-4.3 5.5-6 9.3-5.1-.4 4.6-3.5 6.3-9.3 5.1z" fill="#10B981"></path>
+      <path d="M14.6 21.4c-3.9-1.6-5.6-4.4-5-8.4 4.4 1.1 6.1 3.9 5 8.4z" fill="#047857"></path>
+      <path d="M17.4 8.8c1.2-4 3.8-6 7.7-6.1-.5 4.4-3.1 6.4-7.7 6.1z" fill="#10B981"></path>
+      <path d="M14.8 12.2c-3.6-1.1-5.2-3.5-4.9-7.2 4 .8 5.6 3.2 4.9 7.2z" fill="#047857"></path>
+    </g>
+  </symbol>
+
+  <symbol id="i-daisy" viewBox="0 0 32 32">
+    <path d="M14.8 17.4h3.2c.5 4.5.3 8.5-.4 12-1.3.4-2.4.4-3.4 0-.4-3.8-.5-7.8.6-12z" fill="#047857"></path>
+    <path d="M14.4 23.2c-3.3-.6-5.3-2.4-5.8-5.5 3.9-.3 5.9 1.5 5.8 5.5z" fill="#10B981"></path>
+    <g style="animation:bob 3.6s ease-in-out infinite;transform-origin:16px 14px">
+      <g fill="#FFC2CC">
+        <ellipse cx="16.2" cy="5.6" rx="3.4" ry="4.2"></ellipse>
+        <ellipse cx="23" cy="8.8" rx="3.3" ry="4.2" transform="rotate(48 23 8.8)"></ellipse>
+        <ellipse cx="24.6" cy="16.2" rx="3.3" ry="4.2" transform="rotate(96 24.6 16.2)"></ellipse>
+        <ellipse cx="19.4" cy="21.4" rx="3.3" ry="4.2" transform="rotate(144 19.4 21.4)"></ellipse>
+        <ellipse cx="12.4" cy="20.7" rx="3.3" ry="4.2" transform="rotate(196 12.4 20.7)"></ellipse>
+        <ellipse cx="8.1" cy="14.8" rx="3.3" ry="4.2" transform="rotate(250 8.1 14.8)"></ellipse>
+        <ellipse cx="10" cy="8.3" rx="3.3" ry="4.2" transform="rotate(300 10 8.3)"></ellipse>
+      </g>
+      <ellipse cx="16.3" cy="14.1" rx="5.2" ry="4.9" fill="#FBBF24"></ellipse>
+      <ellipse cx="14.9" cy="12.9" rx="2.2" ry="1.9" fill="#FDE7B5"></ellipse>
+    </g>
+  </symbol>
+
+  <symbol id="i-clover" viewBox="0 0 32 32">
+    <path d="M14.9 17.4h3.2c.5 4.4.2 8.3-.6 11.6-1.2.4-2.3.4-3.2 0-.4-3.7-.5-7.6.6-11.6z" fill="#047857"></path>
+    <g style="animation:bob 3.2s ease-in-out infinite;transform-origin:16px 18px">
+      <ellipse cx="10.3" cy="12.6" rx="5.6" ry="5.2" transform="rotate(-24 10.3 12.6)" fill="#10B981"></ellipse>
+      <ellipse cx="21.7" cy="12.2" rx="5.6" ry="5.2" transform="rotate(22 21.7 12.2)" fill="#047857"></ellipse>
+      <ellipse cx="16.2" cy="6.6" rx="5.2" ry="5" fill="#10B981"></ellipse>
+      <ellipse cx="16.1" cy="17.3" rx="5.4" ry="5" fill="#047857"></ellipse>
+      <ellipse cx="14.4" cy="10.4" rx="2.4" ry="2" fill="#6EE7B7" opacity=".8"></ellipse>
+    </g>
+  </symbol>
+
+  <symbol id="i-rose" viewBox="0 0 32 32">
+    <path d="M14.8 17.8h3.3c.4 4.4.2 8.3-.6 11.5-1.2.4-2.3.4-3.2 0-.4-3.7-.5-7.6.5-11.5z" fill="#047857"></path>
+    <path d="M14.4 24c-3.3-.6-5.3-2.5-5.7-5.7 3.9-.2 5.8 1.7 5.7 5.7z" fill="#10B981"></path>
+    <path d="M19.6 21.6c3-.8 4.6-2.7 4.8-5.5-3.6 0-5.2 1.8-4.8 5.5z" fill="#047857"></path>
+    <g style="animation:wobble 3.8s ease-in-out infinite;transform-origin:16px 18px">
+      <ellipse cx="16.2" cy="11.4" rx="9" ry="8.4" fill="#FB7185"></ellipse>
+      <path d="M16.6 5.4c3.9 1.4 5.8 3.9 5.5 7.4-.3 3.5-2.6 5.4-6.7 5.7 3-1.4 4.6-3.4 4.8-6 .2-2.7-1-4.9-3.6-7.1z" fill="#FFC2CC"></path>
+      <ellipse cx="16.1" cy="12" rx="3.4" ry="3" fill="#FFC2CC"></ellipse>
+    </g>
+  </symbol>
+
+  <symbol id="i-cactus" viewBox="0 0 32 32">
+    <rect x="11.4" y="24.6" width="11.6" height="4.6" rx="2.3" fill="#F59E0B"></rect>
+    <path d="M13.2 13.2c0-3 1-4.5 3.2-4.5s3.3 1.5 3.3 4.5c.1 4.6 0 9.1-.3 13.4H13.6c-.4-4.4-.5-8.9-.4-13.4z" fill="#047857"></path>
+    <path d="M13.4 21.2c-3.9.4-5.9-1.4-6-5.2-.1-2.2.4-4.1 1.5-5.7 2.2-.2 3.3 1.1 3.2 3.9 0 1.5.4 2.7 1.3 3.7z" fill="#10B981"></path>
+    <path d="M19.4 18.2c3.2.5 5-.9 5.3-4.1.1-1.6-.2-3-.9-4.2-1.8-.3-2.8.7-2.9 3-.1 1.4-.6 2.5-1.5 3.2z" fill="#10B981"></path>
+    <ellipse cx="16.4" cy="13.4" rx="1.3" ry="2.4" fill="#6EE7B7" opacity=".8"></ellipse>
+  </symbol>
+
+  <symbol id="i-hibiscus" viewBox="0 0 32 32">
+    <path d="M15.2 19.6h3.2c.3 3.9 0 7.2-.7 9.7-1.2.4-2.2.4-3.1 0-.3-3.2-.4-6.4.6-9.7z" fill="#047857"></path>
+    <path d="M14.6 24.6c-3.2-.7-5-2.5-5.3-5.6 3.8-.1 5.6 1.8 5.3 5.6z" fill="#10B981"></path>
+    <g style="animation:bob 3.4s ease-in-out infinite;transform-origin:16px 16px">
+      <g fill="#FB7185">
+        <ellipse cx="16.3" cy="6.6" rx="5.2" ry="5.4"></ellipse>
+        <ellipse cx="24" cy="12.6" rx="5.2" ry="5.4" transform="rotate(72 24 12.6)"></ellipse>
+        <ellipse cx="21" cy="21.4" rx="5.2" ry="5.4" transform="rotate(144 21 21.4)"></ellipse>
+        <ellipse cx="11.4" cy="21.2" rx="5.2" ry="5.4" transform="rotate(216 11.4 21.2)"></ellipse>
+        <ellipse cx="8.5" cy="12.4" rx="5.2" ry="5.4" transform="rotate(288 8.5 12.4)"></ellipse>
+      </g>
+      <ellipse cx="16.2" cy="14.4" rx="4.4" ry="4.2" fill="#FFC2CC"></ellipse>
+      <path d="M17.2 14.6c1.4 2.2 3 3.9 5 5.2" stroke="#F59E0B" stroke-width="2.4" stroke-linecap="round" fill="none"></path>
+      <circle cx="22.6" cy="20.4" r="1.9" fill="#FBBF24"></circle>
+    </g>
+  </symbol>
+
+  <symbol id="i-oak" viewBox="0 0 32 32">
+    <path d="M13.8 17.4h4.6c.5 4.2.4 8.1-.2 11.7h-4.2c-.6-3.8-.7-7.7-.2-11.7z" fill="#F59E0B"></path>
+    <path d="M17.9 22.6c1.3-1.4 2.8-2.3 4.4-2.8" stroke="#F59E0B" stroke-width="2.6" stroke-linecap="round" fill="none"></path>
+    <g style="animation:bob 3.8s ease-in-out infinite;transform-origin:16px 19px">
+      <path d="M5.6 13.2c-.4-5 3-8.5 8-9 5.1-.5 8.8 1.6 10.4 5.3 3.7.9 5.1 3.5 3.8 6.6-1.4 3.3-5.1 4.8-10.8 4.6-7.5-.3-11-2.6-11.4-7.5z" fill="#10B981"></path>
+      <path d="M12.4 4.3c3.6.2 6.4 1.9 8 5 1.6.3 2.8 1 3.4 2.2-4.3 1-8.1.8-11.4-.8-2.9-1.4-3.4-3.5 0-6.4z" fill="#6EE7B7" opacity=".85"></path>
+    </g>
+  </symbol>
+
+  <symbol id="i-pine" viewBox="0 0 32 32">
+    <rect x="13.8" y="22.4" width="4.8" height="6.8" rx="2" fill="#F59E0B"></rect>
+    <g style="animation:bob 3.6s ease-in-out infinite;transform-origin:16px 26px">
+      <path d="M16.3 2.8c2.7 2.6 4.6 5.4 5.6 8.4.6 1.8-.2 2.7-2.2 2.9-2.7.3-5.3.2-7.8-.3-1.7-.4-2.2-1.4-1.4-3 1.3-2.9 3.2-5.6 5.8-8z" fill="#047857"></path>
+      <path d="M16.2 9.4c3.2 2.6 5.4 5.5 6.6 8.7.6 1.7-.2 2.6-2.4 2.9-3 .4-5.9.3-8.8-.2-2-.4-2.6-1.4-1.8-3 1.5-3 3.6-5.8 6.4-8.4z" fill="#10B981"></path>
+      <path d="M16.1 15.6c3.5 2.6 5.9 5.4 7.2 8.5.7 1.6-.1 2.5-2.4 2.8-3.4.4-6.6.4-9.8-.1-2.2-.3-2.9-1.3-2-2.9 1.6-3 4-5.8 7-8.3z" fill="#047857"></path>
+    </g>
+  </symbol>
+
+  <symbol id="i-cherry" viewBox="0 0 32 32">
+    <path d="M13.8 17.8h4.4c.5 4.2.4 8 0 11.4h-4.2c-.6-3.7-.7-7.5-.2-11.4z" fill="#F59E0B"></path>
+    <g style="animation:bob 3.6s ease-in-out infinite;transform-origin:16px 19px">
+      <path d="M6 12.4C5.5 7.6 8.8 4.3 13.6 3.8c4.9-.5 8.4 1.5 9.9 5.1 3.3.9 4.5 3.2 3.4 6-1.3 3.1-4.8 4.5-10.3 4.3C9.4 19 6.3 16.8 6 12.4z" fill="#FB7185"></path>
+      <path d="M13.2 4.6c3.3.2 5.9 1.8 7.4 4.6 1.4.4 2.4 1.1 2.9 2.1-4 1-7.5.8-10.5-.7-2.7-1.3-3.2-3.3.2-6z" fill="#FFC2CC"></path>
+      <circle cx="11.2" cy="12.6" r="1.7" fill="#0E7490"></circle>
+      <circle cx="20" cy="13.6" r="1.7" fill="#0E7490"></circle>
+    </g>
+  </symbol>
+
+  <symbol id="i-fern" viewBox="0 0 32 32">
+    <path d="M13.4 28.9c-.9-8.2.7-15.6 4.8-22.2" stroke="#047857" stroke-width="3.4" stroke-linecap="round" fill="none"></path>
+    <g style="animation:bob 3.4s ease-in-out infinite;transform-origin:16px 28px">
+      <g fill="#10B981">
+        <ellipse cx="10.4" cy="23.6" rx="4.2" ry="2.9" transform="rotate(-22 10.4 23.6)"></ellipse>
+        <ellipse cx="19.2" cy="18.6" rx="4.2" ry="2.9" transform="rotate(20 19.2 18.6)"></ellipse>
+        <ellipse cx="12.4" cy="15.8" rx="3.9" ry="2.7" transform="rotate(-20 12.4 15.8)"></ellipse>
+        <ellipse cx="21.2" cy="11.4" rx="3.6" ry="2.5" transform="rotate(22 21.2 11.4)"></ellipse>
+        <ellipse cx="15.2" cy="9.4" rx="3.3" ry="2.3" transform="rotate(-20 15.2 9.4)"></ellipse>
+      </g>
+      <circle cx="19.6" cy="5.4" r="3.1" fill="#047857"></circle>
+      <circle cx="19" cy="5.1" r="1.3" fill="#6EE7B7"></circle>
+    </g>
+  </symbol>
+
+  <symbol id="i-bluebell" viewBox="0 0 32 32">
+    <path d="M11.4 29c-.5-8.8 1.4-16 5.8-21.6" stroke="#047857" stroke-width="3.4" stroke-linecap="round" fill="none"></path>
+    <path d="M11.8 23.4c-3.1-.6-4.8-2.4-5-5.5 3.7-.2 5.4 1.6 5 5.5z" fill="#10B981"></path>
+    <g style="animation:bob 3.2s ease-in-out infinite;transform-origin:18px 8px">
+      <path d="M12.6 13.4c0-2.6 1.3-3.9 3.7-3.9s3.6 1.3 3.5 3.9c-.1 2.6-1.4 4-3.7 4s-3.5-1.3-3.5-4z" fill="#06B6D4"></path>
+      <path d="M18.4 7.6c0-2.4 1.2-3.6 3.4-3.6s3.3 1.2 3.2 3.6c-.1 2.4-1.2 3.7-3.4 3.7s-3.2-1.3-3.2-3.7z" fill="#0E7490"></path>
+      <path d="M15.4 4.4c0-2.2 1.1-3.3 3.1-3.3s3 1.1 2.9 3.3c-.1 2.2-1.1 3.3-3.1 3.3s-2.9-1.1-2.9-3.3z" fill="#06B6D4"></path>
+      <ellipse cx="14.6" cy="12.2" rx="1.2" ry="1.7" fill="#7DE3F3" opacity=".8"></ellipse>
+    </g>
+  </symbol>
+
+  <symbol id="i-lotus" viewBox="0 0 32 32">
+    <g style="animation:bob 3.6s ease-in-out infinite;transform-origin:16px 22px">
+      <ellipse cx="7.4" cy="17.6" rx="5.6" ry="3.6" transform="rotate(-38 7.4 17.6)" fill="#FB7185"></ellipse>
+      <ellipse cx="24.8" cy="17.4" rx="5.6" ry="3.6" transform="rotate(38 24.8 17.4)" fill="#FB7185"></ellipse>
+      <ellipse cx="11" cy="14.6" rx="4.6" ry="6" transform="rotate(-22 11 14.6)" fill="#FFC2CC"></ellipse>
+      <ellipse cx="21.2" cy="14.4" rx="4.6" ry="6" transform="rotate(22 21.2 14.4)" fill="#FFC2CC"></ellipse>
+      <ellipse cx="16.1" cy="13.2" rx="4.4" ry="7" fill="#FB7185"></ellipse>
+      <ellipse cx="16.1" cy="13.8" rx="1.9" ry="3.4" fill="#FFC2CC"></ellipse>
+    </g>
+    <path d="M4.4 24.2c2.5-2 4.7-2 6.6 0 2 2 4.1 2 6.4 0 2.2-2 4.4-1.9 6.6.1 1.6 1.4 3.2 1.7 4.8.9" stroke="#06B6D4" stroke-width="3" stroke-linecap="round" fill="none" style="animation:crest 3.4s ease-in-out infinite"></path>
+  </symbol>
+
+  <symbol id="i-wheat" viewBox="0 0 32 32">
+    <path d="M15.2 29c-.6-7.6-.3-14 1.1-19.3" stroke="#047857" stroke-width="3.4" stroke-linecap="round" fill="none"></path>
+    <path d="M14.8 24.6c-3.3-.6-5.1-2.6-5.4-6 4 .1 5.8 2.1 5.4 6z" fill="#10B981"></path>
+    <g style="animation:bob 3.2s ease-in-out infinite;transform-origin:17px 26px">
+      <g fill="#FBBF24">
+        <ellipse cx="17.6" cy="4.4" rx="2.9" ry="3.8"></ellipse>
+        <ellipse cx="12.9" cy="9.4" rx="2.9" ry="3.8" transform="rotate(-26 12.9 9.4)"></ellipse>
+        <ellipse cx="21.3" cy="9" rx="2.9" ry="3.8" transform="rotate(26 21.3 9)"></ellipse>
+        <ellipse cx="12.1" cy="15.4" rx="2.9" ry="3.8" transform="rotate(-26 12.1 15.4)"></ellipse>
+        <ellipse cx="20.7" cy="15" rx="2.9" ry="3.8" transform="rotate(26 20.7 15)"></ellipse>
+        <ellipse cx="16.8" cy="11.8" rx="2.9" ry="4"></ellipse>
+      </g>
+      <g fill="#F59E0B">
+        <ellipse cx="17.6" cy="4.4" rx="1.1" ry="2.4"></ellipse>
+        <ellipse cx="16.8" cy="11.8" rx="1.1" ry="2.5"></ellipse>
+        <ellipse cx="12.4" cy="9.6" rx="1" ry="2.2" transform="rotate(-26 12.4 9.6)"></ellipse>
+        <ellipse cx="21.8" cy="9.2" rx="1" ry="2.2" transform="rotate(26 21.8 9.2)"></ellipse>
+      </g>
+    </g>
+  </symbol>
+
+  <symbol id="i-bamboo" viewBox="0 0 32 32">
+    <g style="animation:wobble 4s ease-in-out infinite;transform-origin:16px 29px">
+      <rect x="9.4" y="8.4" width="6.4" height="20.8" rx="3" fill="#047857"></rect>
+      <rect x="17.6" y="13" width="5.8" height="16.2" rx="2.8" fill="#10B981"></rect>
+      <g fill="#EAF2F1" opacity=".5">
+        <rect x="9.4" y="14.6" width="6.4" height="1.9" rx=".9"></rect>
+        <rect x="9.4" y="21.4" width="6.4" height="1.9" rx=".9"></rect>
+        <rect x="17.6" y="19.2" width="5.8" height="1.8" rx=".9"></rect>
+      </g>
+      <path d="M15.6 10.8c3.6-2.3 6.7-2.4 9.4-.4-2 3.1-5.1 3.2-9.4.4z" fill="#10B981"></path>
+      <path d="M12.6 9.8c-2.1-3-2.3-5.7-.5-8.1 2.6 2.2 2.8 4.9.5 8.1z" fill="#6EE7B7"></path>
+    </g>
+  </symbol>
+
+  <symbol id="i-maple" viewBox="0 0 32 32">
+    <path d="M14.6 20.4h3.4c.4 3.4.2 6.3-.4 8.7-1.1.4-2 .4-2.9 0-.4-2.8-.4-5.7-.1-8.7z" fill="#047857"></path>
+    <g style="animation:wobble 3.6s ease-in-out infinite;transform-origin:16px 21px">
+      <path d="M16.3 2.4c1.3 2.1 2.4 4 3.3 5.6 1-.5 2-.9 3.1-1.2-.2 1.5-.5 2.9-.9 4.1 1.9-.6 3.9-1 5.9-1.2-.9 1.6-1.9 3-2.8 4.3.9.2 1.8.5 2.6.9-1.8 1.7-3.6 3.1-5.4 4.2.5.9.9 1.8 1.2 2.7-2.6-.2-4.9-.5-6.8-.9-.1 2.9-.1 5.6.1 8.1-1 .4-1.8.4-2.6 0 .3-2.6.4-5.3.3-8.2-2 .6-4.2 1-6.5 1.4.2-1 .6-2 1-2.9-2-1-3.9-2.3-5.7-3.9.8-.5 1.7-.9 2.6-1.2-1-1.2-2-2.6-3-4.2 2 0 4 .2 5.9.7-.4-1.3-.7-2.7-.9-4.2 1.1.2 2.2.5 3.2 1 .9-1.8 2-3.5 3.4-5.1z" fill="#F59E0B"></path>
+      <path d="M16.3 2.4c1.3 2.1 2.4 4 3.3 5.6 1-.5 2-.9 3.1-1.2-.2 1.5-.5 2.9-.9 4.1 1.9-.6 3.9-1 5.9-1.2-.9 1.6-1.9 3-2.8 4.3-2.6-2.4-5.5-6-8.6-11.6z" fill="#FBD08A"></path>
+    </g>
+  </symbol>
+
+  <symbol id="i-palm" viewBox="0 0 32 32">
+    <path d="M16.6 9.4c2 .1 3.3.5 3.9 1.4.9 6.2.9 12.3 0 18.2h-6c-.6-6.6-.2-13.2 2.1-19.6z" fill="#F59E0B"></path>
+    <path d="M18.4 12.2c.7 5.6.8 11.2.3 16.8h-2.4c-.5-5.7-.2-11.3 2.1-16.8z" fill="#FBD08A" opacity=".7"></path>
+    <g style="animation:bob 3.6s ease-in-out infinite;transform-origin:17px 10px">
+      <ellipse cx="9.4" cy="9.4" rx="6.2" ry="3.8" transform="rotate(-18 9.4 9.4)" fill="#10B981"></ellipse>
+      <ellipse cx="23.6" cy="9.2" rx="6.2" ry="3.8" transform="rotate(18 23.6 9.2)" fill="#047857"></ellipse>
+      <ellipse cx="17.2" cy="5.8" rx="4" ry="4.5" fill="#10B981"></ellipse>
+      <circle cx="20.4" cy="12.6" r="2" fill="#FBBF24"></circle>
+      <circle cx="14.2" cy="13" r="1.7" fill="#F59E0B"></circle>
+    </g>
+  </symbol>
+
+  <symbol id="i-toadstool" viewBox="0 0 32 32">
+    <path d="M11.4 14.6h9.2c-.6 4.9-.4 9.6.6 14-3.5.9-7 .9-10.4 0 1-4.4 1.2-9.1.6-14z" fill="#FDE7B5"></path>
+    <g style="animation:bob 3.4s ease-in-out infinite;transform-origin:16px 16px">
+      <path d="M3.6 15.4C4 8.6 8.6 4.6 16.1 4.4c7.6-.2 12.2 3.8 12.4 11-4.2 2.2-8.3 3.2-12.5 3.2-4.3 0-8.4-1.1-12.4-3.2z" fill="#FB7185"></path>
+      <ellipse cx="10.8" cy="10.2" rx="3.2" ry="2.6" fill="#FFC2CC"></ellipse>
+      <ellipse cx="19.8" cy="8.8" rx="2.4" ry="2" fill="#FFC2CC"></ellipse>
+      <ellipse cx="23.4" cy="13" rx="2" ry="1.7" fill="#FFC2CC"></ellipse>
+    </g>
+  </symbol>
+
+  <symbol id="i-chestnut" viewBox="0 0 32 32">
+    <path d="M16.2 26.6c-5.8 0-9.4-3-9.6-8.2-.2-4.6 2-8 6-10.1 1.2-.6 2.2-.4 3 .6 3.4 4.3 5.6 8.1 6.6 11.5 1 3.4-.9 6.2-6 6.2z" fill="#F59E0B"></path>
+    <path d="M12.3 9.4c1-.8 2-.8 2.9.3 3.3 4.2 5.5 7.9 6.6 11.3-3-1.5-5.6-3.9-7.9-7.2-1-1.5-1.5-3-1.6-4.4z" fill="#FBD08A"></path>
+    <ellipse cx="13.2" cy="22" rx="4.2" ry="2.6" fill="#FDE7B5"></ellipse>
+    <path d="M13.4 8.2c-.6-3 .4-5 3-6.1 1.9 2.1 1.6 4.4-.8 6.8z" fill="#047857"></path>
+    <path d="M16.6 7.4c2-1.7 4-1.9 6-.7-1.1 2.3-3.1 3.1-6 2.4z" fill="#10B981"></path>
+  </symbol>
+
+  <symbol id="i-spruce" viewBox="0 0 32 32">
+    <rect x="13.4" y="23.8" width="5.4" height="5.4" rx="1.8" fill="#F59E0B"></rect>
+    <rect x="9.6" y="27.4" width="13" height="2.6" rx="1.3" fill="#FBD08A"></rect>
+    <g style="animation:bob 3.8s ease-in-out infinite;transform-origin:16px 28px">
+      <path d="M16.2 1.8c1.9 1.6 3.4 3.6 4.4 5.9.7 1.6.1 2.5-1.7 2.8-1.9.3-3.7.3-5.5 0-1.7-.3-2.3-1.2-1.7-2.7 1-2.3 2.5-4.3 4.5-6z" fill="#047857"></path>
+      <path d="M16.2 7.4c2.7 1.9 4.7 4.2 6 6.9.8 1.6.1 2.6-2.1 2.9-2.6.4-5.1.4-7.6 0-2.2-.3-3-1.2-2.2-2.8 1.3-2.7 3.2-5 5.9-7z" fill="#10B981"></path>
+      <path d="M16.1 13.4c3.3 2.1 5.7 4.7 7.2 7.7.9 1.7.1 2.7-2.4 3.1-3.2.4-6.3.4-9.4 0-2.5-.3-3.3-1.3-2.5-3 1.5-3 4-5.6 7.1-7.8z" fill="#047857"></path>
+      <path d="M16.2 7.4c2.7 1.9 4.7 4.2 6 6.9-2.4-.4-4.4-1.8-6.1-4.2-.9-1.2-1.2-2.1-.9-2.7z" fill="#6EE7B7" opacity=".55"></path>
+    </g>
+  </symbol>
+
+  <symbol id="i-log-bench" viewBox="0 0 32 32">
+    <rect x="7.2" y="18.4" width="4.4" height="10.4" rx="2" fill="#047857"></rect>
+    <rect x="20.4" y="18.4" width="4.4" height="10.4" rx="2" fill="#047857"></rect>
+    <rect x="2.6" y="11.4" width="26.8" height="8.4" rx="4.2" fill="#F59E0B"></rect>
+    <ellipse cx="26.6" cy="15.6" rx="2.8" ry="4.2" fill="#FBD08A"></ellipse>
+    <ellipse cx="26.6" cy="15.6" rx="1.1" ry="1.7" fill="#F59E0B"></ellipse>
+    <rect x="5.4" y="13.4" width="14" height="2" rx="1" fill="#FBD08A" opacity=".7"></rect>
+  </symbol>
+
+  <symbol id="i-beehive" viewBox="0 0 32 32">
+    <path d="M5.8 24.4C5 15.2 8.4 9.4 16 9.2c7.8-.2 11.2 5.7 10.3 15.2-6.8 1.4-13.6 1.4-20.5 0z" fill="#FBBF24"></path>
+    <g fill="#F59E0B">
+      <rect x="6.4" y="14.4" width="19.4" height="2.4" rx="1.2"></rect>
+      <rect x="5.6" y="19.4" width="21" height="2.4" rx="1.2"></rect>
+    </g>
+    <path d="M12.8 25.4c.2-2.7 1.2-4 3.2-4s3 1.3 3.1 4c-2.1.3-4.2.3-6.3 0z" fill="#111827"></path>
+    <g style="animation:loop 2.6s ease-in-out infinite">
+      <ellipse cx="25.4" cy="6.6" rx="3.4" ry="2.7" fill="#FBBF24"></ellipse>
+      <path d="M24.6 4c.3-1.4 1.2-2.1 2.6-2.1-.1 1.5-1 2.2-2.6 2.1z" fill="#7DE3F3"></path>
+      <rect x="24.6" y="4.4" width="1.7" height="4.4" rx=".8" fill="#111827"></rect>
+      <circle cx="27.4" cy="6.2" r=".8" fill="#111827"></circle>
+    </g>
+  </symbol>
+
+  <symbol id="i-chicken" viewBox="0 0 32 32">
+    <path d="M6 20.8C6 15 9.8 12 16.4 11.9c6.9-.1 10.6 3.4 10.2 9.4-.3 4.7-3.8 7.1-10.3 7.1-6.6 0-10.3-2.6-10.3-7.6z" fill="#FBBF24"></path>
+    <path d="M18.2 12c-2-4 .1-7.2 4.4-7.6 3.5.9 4.7 3.6 3.2 7.5-2.5.6-5 .6-7.6.1z" fill="#FBBF24"></path>
+    <path d="M21.2 5c.6-2.2 2.2-3.2 4.6-2.9 0 2.2-1.5 3.3-4.6 2.9z" fill="#FB7185"></path>
+    <path d="M25.2 8.6c2.2-.2 3.7.3 4.6 1.5-1.1 1.1-2.6 1.6-4.6 1.4z" fill="#F59E0B"></path>
+    <circle cx="23" cy="8.2" r="1.5" fill="#111827"></circle>
+    <circle cx="19.6" cy="11.6" r="1.7" fill="#FB7185" opacity=".55"></circle>
+    <path d="M8.6 19.2c2.6 2.4 5.2 3.6 7.8 3.8" stroke="#F59E0B" stroke-width="2.4" stroke-linecap="round" fill="none"></path>
+    <g fill="#F59E0B">
+      <rect x="10.6" y="27.4" width="2.6" height="4" rx="1.3"></rect>
+      <rect x="17.4" y="27.4" width="2.6" height="4" rx="1.3"></rect>
+    </g>
+  </symbol>
+
+  <symbol id="i-rabbit" viewBox="0 0 32 32">
+    <path d="M8.6 21.8C8.6 16.4 11.9 14 17.6 14c5.9 0 9 2.5 8.9 7.9-.1 4.6-3.1 6.9-8.9 6.9-5.9 0-9-2.3-9-7z" fill="#06B6D4"></path>
+    <path d="M11.4 15.4c-2.6-4.9-2.9-8.8-.9-11.6 3 1.7 4.7 5.2 5.1 10.4-1.5.2-2.9.6-4.2 1.2z" fill="#06B6D4"></path>
+    <path d="M18.6 14.6c.8-5.2 2.6-8.5 5.4-9.9 1.4 3-.1 6.5-3 10.6-.8-.3-1.6-.5-2.4-.7z" fill="#0E7490"></path>
+    <path d="M12.2 6.4c1.5 1.9 2.4 4.4 2.7 7.6-1.2-.4-2.2-1.5-2.9-3.2-.5-1.6-.5-3.1.2-4.4z" fill="#7DE3F3" opacity=".7"></path>
+    <circle cx="13.6" cy="20.8" r="1.7" fill="#111827" style="animation:blink 5s infinite;transform-origin:13.6px 20.8px"></circle>
+    <circle cx="20.8" cy="20.6" r="1.7" fill="#111827" style="animation:blink 5s infinite;transform-origin:20.8px 20.6px"></circle>
+    <circle cx="9.9" cy="24" r="2.1" fill="#FB7185" opacity=".5"></circle>
+    <circle cx="24.4" cy="23.8" r="2.1" fill="#FB7185" opacity=".5"></circle>
+    <ellipse cx="17.2" cy="23.6" rx="1.7" ry="1.3" fill="#FB7185"></ellipse>
+  </symbol>
+
+  <symbol id="i-duck" viewBox="0 0 32 32">
+    <path d="M6.8 18.6c0-4.7 3.2-7.2 9.2-7.3 6.2-.1 9.4 2.5 9 7.6-4 2.2-8 3.2-12 3-2.2-.1-4.3-1.2-6.2-3.3z" fill="#FBBF24"></path>
+    <path d="M17.6 12.6c-2.2-4.3.2-7.6 4.6-8 3.5 1.2 4.4 4.1 2.6 8.3-2.4.5-4.8.4-7.2-.3z" fill="#FBBF24"></path>
+    <path d="M24 7.6c2.6-.4 4.5.2 5.6 1.7-1.4 1.4-3.3 2-5.6 1.7z" fill="#F59E0B"></path>
+    <circle cx="22.2" cy="7.4" r="1.6" fill="#111827"></circle>
+    <circle cx="19.4" cy="10.8" r="1.8" fill="#FB7185" opacity=".5"></circle>
+    <path d="M8.4 16.6c2.6 1.8 5.1 2.6 7.6 2.6" stroke="#F59E0B" stroke-width="2.4" stroke-linecap="round" fill="none"></path>
+    <path d="M4.2 24.8c2.4-1.9 4.5-1.9 6.4 0 1.9 1.9 4 1.9 6.2 0 2.2-1.9 4.3-1.8 6.4.1 1.6 1.4 3.2 1.7 4.8.9" stroke="#06B6D4" stroke-width="3" stroke-linecap="round" fill="none" style="animation:crest 3.2s ease-in-out infinite"></path>
+  </symbol>
+
+  <symbol id="i-sheep" viewBox="0 0 32 32">
+    <g fill="#8A94A0">
+      <rect x="8.4" y="21.6" width="3.4" height="7.6" rx="1.7"></rect>
+      <rect x="15.4" y="21.6" width="3.4" height="7.6" rx="1.7"></rect>
+    </g>
+    <g style="animation:bob 3.4s ease-in-out infinite;transform-origin:14px 24px">
+      <g fill="#C9D1D9">
+        <circle cx="7.8" cy="18.4" r="4.8"></circle>
+        <circle cx="11.4" cy="13.4" r="4.9"></circle>
+        <circle cx="16.8" cy="12.2" r="4.7"></circle>
+        <circle cx="20.4" cy="16.2" r="4.5"></circle>
+        <circle cx="12" cy="19.6" r="5.7"></circle>
+        <circle cx="17.4" cy="19.4" r="4.9"></circle>
+      </g>
+      <g fill="#EAF2F1">
+        <circle cx="11.1" cy="12.9" r="3.1"></circle>
+        <circle cx="16.4" cy="11.8" r="2.7"></circle>
+        <circle cx="8.4" cy="17.4" r="2.4"></circle>
+      </g>
+      <ellipse cx="20.3" cy="13.6" rx="2.1" ry="2.9" transform="rotate(-30 20.3 13.6)" fill="#8A94A0"></ellipse>
+      <ellipse cx="27.2" cy="13.9" rx="2" ry="2.8" transform="rotate(28 27.2 13.9)" fill="#8A94A0"></ellipse>
+      <ellipse cx="23.5" cy="17.6" rx="4.5" ry="4.9" fill="#8A94A0"></ellipse>
+      <g fill="#111827"><circle cx="21.8" cy="16.6" r="1.3"></circle><circle cx="25.5" cy="16.5" r="1.3"></circle></g>
+      <ellipse cx="23.7" cy="20.4" rx="2" ry="1.5" fill="#FB7185" opacity=".7"></ellipse>
+    </g>
+  </symbol>
+
+  <symbol id="i-barn-cat" viewBox="0 0 32 32">
+    <path d="M20.6 27.4c3.6 1 5.4-.6 5.4-4.4 0-2.6-.8-4.8-2.4-6.6" stroke="#F59E0B" stroke-width="3.4" stroke-linecap="round" fill="none"></path>
+    <g style="animation:bob 3.6s ease-in-out infinite;transform-origin:16px 28px">
+      <path d="M9.6 28.6c-1.8-5.4-1.8-10 .2-13.8 1.6-3 3.8-4.4 6.6-4.3 2.9.1 5 1.7 6.2 4.7 1.5 3.7 1.3 8.2-.6 13.4z" fill="#F59E0B"></path>
+      <path d="M10.4 13.8c-1.6-2.9-2.1-5.3-1.4-7.2 2.4.7 4.2 2.4 5.4 4.9-1.5.5-2.8 1.3-4 2.3z" fill="#F59E0B"></path>
+      <path d="M21.8 13.6c1.8-2.6 2.6-4.8 2.2-6.7-2.3.5-4.1 1.9-5.6 4.2 1.2.6 2.3 1.5 3.4 2.5z" fill="#FBD08A"></path>
+      <circle cx="13.6" cy="18.4" r="1.6" fill="#111827" style="animation:blink 6s infinite;transform-origin:13.6px 18.4px"></circle>
+      <circle cx="19.4" cy="18.2" r="1.6" fill="#111827" style="animation:blink 6s infinite;transform-origin:19.4px 18.2px"></circle>
+      <circle cx="10.4" cy="21.4" r="2" fill="#FB7185" opacity=".5"></circle>
+      <circle cx="22.4" cy="21.2" r="2" fill="#FB7185" opacity=".5"></circle>
+      <ellipse cx="16.5" cy="21.2" rx="1.6" ry="1.2" fill="#FB7185"></ellipse>
+    </g>
+  </symbol>
+
+  <!-- ---------- GROWTH STAGES ---------- -->
+  <symbol id="i-stage-seed" viewBox="0 0 32 32">
+    <rect x="3.4" y="20.6" width="25.4" height="4.6" rx="2.3" fill="#F59E0B" opacity=".45"></rect>
+    <g style="animation:bob 3.2s ease-in-out infinite;transform-origin:16px 22px">
+      <ellipse cx="16.2" cy="15.4" rx="5.4" ry="6.4" transform="rotate(12 16.2 15.4)" fill="#F59E0B"></ellipse>
+      <ellipse cx="14.6" cy="13.4" rx="2.2" ry="2.8" transform="rotate(12 14.6 13.4)" fill="#FBD08A"></ellipse>
+    </g>
+  </symbol>
+
+  <symbol id="i-stage-sprout" viewBox="0 0 32 32">
+    <rect x="3.4" y="23.4" width="25.4" height="4.6" rx="2.3" fill="#F59E0B" opacity=".45"></rect>
+    <g style="animation:bob 3.2s ease-in-out infinite;transform-origin:16px 25px">
+      <rect x="14.4" y="15.6" width="3.6" height="9.4" rx="1.8" fill="#047857"></rect>
+      <ellipse cx="10.4" cy="15.2" rx="5.2" ry="3.7" transform="rotate(-24 10.4 15.2)" fill="#10B981"></ellipse>
+      <ellipse cx="21.4" cy="13.6" rx="5.2" ry="3.7" transform="rotate(22 21.4 13.6)" fill="#047857"></ellipse>
+      <ellipse cx="9.6" cy="14.4" rx="2" ry="1.4" transform="rotate(-24 9.6 14.4)" fill="#6EE7B7"></ellipse>
+    </g>
+  </symbol>
+
+  <symbol id="i-stage-potted" viewBox="0 0 32 32">
+    <g style="animation:bob 3.4s ease-in-out infinite;transform-origin:16px 28px">
+      <rect x="14.4" y="12" width="3.6" height="9" rx="1.8" fill="#047857"></rect>
+      <ellipse cx="10.6" cy="11.6" rx="5" ry="3.6" transform="rotate(-24 10.6 11.6)" fill="#10B981"></ellipse>
+      <ellipse cx="21.4" cy="10.2" rx="5" ry="3.6" transform="rotate(22 21.4 10.2)" fill="#047857"></ellipse>
+      <path d="M7.6 19.6h17l-1.8 8.2c-4.4.8-8.8.8-13.2 0z" fill="#F59E0B"></path>
+      <rect x="6" y="16.4" width="20.2" height="4.4" rx="2.2" fill="#FBD08A"></rect>
+    </g>
+  </symbol>
+
+  <symbol id="i-stage-bloom" viewBox="0 0 32 32">
+    <circle cx="16" cy="13" r="12" fill="#FBBF24" opacity=".3" style="animation:halo 3.4s ease-in-out infinite;transform-origin:16px 13px"></circle>
+    <rect x="14.6" y="17" width="3.4" height="12" rx="1.7" fill="#047857"></rect>
+    <path d="M14.2 24.4c-3.2-.6-5-2.5-5.2-5.6 3.8-.2 5.6 1.7 5.2 5.6z" fill="#10B981"></path>
+    <g style="animation:bob 3.4s ease-in-out infinite;transform-origin:16px 13px">
+      <g fill="#FB7185">
+        <ellipse cx="16.2" cy="6.4" rx="4.3" ry="4.6"></ellipse>
+        <ellipse cx="22.6" cy="11.4" rx="4.3" ry="4.6" transform="rotate(72 22.6 11.4)"></ellipse>
+        <ellipse cx="20.2" cy="18.6" rx="4.3" ry="4.6" transform="rotate(144 20.2 18.6)"></ellipse>
+        <ellipse cx="12.2" cy="18.4" rx="4.3" ry="4.6" transform="rotate(216 12.2 18.4)"></ellipse>
+        <ellipse cx="9.8" cy="11.2" rx="4.3" ry="4.6" transform="rotate(288 9.8 11.2)"></ellipse>
+      </g>
+      <circle cx="16.1" cy="12.9" r="4.2" fill="#FBBF24"></circle>
+      <circle cx="14.8" cy="11.8" r="1.7" fill="#FDE7B5"></circle>
+    </g>
+  </symbol>
+
+  <!-- ---------- NAV ---------- -->
+  <symbol id="i-nav-home" viewBox="0 0 32 32">
+    <path d="M16.4 3.4c.8 0 1.5.3 2.2.8l10.2 8.6c1.2 1.1.6 3-1.2 3H5c-1.8 0-2.4-1.9-1.2-3l10.4-8.6c.7-.5 1.4-.8 2.2-.8z" fill="#0E7490"></path>
+    <path d="M6.6 15.8h19.6c.5 4 .4 8 .1 11.9-6.6 1-13.2 1-19.8 0-.4-3.9-.4-7.9.1-11.9z" fill="#06B6D4"></path>
+    <rect x="12.8" y="19.2" width="7" height="8.9" rx="2.8" fill="#EAF2F1"></rect>
+  </symbol>
+
+  <symbol id="i-nav-log" viewBox="0 0 32 32">
+    <rect x="5.4" y="3.6" width="16.4" height="24.8" rx="4.4" fill="#0E7490"></rect>
+    <g fill="#EAF2F1">
+      <rect x="8.8" y="9.4" width="9.6" height="2.6" rx="1.3"></rect>
+      <rect x="8.8" y="14.6" width="7.6" height="2.6" rx="1.3"></rect>
+      <rect x="8.8" y="19.8" width="5.4" height="2.6" rx="1.3"></rect>
+    </g>
+    <path d="m25.4 7.4 3.6 3.6-8.6 8.6-5 1.4 1.4-5z" fill="#F59E0B"></path>
+    <path d="m25.4 7.4 3.6 3.6-2 2-3.6-3.6z" fill="#FBD08A"></path>
+  </symbol>
+
+  <symbol id="i-nav-garden" viewBox="0 0 32 32">
+    <rect x="2.6" y="23.4" width="26.8" height="5" rx="2.5" fill="#F59E0B" opacity=".5"></rect>
+    <g style="animation:bob 3.2s ease-in-out infinite;transform-origin:10px 24px">
+      <rect x="8.6" y="16.4" width="3.2" height="7.6" rx="1.6" fill="#047857"></rect>
+      <ellipse cx="6" cy="16" rx="4.2" ry="3" transform="rotate(-24 6 16)" fill="#10B981"></ellipse>
+      <ellipse cx="14" cy="14.8" rx="4" ry="2.9" transform="rotate(22 14 14.8)" fill="#047857"></ellipse>
+    </g>
+    <g style="animation:bob 3.2s ease-in-out .5s infinite;transform-origin:21px 24px">
+      <rect x="19.6" y="13.6" width="3.2" height="10.4" rx="1.6" fill="#047857"></rect>
+      <ellipse cx="25.4" cy="15.4" rx="4" ry="2.9" transform="rotate(22 25.4 15.4)" fill="#10B981"></ellipse>
+      <circle cx="21.2" cy="10.6" r="4.4" fill="#FB7185"></circle>
+      <circle cx="21.2" cy="10.6" r="1.8" fill="#FBBF24"></circle>
+    </g>
+  </symbol>
+
+  <symbol id="i-nav-history" viewBox="0 0 32 32">
+    <circle cx="16.4" cy="16.4" r="12.2" fill="#0E7490"></circle>
+    <circle cx="16.4" cy="16.4" r="8.6" fill="#7DE3F3" opacity=".35"></circle>
+    <path d="M16.2 8.6c1.1 0 1.9.8 1.9 1.9v5.1l3.9 2.2c.9.5 1.2 1.7.7 2.6-.5.9-1.7 1.2-2.6.7l-4.8-2.8c-.6-.3-1-1-1-1.7v-6.1c0-1.1.8-1.9 1.9-1.9z" fill="#EAF2F1"></path>
+  </symbol>
+
+  <!-- ---------- SYSTEM MARKS ---------- -->
+  <symbol id="i-sun" viewBox="0 0 32 32">
+    <g style="animation:bob 3.6s ease-in-out infinite;transform-origin:16px 16px">
+      <g fill="#F59E0B">
+        <rect x="14.2" y="0.8" width="4.2" height="6.4" rx="2.1"></rect>
+        <rect x="14.2" y="24.8" width="4.2" height="6.4" rx="2.1"></rect>
+        <rect x="24.8" y="13.9" width="6.4" height="4.2" rx="2.1"></rect>
+        <rect x="0.8" y="13.9" width="6.4" height="4.2" rx="2.1"></rect>
+        <rect x="22.6" y="4.6" width="4.2" height="6.4" rx="2.1" transform="rotate(45 24.7 7.8)"></rect>
+        <rect x="5.6" y="21.4" width="4.2" height="6.4" rx="2.1" transform="rotate(45 7.7 24.6)"></rect>
+        <rect x="22.4" y="21.2" width="4.2" height="6.4" rx="2.1" transform="rotate(-45 24.5 24.4)"></rect>
+        <rect x="5.8" y="4.8" width="4.2" height="6.4" rx="2.1" transform="rotate(-45 7.9 8)"></rect>
+      </g>
+      <circle cx="16.2" cy="16.1" r="7.6" fill="#FBBF24"></circle>
+      <circle cx="13.8" cy="13.8" r="2.8" fill="#FDE7B5" opacity=".8"></circle>
+    </g>
+  </symbol>
+
+  <symbol id="i-bell" viewBox="0 0 32 32">
+    <rect x="14.2" y="2.6" width="4.4" height="4.4" rx="2.2" fill="#F59E0B"></rect>
+    <path d="M16.3 5.6c5 0 7.6 3 7.7 8.4.1 3.2.9 6 2.4 8.4H6.2c1.7-2.4 2.6-5.2 2.6-8.4 0-5.5 2.5-8.4 7.5-8.4z" fill="#FBBF24"></path>
+    <path d="M13 6.9c-1.8 2-2.7 4.5-2.7 7.4 0 3-.6 5.7-1.8 8.1H6.2c1.7-2.4 2.6-5.2 2.6-8.4 0-3.7 1.4-6.1 4.2-7.1z" fill="#FDE7B5" opacity=".75"></path>
+    <rect x="4.6" y="21.6" width="23.4" height="4" rx="2" fill="#F59E0B"></rect>
+    <path d="M12.6 26.4h7.4c-.2 2.8-1.5 4.2-3.8 4.2s-3.5-1.4-3.6-4.2z" fill="#F59E0B"></path>
+  </symbol>
+
+  <symbol id="i-gear" viewBox="0 0 32 32">
+    <g fill="#0E7490">
+      <rect x="23.8" y="13.2" width="5.6" height="5.6" rx="2.2"></rect>
+      <rect x="20.7" y="20.7" width="5.6" height="5.6" rx="2.2" transform="rotate(45 23.5 23.5)"></rect>
+      <rect x="13.2" y="23.8" width="5.6" height="5.6" rx="2.2"></rect>
+      <rect x="5.7" y="20.7" width="5.6" height="5.6" rx="2.2" transform="rotate(45 8.5 23.5)"></rect>
+      <rect x="2.6" y="13.2" width="5.6" height="5.6" rx="2.2"></rect>
+      <rect x="5.7" y="5.7" width="5.6" height="5.6" rx="2.2" transform="rotate(45 8.5 8.5)"></rect>
+      <rect x="13.2" y="2.6" width="5.6" height="5.6" rx="2.2"></rect>
+      <rect x="20.7" y="5.7" width="5.6" height="5.6" rx="2.2" transform="rotate(45 23.5 8.5)"></rect>
+    </g>
+    <circle cx="16" cy="16" r="9.6" fill="#0E7490"></circle>
+    <circle cx="16" cy="16" r="7.6" fill="#06B6D4"></circle>
+    <circle cx="16" cy="16" r="3.9" fill="#EAF2F1"></circle>
+  </symbol>
+
+  <symbol id="i-leaf-logo" viewBox="0 0 32 32">
+    <path d="M6 28.2c1.8-4.6 4.4-8.4 7.8-11.4" stroke="#047857" stroke-width="3.4" stroke-linecap="round" fill="none"></path>
+    <g style="animation:sway 4.2s ease-in-out infinite;transform-origin:13px 20px">
+      <path d="M11.6 19.4C13 9.8 19.2 4.4 29.2 3c1.7 10.4-2.6 17-12.8 19.6-3 .8-4.9-.1-4.8-3.2z" fill="#10B981"></path>
+      <path d="M29.2 3c1 6.1-.2 10.9-3.5 14.4-2.7-6-2.5-10.8.6-14.4z" fill="#6EE7B7" opacity=".8"></path>
+    </g>
+  </symbol>
+
+  <!-- ---------- CRAVING FACES ---------- -->
+  <symbol id="i-face-1" viewBox="0 0 32 32">
+    <circle cx="16.2" cy="16.2" r="13.4" fill="#10B981"></circle>
+    <circle cx="13.6" cy="12.4" r="4.6" fill="#6EE7B7" opacity=".6"></circle>
+    <g fill="#111827"><circle cx="11.6" cy="14.2" r="2.1"></circle><circle cx="20.4" cy="14" r="2.1"></circle></g>
+    <path d="M10.4 19.6c3.6 3 7.5 3.1 11.6.3" stroke="#111827" stroke-width="3" stroke-linecap="round" fill="none"></path>
+    <circle cx="8.4" cy="19.6" r="2.2" fill="#FB7185" opacity=".55"></circle>
+    <circle cx="24" cy="19.4" r="2.2" fill="#FB7185" opacity=".55"></circle>
+  </symbol>
+  <symbol id="i-face-3" viewBox="0 0 32 32">
+    <circle cx="16.2" cy="16.2" r="13.4" fill="#FBBF24"></circle>
+    <circle cx="13.6" cy="12.4" r="4.6" fill="#FDE7B5" opacity=".7"></circle>
+    <g fill="#111827"><circle cx="11.8" cy="14.4" r="2.1"></circle><circle cx="20.6" cy="14.2" r="2.1"></circle></g>
+    <path d="M11 20.6c3.6-1.2 7.1-1.2 10.6.2" stroke="#111827" stroke-width="3" stroke-linecap="round" fill="none"></path>
+  </symbol>
+  <symbol id="i-face-5" viewBox="0 0 32 32">
+    <circle cx="16.2" cy="16.2" r="13.4" fill="#F59E0B"></circle>
+    <circle cx="13.6" cy="12.4" r="4.6" fill="#FBD08A" opacity=".65"></circle>
+    <g fill="#111827"><ellipse cx="11.8" cy="14.4" rx="2.1" ry="2.5"></ellipse><ellipse cx="20.8" cy="14.2" rx="2.1" ry="2.5"></ellipse></g>
+    <rect x="10.6" y="19.8" width="11.2" height="3" rx="1.5" fill="#111827"></rect>
+  </symbol>
+  <symbol id="i-face-7" viewBox="0 0 32 32">
+    <circle cx="16.2" cy="16.2" r="13.4" fill="#FB7185"></circle>
+    <circle cx="13.6" cy="12.4" r="4.6" fill="#FFC2CC" opacity=".7"></circle>
+    <path d="M7.8 10.4c2.4 0 4.2 1 5.4 3M24.8 10c-2.3.3-4 1.5-5 3.6" stroke="#111827" stroke-width="2.6" stroke-linecap="round" fill="none"></path>
+    <g fill="#111827"><circle cx="11.6" cy="15.6" r="2.1"></circle><circle cx="20.8" cy="15.4" r="2.1"></circle></g>
+    <path d="M11.4 22.6c3.2-2.2 6.4-2.2 9.6-.2" stroke="#111827" stroke-width="3" stroke-linecap="round" fill="none"></path>
+  </symbol>
+  <symbol id="i-face-9" viewBox="0 0 32 32">
+    <circle cx="16.2" cy="16.2" r="13.4" fill="#FB7185"></circle>
+    <circle cx="13.6" cy="12.4" r="4.6" fill="#FFC2CC" opacity=".6"></circle>
+    <path d="m8.4 10.2 5 2.8M24.4 9.8l-4.8 3.2" stroke="#111827" stroke-width="2.8" stroke-linecap="round" fill="none"></path>
+    <g fill="#111827"><circle cx="11.8" cy="16.4" r="2.2"></circle><circle cx="20.8" cy="16.2" r="2.2"></circle></g>
+    <ellipse cx="16.3" cy="23" rx="4.2" ry="3.4" fill="#111827"></ellipse>
+    <path d="M2.8 20.6c1.8.2 3.2.9 4.2 2.2M29.6 20.2c-1.8.3-3.1 1.1-4 2.4" stroke="#0E7490" stroke-width="2.6" stroke-linecap="round" fill="none"></path>
+  </symbol>
+
+  <!-- ---------- OUTCOMES ---------- -->
+  <symbol id="i-held-out" viewBox="0 0 32 32">
+    <g style="animation:bob 3.6s ease-in-out infinite;transform-origin:22px 10px">
+      <g fill="#F59E0B">
+        <rect x="19.9" y="1.4" width="3.8" height="5" rx="1.9"></rect>
+        <rect x="25.9" y="7.6" width="5" height="3.8" rx="1.9"></rect>
+        <rect x="24.7" y="2.6" width="3.8" height="5" rx="1.9" transform="rotate(45 26.6 5.1)"></rect>
+        <rect x="24.9" y="12.4" width="3.8" height="5" rx="1.9" transform="rotate(-45 26.8 14.9)"></rect>
+      </g>
+      <circle cx="21.8" cy="10.2" r="5.4" fill="#FBBF24"></circle>
+      <circle cx="20.1" cy="8.6" r="2" fill="#FDE7B5" opacity=".85"></circle>
+    </g>
+    <path d="M3.6 20.6c-.6-3.3 1-5.4 4.4-5.9 1.4-3.2 3.9-4.6 7.4-4 2.7.3 4.4 1.8 5 4.4 3.5.2 5.1 1.9 4.8 5-.3 2.8-2.6 4.2-7 4.3-5.2.1-9.2 0-12-.3-1.6-.2-2.5-1.3-2.6-3.5z" fill="#C9D1D9"></path>
+    <path d="M8 14.7c1.4-3.2 3.9-4.6 7.4-4-2.6 1-4.4 2.6-5.4 4.8-1 2.2-1.2 4.8-.6 7.8-2 .1-3.4-.1-4.2-.7 1.6-2.8 2.5-5.4 2.8-7.9z" fill="#EAF2F1"></path>
+    <path d="M9.6 28.6c4.2-.8 8.4-.8 12.6 0" stroke="#06B6D4" stroke-width="2.8" stroke-linecap="round" fill="none"></path>
+  </symbol>
+
+  <symbol id="i-gave-in" viewBox="0 0 32 32">
+    <path d="M4 12.8c-.6-3.4 1-5.6 4.6-6.2 1.6-3.2 4.3-4.6 8-4 2.9.4 4.6 2 5.2 4.7 3.7.1 5.4 1.9 5 5.1-.3 2.9-2.7 4.4-7.4 4.5-5.4.1-9.6 0-12.6-.3-1.7-.2-2.7-1.4-2.8-3.8z" fill="#8A94A0"></path>
+    <path d="M8.6 6.6c1.6-3.2 4.3-4.6 8-4-2.8 1-4.7 2.7-5.8 5-1.1 2.3-1.4 5-.8 8.1-2.2.1-3.7-.1-4.5-.7 1.7-3 2.7-5.8 3.1-8.4z" fill="#C9D1D9" opacity=".55"></path>
+    <g fill="#06B6D4">
+      <rect x="8" y="18.6" width="3" height="5.4" rx="1.5" transform="rotate(14 9.5 21.3)" style="animation:drip 1.8s ease-in-out infinite"></rect>
+      <rect x="14.6" y="18.8" width="3" height="5.4" rx="1.5" transform="rotate(14 16.1 21.5)" style="animation:drip 1.8s ease-in-out .5s infinite"></rect>
+      <rect x="21.2" y="18.4" width="3" height="5.4" rx="1.5" transform="rotate(14 22.7 21.1)" style="animation:drip 1.8s ease-in-out .9s infinite"></rect>
+    </g>
+    <path d="M3.4 27.4c2.4-2.1 4.6-2.1 6.6 0 2 2.1 4.2 2.1 6.5 0 2.3-2.1 4.5-2 6.7.1 1.7 1.5 3.4 1.8 5.1 1" stroke="#0E7490" stroke-width="3.2" stroke-linecap="round" fill="none" style="animation:crest 3.2s ease-in-out infinite"></path>
+  </symbol>
+
+  <!-- ---------- COPING ---------- -->
+  <symbol id="i-cope-phone" viewBox="0 0 32 32">
+    <path d="M5.4 8c1.8-3.2 4.2-4.4 7.2-3.6 1.2 2.4 2.1 4.9 2.6 7.6-1.2 1.2-2.5 2-3.9 2.5 1.2 3.4 3.4 5.9 6.8 7.6.7-1.4 1.7-2.5 3-3.3 2.5.9 4.9 2 7.1 3.4.2 3-1.4 5.2-4.7 6.4-7.6.3-13.3-2.9-17.2-9.4C3.1 13.9 2.8 10.4 5.4 8z" fill="#0E7490"></path>
+    <path d="M12.6 4.4c1.2 2.4 2.1 4.9 2.6 7.6-1.2 1.2-2.5 2-3.9 2.5-1.6-4.1-1.2-7.5 1.3-10.1z" fill="#06B6D4"></path>
+    <path d="M20.4 4c4.4.8 7 3.6 7.6 8.2" stroke="#06B6D4" stroke-width="2.8" stroke-linecap="round" fill="none"></path>
+  </symbol>
+
+  <symbol id="i-cope-walk" viewBox="0 0 32 32">
+    <circle cx="18.2" cy="6.4" r="4.4" fill="#F59E0B"></circle>
+    <circle cx="16.6" cy="5.2" r="1.7" fill="#FBD08A"></circle>
+    <g style="animation:bob 2.6s ease-in-out infinite;transform-origin:17px 20px">
+      <path d="M17.8 11.2c2.8 0 4.5 1.5 5.2 4.4l3 2.4c1 .8 1.1 2 .3 2.9-.8.9-2 1-2.9.2l-3.4-2.7c-.6-.5-1-1.1-1.2-1.9z" fill="#0E7490"></path>
+      <path d="M17.6 11.2c-2.8.2-4.7 1.7-5.7 4.6l-2.6 3.1c-.8 1-.7 2.2.2 2.9.9.7 2.1.6 2.8-.4l2.9-3.5c.4-.5.7-1.1.8-1.8z" fill="#06B6D4"></path>
+      <path d="M13.8 13.6h6.4c1.2 2.4 1.6 4.6 1.2 6.6l3.2 6.6c.6 1.2.1 2.4-1.1 2.9-1.1.5-2.4 0-2.9-1.2l-3.4-7c-.3-.7-.4-1.4-.3-2.1z" fill="#0E7490"></path>
+      <path d="M15.6 17.6c-.9 1.8-2.2 3.3-4 4.5l-1.6 5.6c-.4 1.3-1.6 2-2.8 1.6-1.2-.4-1.8-1.6-1.4-2.9l1.9-6.4c.2-.7.6-1.2 1.2-1.6z" fill="#06B6D4"></path>
+    </g>
+  </symbol>
+
+  <symbol id="i-cope-breathe" viewBox="0 0 32 32">
+    <circle cx="16" cy="16" r="14" fill="#06B6D4" opacity=".28" style="animation:halo 3.6s ease-in-out infinite;transform-origin:16px 16px"></circle>
+    <path d="M16.3 3.2c6 0 10.2 3.2 11.9 9-3.4 1-6.2.1-8.5-2.6-1.4-1.6-2.5-3.7-3.4-6.4z" fill="#06B6D4"></path>
+    <path d="M16.1 28.8c-6 0-10.2-3.2-11.9-9 3.4-1 6.2-.2 8.5 2.6 1.4 1.6 2.5 3.7 3.4 6.4z" fill="#0E7490"></path>
+    <circle cx="16.2" cy="16.1" r="4.6" fill="#0E7490"></circle>
+    <circle cx="14.8" cy="14.8" r="1.7" fill="#7DE3F3"></circle>
+  </symbol>
+
+  <symbol id="i-stone" viewBox="0 0 32 32">
+    <path d="M5 21c0-5.2 4.3-9.4 9.6-9.4 5.9 0 11.4 3.7 11.4 8.9 0 3.7-3.2 5.8-8.4 5.8h-6.7C6.9 26.3 5 24.2 5 21z" fill="#8A94A0"/>
+    <path d="M8.6 19.2c1.6-3.2 4.3-5.3 7.5-5.6-2.7 1.7-4.7 3.9-5.7 6.4z" fill="#B7BFC8"/>
+  </symbol>
+  <symbol id="i-clear" viewBox="0 0 32 32">
+    <path d="M10 10l12 12M22 10L10 22" stroke="#FB7185" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+  </symbol>
+</svg>
+<header class="cc-top">
+  <div class="cc-logo"><span class="leaf"><svg class="ico" style="width:22px;height:22px" aria-hidden="true"><use href="#i-leaf-logo"></use></svg></span>Crave<em>Cast</em></div>
+
+  <nav class="cc-nav" id="tabBar" role="tablist" aria-label="Sections">
+    <button class="cc-navbtn" role="tab" data-tab="home"    aria-selected="true"><svg class="ico" style="width:16px;height:16px" aria-hidden="true"><use href="#i-nav-home"></use></svg>Home</button>
+    <button class="cc-navbtn" role="tab" data-tab="log"     aria-selected="false"><svg class="ico" style="width:16px;height:16px" aria-hidden="true"><use href="#i-nav-log"></use></svg>Log</button>
+    <button class="cc-navbtn" role="tab" data-tab="garden"  aria-selected="false"><svg class="ico" style="width:16px;height:16px" aria-hidden="true"><use href="#i-nav-garden"></use></svg>Garden</button>
+    <button class="cc-navbtn" role="tab" data-tab="history" aria-selected="false"><svg class="ico" style="width:16px;height:16px" aria-hidden="true"><use href="#i-nav-history"></use></svg>History<span class="cc-tag amber" id="tabCount" style="margin-left:6px;padding:2px 8px;font-size:11px">0</span></button>
+  </nav>
+
+  <div class="cc-topright">
+    <select class="cc-habit" id="habitSel" aria-label="Tracked habit"></select>
+    <button class="cc-pillbtn" id="manageBtn" title="Add or remove tracked habits">Habits</button>
+    <button class="cc-pillbtn" id="armBtn">Early warnings</button>
+    <button class="cc-pillbtn" id="setBtn" title="Alert settings"><svg class="ico" style="width:15px;height:15px" aria-hidden="true"><use href="#i-gear"></use></svg></button>
+    <button class="cc-pillbtn" id="acctBtn" title="Account and sync" hidden>Account</button>
+    <button class="cc-pillbtn" id="themeBtn" title="Switch light / dark" aria-label="Switch theme">🌙 Dark</button>
+    <div class="cc-chip-user"><span class="cc-avatar" id="avatarLetter">B</span><span style="font:700 13.5px var(--disp);color:var(--ink)" id="avatarName">You</span></div>
+  </div>
+</header>
+
+<main class="cc-main">
 
   <div id="alertRail" aria-live="assertive" aria-atomic="false"></div>
 
-  <nav class="tabs" id="tabBar" role="tablist" aria-label="Sections">
-    <button role="tab" data-tab="today" aria-selected="true" aria-controls="tab-today">Today</button>
-    <button role="tab" data-tab="log" aria-selected="false" aria-controls="tab-log">Log an urge</button>
-    <button role="tab" data-tab="patterns" aria-selected="false" aria-controls="tab-patterns">Patterns</button>
-    <button role="tab" data-tab="history" aria-selected="false" aria-controls="tab-history">History<span class="badge" id="tabCount">0</span></button>
-  </nav>
-
-  <main class="stack">
-   <div class="tabpanel" id="tab-today" role="tabpanel" aria-labelledby="tab-today">
-
-    <!-- THE GARDEN ----------------------------------------------------- -->
-    <section class="card hero">
-      <div class="hero-top" id="heroTop"></div>
-      <div class="scene">
-        <div class="sun"></div>
-        <div class="cloud c1"></div>
-        <div class="cloud c2"></div>
-        <div class="hill"></div>
-        <div class="stage" id="stage"></div>
+  <!-- ══════════════ HOME ══════════════ -->
+  <div class="cc-view" id="tab-home" role="tabpanel">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:20px">
+      <div>
+        <div class="cc-eyebrow" id="greetEyebrow" style="margin-bottom:7px"></div>
+        <div style="font:800 34px/1.15 var(--disp);color:var(--ink);letter-spacing:-.02em" id="greetLine">How are you right now?</div>
       </div>
-      <div class="quest" id="quest"></div>
-    </section>
+      <button class="cc-chunk amber" data-tab-go="log">Having a craving? Log it 💧</button>
+    </div>
 
-    <!-- THE COLLECTION ------------------------------------------------- -->
-    <section class="card">
-      <div class="card-hd">
-        <h2>Your collection</h2>
-        <span class="sub" id="collSub"></span>
-      </div>
-      <div class="card-bd"><div class="coll" id="coll"></div></div>
-    </section>
-
-    <!-- CRAVING WEATHER ------------------------------------------------ -->
-    <section class="card">
-      <div class="card-hd">
-        <h2>Craving weather</h2>
-        <span class="sub" id="wxNote"></span>
-      </div>
-      <div class="card-bd">
-        <div class="wx-now">
-          <div class="big" id="wxIco">\u2600\ufe0f</div>
-          <div>
-            <div class="word" id="wxWord">Clear</div>
-            <div class="sub" id="wxSub"></div>
+    <div class="cc-grid a340">
+      <!-- plant card -->
+      <section class="cc-plantcard cc-rise">
+        <div class="orb"></div>
+        <div style="position:relative;display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <div class="cc-eyebrow" style="color:var(--green-ink)">Today’s plant</div>
+          <div style="font:700 12px var(--disp);color:var(--green-ink);background:var(--green-chip);border-radius:100px;padding:5px 12px" id="plantClock">not planted yet</div>
+        </div>
+        <div style="position:relative;display:flex;align-items:center;gap:22px;flex-wrap:wrap">
+          <div class="cc-well">
+            <div class="halo cc-halo"></div><div class="disc"></div>
+            <span class="glyph" id="plantGlyph"></span>
+          </div>
+          <div style="flex:1;min-width:200px">
+            <div style="font:700 22px/1.25 var(--disp);color:var(--g-head);margin-bottom:7px" id="plantHeadline">Pick what you’ll grow today</div>
+            <div style="font:500 14px/1.55 var(--body);color:var(--g-sub);margin-bottom:14px" id="plantSub">One plant a day. Ride the day out and it’s yours forever.</div>
+            <div class="cc-stages" id="plantStages"></div>
           </div>
         </div>
-        <div class="wx" id="wxStrip"></div>
-        <div class="armbar" style="margin-top:16px">
-          <button class="btn primary" id="armBtn">Arm early warnings</button>
+        <div class="cc-species" id="speciesRow"></div>
+        <button class="cc-chunk green" id="plantBtn" style="margin-top:18px">
+          <span id="plantBtnLabel">Plant it 🌱</span><span class="cc-sheen"></span>
+        </button>
+      </section>
+
+      <div class="cc-col">
+        <!-- risk ring -->
+        <section class="cc-risk">
+          <div class="irid"></div>
+          <div style="position:relative;display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+            <div class="cc-ring">
+              <div class="halo cc-halo"></div>
+              <div class="arc" id="riskArc"></div>
+              <div class="hub">
+                <div class="num" id="riskNum">0<span>%</span></div>
+                <div class="lab" id="riskLab">CALM</div>
+              </div>
+            </div>
+            <div style="flex:1;min-width:190px">
+              <div class="cc-tag amber" id="riskTag" style="margin-bottom:10px">Steady</div>
+              <div style="font:700 20px/1.3 var(--disp);color:var(--ink);margin-bottom:7px" id="riskTitle">Reading your day</div>
+              <div class="cc-sub" id="riskBody"></div>
+            </div>
+          </div>
+          <button class="cc-why" id="whyBtn"><span>Why this number? 🤔</span><span class="chev">⌄</span></button>
+          <div class="cc-whybody" id="whyBody"><div style="padding-top:13px;display:flex;flex-direction:column;gap:10px" id="whyRows"></div></div>
           <div class="armstate" id="armState"><span class="led"></span><span id="armTxt">Warnings off</span></div>
+        </section>
+
+        <!-- stat trio -->
+        <div class="cc-grid a150">
+          <div class="cc-card" style="border-radius:26px;padding:18px 20px">
+            <div class="cc-eyebrow">Clean streak</div>
+            <div style="display:flex;align-items:baseline;gap:6px;margin-top:7px">
+              <span style="font:800 30px var(--disp);color:var(--ink);letter-spacing:-.02em" id="statStreak">0</span>
+              <span style="font:600 14px var(--body);color:var(--soft)">days</span>
+            </div>
+            <div style="margin-top:11px;height:7px;border-radius:100px;background:var(--track);overflow:hidden">
+              <div style="height:100%;border-radius:100px;background:linear-gradient(90deg,#06B6D4,#10B981)" id="statStreakBar"></div>
+            </div>
+          </div>
+          <div class="cc-card" style="border-radius:26px;padding:18px 20px">
+            <div class="cc-eyebrow">Garden</div>
+            <div style="display:flex;align-items:baseline;gap:6px;margin-top:7px">
+              <span style="font:800 30px var(--disp);color:var(--ink);letter-spacing:-.02em" id="statGrown">0</span>
+              <span style="font:600 14px var(--body);color:var(--soft)">grown</span>
+            </div>
+            <div style="font:500 12.5px var(--body);color:var(--soft);margin-top:9px" id="statUnlockLine"></div>
+          </div>
+          <div class="cc-card" style="border-radius:26px;padding:18px 20px">
+            <div class="cc-eyebrow">This week</div>
+            <div style="display:flex;align-items:baseline;gap:6px;margin-top:7px">
+              <span style="font:800 30px var(--disp);color:var(--ink);letter-spacing:-.02em" id="statLogs">0</span>
+              <span style="font:600 14px var(--body);color:var(--soft)">logs</span>
+            </div>
+            <div class="cc-spark" id="spark"></div>
+          </div>
+        </div>
+
+        <!-- forecast -->
+        <section class="cc-card">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px">
+            <div class="cc-h">Next 12 hours</div><div class="cc-mono" id="fcNote">forecast</div>
+          </div>
+          <div class="cc-bars" id="fcBars"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ LOG ══════════════ -->
+  <div class="cc-view" id="tab-log" role="tabpanel" hidden>
+    <div class="cc-logwrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div class="cc-h lg" style="font-size:32px">Quick log ✍️</div>
+        <div class="cc-mono" id="logStepNote">5 questions · about a minute</div>
+      </div>
+      <div class="cc-rail"><i id="logRail" style="width:8%"></i></div>
+
+      <div class="cc-step">
+        <div class="cc-eyebrow" style="margin-bottom:12px">Step 1</div>
+        <div class="cc-q">How strong is it right now?</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:22px">
+          <span id="cravFace" style="line-height:0"></span>
+          <span style="font:800 66px/1 var(--disp);letter-spacing:-.04em;transition:color .3s" id="cravVal">7</span>
+        </div>
+        <div class="cc-slider">
+          <div class="trk" style="background:linear-gradient(90deg,#10B981,#F59E0B,#FB7185);opacity:.22"></div>
+          <div class="fill" id="cravFill" style="background:linear-gradient(90deg,#10B981,#F59E0B,#FB7185)"></div>
+          <div class="thumb" id="cravThumb"></div>
+          <input type="range" min="1" max="10" value="7" id="cravIn" aria-label="Craving intensity">
+        </div>
+        <div class="cc-ends"><span>barely there</span><span>overwhelming</span></div>
+      </div>
+
+      <div class="cc-step">
+        <div class="cc-eyebrow" style="margin-bottom:12px">Step 2</div>
+        <div class="cc-q" style="margin-bottom:8px">How’s your mood?</div>
+        <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:16px">
+          <span style="font:800 38px var(--disp);color:var(--teal-deep);letter-spacing:-.03em" id="moodVal">5</span>
+          <span style="font:500 14px var(--body);color:var(--soft)" id="moodWord">doing okay 🙂</span>
+        </div>
+        <div class="cc-slider" style="height:40px;margin-bottom:24px">
+          <div class="trk" style="top:17px;height:8px;background:var(--track)"></div>
+          <div class="fill" id="moodFill" style="top:17px;height:8px;background:linear-gradient(90deg,#06B6D4,#10B981)"></div>
+          <div class="thumb" id="moodThumb" style="top:6px;width:30px;height:30px;margin-left:-15px;border-color:#0891B2"></div>
+          <input type="range" min="1" max="10" value="5" id="moodIn" aria-label="Mood">
+        </div>
+        <div style="font:600 14px var(--body);color:var(--soft);margin-bottom:11px">Stress level</div>
+        <div class="cc-3up" id="stressOpts"></div>
+      </div>
+
+      <div class="cc-step">
+        <div class="cc-eyebrow" style="margin-bottom:12px">Step 3</div>
+        <div class="cc-q" style="margin-bottom:6px">Where are you, and who’s around?</div>
+        <div style="font:500 13px var(--body);color:var(--muted);margin-bottom:18px">Tap all that fit — no wrong answers.</div>
+        <div class="cc-pills" id="ctxPills"></div>
+      </div>
+
+      <!-- Step 4 is not in the mockup. It is kept because the held/slipped
+           signal is what trains the model and grows the garden. -->
+      <div class="cc-step">
+        <div class="cc-eyebrow" style="margin-bottom:12px">Step 4</div>
+        <div class="cc-q" style="margin-bottom:6px">How did it go?</div>
+        <div style="font:500 13px var(--body);color:var(--muted);margin-bottom:18px">This is the part your forecast learns from.</div>
+        <div class="cc-3up" style="grid-template-columns:repeat(2,1fr)" id="outcomeOpts"></div>
+      </div>
+
+      <div class="cc-step">
+        <div class="cc-eyebrow" style="margin-bottom:12px">Step 5 · optional</div>
+        <div class="cc-q" style="margin-bottom:6px">Anything worth remembering?</div>
+        <div style="font:500 13px var(--body);color:var(--muted);margin-bottom:18px">What set it off, or what got you through it.</div>
+        <textarea class="cc-note" id="logNote" placeholder="Had a tough meeting, feeling triggered…"></textarea>
+      </div>
+
+      <button class="cc-chunk teal" id="logSubmit" style="margin-top:20px">Check my risk 💪<span class="cc-sheen"></span></button>
+      <div style="text-align:center;font:500 13px var(--body);color:var(--muted);margin-top:12px">We’ll save it and read your patterns — takes a second.</div>
+    </div>
+  </div>
+
+  <!-- ══════════════ RESULT ══════════════ -->
+  <div class="cc-view" id="tab-result" role="tabpanel" hidden>
+    <div style="max-width:760px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+        <button style="width:38px;height:38px;border-radius:14px;background:var(--card);border:1px solid var(--hair);cursor:pointer;font-size:16px;color:var(--soft)" data-tab-go="log">‹</button>
+        <div class="cc-h lg" style="font-size:28px">Your reading ✨</div>
+        <div class="cc-mono" style="margin-left:auto" id="resTime"></div>
+      </div>
+      <div class="cc-hero">
+        <div class="orb"></div>
+        <div style="position:relative;text-align:center">
+          <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(245,158,11,.22);border:1px solid rgba(245,158,11,.5);color:#FCD34D;border-radius:100px;padding:7px 15px;font:700 12.5px var(--disp)" id="resTag">Reading your patterns</div>
+          <div class="big" id="resRisk">0<span>%</span></div>
+          <div style="font:500 15px/1.5 var(--body);color:rgba(255,255,255,.78);max-width:340px;margin:0 auto" id="resLine">Chance a strong urge shows up in the next two hours.</div>
+          <div class="bar"><div class="fill" id="resFill" style="width:0%"></div></div>
         </div>
       </div>
-    </section>
-
-   </div><!-- /today -->
-
-   <div class="tabpanel" id="tab-log" role="tabpanel" hidden>
-    <!-- LOG ----------------------------------------------------------- -->
-    <section class="card">
-      <div class="card-hd">
-        <h2>Log an urge</h2>
-        <span class="sub" id="flowCount"></span>
+      <div class="cc-grid a300" style="margin-top:18px;gap:16px">
+        <section class="cc-card">
+          <div class="cc-h" style="font-size:18px;margin-bottom:16px">Why we think so</div>
+          <div style="display:flex;flex-direction:column;gap:15px" id="resReasons"></div>
+        </section>
+        <div>
+          <div class="cc-h" style="font-size:18px;margin-bottom:12px">Things that might help 🌱</div>
+          <div style="display:flex;flex-direction:column;gap:11px" id="resCopes"></div>
+        </div>
       </div>
-      <div class="card-bd">
-        <div class="flow-dots" id="flowDots" aria-hidden="true"></div>
-        <div id="flowBody" role="group" aria-live="polite"></div>
-      </div>
-    </section>
+      <div style="text-align:center;font:500 13px var(--body);color:var(--muted);margin-top:20px" id="resFoot"></div>
+    </div>
+  </div>
 
-   </div><!-- /log -->
+  <!-- ══════════════ GARDEN ══════════════ -->
+  <div class="cc-view" id="tab-garden" role="tabpanel" hidden>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px">
+      <div class="cc-h lg">My garden 🌷</div>
+      <div class="cc-tag amber" style="padding:8px 15px;font-size:13.5px" id="gRank"></div>
+    </div>
 
-   <div class="tabpanel" id="tab-patterns" role="tabpanel" hidden>
-    <!-- THE DETAILED CURVE -------------------------------------------- -->
-    <section class="card">
-      <div class="card-hd">
-        <h2>The next 24 hours in detail</h2>
-        <span class="sub" id="chartNote"></span>
+    <div class="cc-grid a320">
+      <section class="cc-plot">
+        <div class="sun"><svg class="ico" style="width:30px;height:30px" aria-hidden="true"><use href="#i-sun"></use></svg></div>
+        <div class="eyebrow" id="gPlaced">Your plot · 0 planted</div>
+        <div class="cc-stage3d"><div class="cc-plane" id="gPlane"></div></div>
+        <div class="cc-plotctl">
+          <button class="cc-rot" id="gRotL" aria-label="Rotate left">↺</button>
+          <button class="cc-rot" id="gRotR" aria-label="Rotate right">↻</button>
+          <div class="cc-seg" id="gSizes"></div>
+        </div>
+      </section>
+
+      <div class="cc-col">
+        <section class="cc-card">
+          <div class="cc-h" style="margin-bottom:3px" id="trayTitle">Planting</div>
+          <div style="font:500 13px var(--body);color:var(--muted);margin-bottom:14px" id="traySub">Click any square in the plot to place it.</div>
+          <div class="cc-tray" id="gTray"></div>
+        </section>
+
+        <section class="cc-unlock">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px">
+            <div style="font:700 16px var(--disp);color:#92400E" id="unlockName">Next unlock</div>
+            <div style="font:500 12px var(--mono);color:#B45309" id="unlockCount">0 / 0</div>
+          </div>
+          <div class="bar"><div class="fill" id="unlockFill" style="width:0%"></div></div>
+          <div style="font:500 13px var(--body);color:#B45309;margin-top:10px" id="unlockLine"></div>
+        </section>
+
+        <section class="cc-card">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px">
+            <div class="cc-h">Collection</div><div class="cc-mono" id="collSub">0 of 28</div>
+          </div>
+          <div class="cc-coll" id="coll"></div>
+          <div style="font:500 12.5px var(--body);color:var(--muted);margin-top:14px;text-align:center">Nothing already grown is ever taken away. 💚</div>
+        </section>
       </div>
-      <div class="card-bd">
+    </div>
+  </div>
+
+  <!-- ══════════════ HISTORY ══════════════ -->
+  <div class="cc-view" id="tab-history" role="tabpanel" hidden>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px">
+      <div class="cc-h lg">Your patterns</div>
+      <div style="display:flex;background:var(--seg);border-radius:100px;padding:4px" id="hRange"></div>
+    </div>
+
+    <div class="cc-grid a330">
+      <section class="cc-card r30">
+        <div class="cc-sub" id="hWeekIntro"></div>
+        <div class="cc-weekbars" id="hWeekBars"></div>
+        <div class="cc-tag amber" style="margin-top:16px;padding:7px 14px;font-size:12.5px" id="hPeak"></div>
+      </section>
+
+      <section class="cc-card r30">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px">
+          <div class="cc-h">Time of day × risk</div><div class="cc-mono">low → high</div>
+        </div>
+        <div class="cc-heat" id="hHeat"></div>
+        <div class="cc-heatcols" id="hHeatCols"></div>
+      </section>
+    </div>
+
+    <div class="cc-grid a260" style="margin-top:18px" id="hInsights"></div>
+
+    <div class="cc-h" style="font-size:18px;margin:26px 0 12px">Recent days 📅</div>
+    <div class="cc-days" id="hDays"></div>
+
+    <!-- ── the model's fuller output, kept below the design's summary ── -->
+    <details style="margin-top:26px" id="deepFold">
+      <summary style="cursor:pointer;font:700 16px var(--disp);color:var(--teal-deep);padding:6px 0">The full model output ▾</summary>
+
+      <section class="cc-card r30" style="margin-top:14px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px">
+          <div class="cc-h">The next 24 hours in detail</div><div class="cc-mono" id="chartNote"></div>
+        </div>
         <div class="plot" id="fcPlot" style="min-height:200px"></div>
         <div class="hm-legend" id="fcLegend" style="margin-top:8px">
-          <span>lower</span>
-          <span class="sw" id="lgd1"></span>
-          <span>higher</span>
-          <span style="margin-left:auto">dotted line = alert threshold \u00b7 shaded band = predicted window</span>
+          <span>lower</span><span class="sw" id="lgd1"></span><span>higher</span>
+          <span style="margin-left:auto">dotted line = alert threshold · shaded band = predicted window</span>
         </div>
         <div class="hint" style="margin-top:11px">
           <span id="nextWhen"></span> <span id="nextIn"></span><br><span id="nextWhy"></span>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- STATS --------------------------------------------------------- -->
-    <section class="card">
-      <div class="tiles" id="tiles"></div>
-    </section>
-
-    <!-- PATTERNS ------------------------------------------------------ -->
-    <section class="card">
-      <div class="card-hd">
-        <h2>Your week, hour by hour</h2>
-        <span class="sub" id="hmSub"></span>
-      </div>
-      <div class="card-bd">
+      <section class="cc-card r30" style="margin-top:14px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px">
+          <div class="cc-h">Your week, hour by hour</div><div class="cc-mono" id="hmSub"></div>
+        </div>
         <div class="plot" id="hmPlot"></div>
         <div class="hm-legend" style="margin-top:10px">
           <span>calm</span><span class="sw" id="lgd2"></span><span>high risk</span>
           <span style="margin-left:auto" id="hmToday"></span>
         </div>
-        <details class="tablefold">
-          <summary>View as table</summary>
-          <div class="tablescroll" id="hmTable"></div>
-        </details>
-      </div>
-    </section>
-
-    <div class="grid-2">
-      <section class="card">
-        <div class="card-hd"><h2>Triggers</h2><span class="sub">ranked by weight in your logs</span></div>
-        <div class="card-bd"><div id="trigBars"></div></div>
+        <details class="tablefold"><summary>View as table</summary>
+          <div class="tablescroll" id="hmTable"></div></details>
       </section>
-      <section class="card">
-        <div class="card-hd"><h2>Moods &amp; settings</h2><span class="sub">where urges start</span></div>
-        <div class="card-bd"><div id="moodBars"></div></div>
-      </section>
-    </div>
 
-    <section class="card">
-      <div class="card-hd"><h2>What has worked</h2><span class="sub">pulled from urges you held out on</span></div>
-      <div class="card-bd"><div id="copeList"></div></div>
-    </section>
-
-    <!-- WHERE THE BASELINE COMES FROM ---------------------------------- -->
-    <section class="card">
-      <div class="card-hd">
-        <h2>The baseline underneath</h2>
-        <span class="sub" id="priorSub"></span>
+      <div class="cc-grid a330" style="margin-top:14px">
+        <section class="cc-card r30"><div class="cc-h" style="margin-bottom:12px">Triggers</div><div id="trigBars"></div></section>
+        <section class="cc-card r30"><div class="cc-h" style="margin-bottom:12px">Moods &amp; settings</div><div id="moodBars"></div></section>
       </div>
-      <div class="card-bd">
+
+      <section class="cc-card r30" style="margin-top:14px">
+        <div class="cc-h" style="margin-bottom:12px">What has worked</div><div id="copeList"></div>
+      </section>
+
+      <section class="cc-card r30" style="margin-top:14px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px">
+          <div class="cc-h">The ADARP baseline underneath</div><div class="cc-mono" id="priorSub"></div>
+        </div>
         <div class="hint" id="priorNote" style="margin-bottom:13px"></div>
         <div class="hint" id="priorWhy" style="margin-bottom:15px"></div>
         <div class="prior-bars" id="priorBars"></div>
@@ -871,30 +1336,33 @@ footer .grow{flex:1}
           <div class="flabel" style="margin-bottom:7px">What they said set it off</div>
           <div class="prior-reasons" id="priorReasons"></div>
         </div>
-      </div>
-    </section>
-   </div><!-- /patterns -->
+      </section>
 
-   <div class="tabpanel" id="tab-history" role="tabpanel" hidden>
-    <!-- HISTORY ------------------------------------------------------- -->
-    <section class="card">
-      <div class="card-hd">
-        <h2>Everything you have logged</h2>
-        <span class="sub"><button class="btn sm ghost" id="exportBtn">Export JSON</button>
-        <button class="btn sm ghost" id="importBtn">Import</button></span>
-      </div>
-      <div class="card-bd"><div class="log-list" id="logList"></div></div>
-    </section>
-   </div><!-- /history -->
+      <section class="cc-card r30" style="margin-top:14px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px">
+          <div class="cc-h">Everything you have logged</div>
+          <span style="display:flex;gap:6px">
+            <button class="cc-pillbtn" id="exportBtn">Export JSON</button>
+            <button class="cc-pillbtn" id="importBtn">Import</button>
+          </span>
+        </div>
+        <div class="log-list" id="logList"></div>
+      </section>
+    </details>
+  </div>
 
-  </main>
-
-  <footer>
-    <span class="grow" id="footNote">Everything you type stays in this browser — no account, no server, no upload.</span>
-    <button class="btn sm ghost" id="demoBtn" title="Draws 48 entries whose timing and triggers are resampled from the phone-survey data">Load sample data</button>
-    <button class="btn sm ghost" id="wipeBtn">Erase everything</button>
+  <footer style="margin-top:40px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+                 border-top:1px solid var(--hair);padding-top:18px">
+    <span style="flex:1;min-width:220px;font:500 12.5px var(--body);color:var(--muted)" id="footNote">Everything you log stays on this device unless you sign in to sync it.</span>
+    <button class="cc-pillbtn" id="demoBtn" title="Draws 48 entries whose timing and triggers are resampled from the phone-survey data">Load sample data</button>
+    <button class="cc-pillbtn" id="wipeBtn">Erase everything</button>
+    <p style="flex-basis:100%;font:500 12px/1.6 var(--body);color:var(--muted);margin:10px 0 0">CraveCast is a self-tracking tool. It is not medical advice
+      and not a treatment for dependence, and its forecast is a pattern in your own
+      logs rather than a clinical prediction. If quitting is going badly, or stopping
+      feels physically unsafe, talk to a doctor or a local support service.</p>
   </footer>
-</div>
+</main>
+
 
 <div id="tip" role="status"></div>
 
@@ -1333,38 +1801,12 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":
 
 let MODEL = null, WINDOWS = [], lastRisk = null;
 
-function renderAll(){
-  MODEL = buildModel();
-  WINDOWS = findWindows(MODEL, Date.now() - 30*60000, 50);
-  gardenTick();
-  renderGarden();
-  renderHabitSel();
-  renderGauge();
-  renderForecast();
-  renderTiles();
-  renderHeatmap();
-  renderBars();
-  renderCoping();
-  renderHistory();
-  renderArm();
-  renderBaseline();
-  $("#tabCount").textContent = activeLogs().length;
-  scheduleSync();      // debounced; keeps the OS queue matching the forecast
-}
 
 /* ── tabs ──────────────────────────────────────────────────────────── */
-let TAB = "today";
-function showTab(name){
-  TAB = name;
-  for(const b of document.querySelectorAll("#tabBar button"))
-    b.setAttribute("aria-selected", b.dataset.tab === name ? "true" : "false");
-  for(const pane of document.querySelectorAll(".tabpanel"))
-    pane.hidden = pane.id !== "tab-" + name;
-  // a chart measured while its panel was hidden has zero width, so anything
-  // that draws to a measured box has to be redrawn once it's visible
-  if(name === "today") renderWeather();
-  if(name === "patterns"){ renderForecast(); renderHeatmap(); renderBaseline(); }
-}
+/* #stage and #tiles each belong to two panels now. They are MOVED between their
+   hosts rather than copied, so their ids stay unique and the listeners bound to
+   whatever the renderers put inside them survive the switch. */
+
 
 /* ── the survey the cold-start baseline is fitted from ─────────────── */
 function renderBaseline(){
@@ -1418,26 +1860,6 @@ function renderHabitSel(){
 /* ── gauge + next window ───────────────────────────────────────────── */
 /* The big number and its band moved to the weather panel on the home tab.
    What is left here is the written detail that sits under the chart. */
-function renderGauge(){
-  const next = WINDOWS.find(w => w.start > Date.now());
-  const inside = WINDOWS.find(w => w.start <= Date.now() && w.end >= Date.now());
-
-  if(inside){
-    $("#nextWhen").textContent = "Open now";
-    $("#nextIn").textContent = "Runs until " + new Date(inside.end).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
-    $("#nextWhy").textContent = whyText(inside);
-  } else if(next){
-    const d = new Date(next.start);
-    $("#nextWhen").textContent = d.toLocaleTimeString([], {hour:"numeric", minute:"2-digit"}) + " " + dayLabel(d);
-    $("#nextIn").textContent = "in " + fmtDur(next.start - Date.now()) +
-      " · peaks " + new Date(next.peakTs).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
-    $("#nextWhy").textContent = whyText(next);
-  } else {
-    $("#nextWhen").textContent = "Nothing flagged";
-    $("#nextIn").textContent = "next 48 hours look clear";
-    $("#nextWhy").textContent = "No stretch crosses your alert threshold. Turn sensitivity up in Settings if you'd rather be warned earlier.";
-  }
-}
 
 function whyText(win){
   const d = windowDrivers(MODEL, win);
@@ -1558,35 +1980,6 @@ function showTip(ev, head, val, desc){
 const hideTip = () => $("#tip").classList.remove("on");
 
 /* ── stat tiles ────────────────────────────────────────────────────── */
-function renderTiles(){
-  const logs = activeLogs();
-  const now = Date.now();
-  const d30 = logs.filter(l => now - l.ts < 30*86400000);
-  const held = d30.filter(l => l.outcome === "held").length;
-  const rate = d30.length ? Math.round(held / d30.length * 100) : null;
-  const lastSlip = logs.find(l => l.outcome === "slip");
-  const habit = S.habits.find(h => h.id === S.activeHabit);
-  const since = lastSlip ? lastSlip.ts : (habit ? habit.createdAt : null);
-  const days = since ? Math.floor((now - since) / 86400000) : null;
-
-  // busiest clock hour by model weight
-  let peakH = null, peakV = -1;
-  for(let h = 0; h < 24; h += 0.25){
-    let s = 0; for(let d = 0; d < 7; d++) s += MODEL.atHD(h, d);
-    if(s > peakV){ peakV = s; peakH = h; }
-  }
-
-  const tiles = [
-    {v: days === null ? "—" : days,
-     k: (days === 1 ? "day" : "days") + (lastSlip ? " since you gave in" : " tracked")},
-    {v: d30.length, k: "urges logged, last 30 days"},
-    {v: rate === null ? "—" : rate + "%", k: "held out, last 30 days"},
-    {v: peakH === null ? "—" : fmtClock(peakH),
-     k: MODEL.source === "baseline" ? "riskiest hour (baseline)" : "your riskiest hour"}
-  ];
-  $("#tiles").innerHTML = tiles.map(t =>
-    `<div class="tile"><span class="v">${esc(t.v)}</span><span class="k">${esc(t.k)}</span></div>`).join("");
-}
 
 /* ── weekly heatmap ────────────────────────────────────────────────── */
 function renderHeatmap(){
@@ -1784,33 +2177,25 @@ const SG_BIRD  = ["🥚","🐣","🐤"];   // egg → hatched → fledgling
 const SG_BEAST = ["🌾","🐾","🍼"];   // bedding → tracks → hand-reared
 const SG_BEE   = ["🌼","🌻","🍯"];   // flowers → forage → honey
 
-const SPECIES = [
-  {id:"sunflower", name:"Sunflower",    kind:"flower", emoji:"🌻", base:SG_PLANT, need:0},
-  {id:"tulip",     name:"Tulip",        kind:"flower", emoji:"🌷", base:SG_PLANT, need:0},
-  {id:"herb",      name:"Herb sprig",   kind:"plant",  emoji:"🌿", base:SG_PLANT, need:0},
-  {id:"daisy",     name:"Daisy",        kind:"flower", emoji:"🌼", base:SG_PLANT, need:2},
-  {id:"clover",    name:"Lucky clover", kind:"plant",  emoji:"🍀", base:SG_PLANT, need:3},
-  {id:"rose",      name:"Rose",         kind:"flower", emoji:"🌹", base:SG_PLANT, need:4},
-  {id:"cactus",    name:"Cactus",       kind:"plant",  emoji:"🌵", base:SG_PLANT, need:5},
-  {id:"oak",       name:"Oak",          kind:"tree",   emoji:"🌳", base:SG_PLANT, need:6},
-  {id:"chicken",   name:"Chicken",      kind:"animal", emoji:"🐔", base:SG_BIRD,  need:7},
-  {id:"hibiscus",  name:"Hibiscus",     kind:"flower", emoji:"🌺", base:SG_PLANT, need:8},
-  {id:"pine",      name:"Pine",         kind:"tree",   emoji:"🌲", base:SG_PLANT, need:9},
-  {id:"rabbit",    name:"Rabbit",       kind:"animal", emoji:"🐰", base:SG_BEAST, need:10},
-  {id:"cherry",    name:"Cherry tree",  kind:"tree",   emoji:"🌸", base:SG_PLANT, need:12},
-  {id:"duck",      name:"Duck",         kind:"animal", emoji:"🦆", base:SG_BIRD,  need:14},
-  {id:"bees",      name:"Beehive",      kind:"animal", emoji:"🐝", base:SG_BEE,   need:16},
-  {id:"palm",      name:"Palm",         kind:"tree",   emoji:"🌴", base:SG_PLANT, need:18},
-  {id:"sheep",     name:"Sheep",        kind:"animal", emoji:"🐑", base:SG_BEAST, need:20},
-  {id:"maple",     name:"Maple",        kind:"tree",   emoji:"🍁", base:SG_PLANT, need:22},
-  {id:"pig",       name:"Pig",          kind:"animal", emoji:"🐖", base:SG_BEAST, need:25},
-  {id:"cow",       name:"Cow",          kind:"animal", emoji:"🐄", base:SG_BEAST, need:29},
-  {id:"goat",      name:"Goat",         kind:"animal", emoji:"🐐", base:SG_BEAST, need:33},
-  {id:"horse",     name:"Horse",        kind:"animal", emoji:"🐴", base:SG_BEAST, need:38},
-  {id:"cat",       name:"Barn cat",     kind:"animal", emoji:"🐈", base:SG_BEAST, need:44},
-  {id:"dog",       name:"Farm dog",     kind:"animal", emoji:"🐕", base:SG_BEAST, need:50},
-  {id:"peacock",   name:"Peacock",      kind:"animal", emoji:"🦚", base:SG_BIRD,  need:60}
+
+/* ── the species catalog, from design_handoff_cravecast/README.md ──────
+   28 species, unlocked by total plants grown. Shaped into the record the
+   existing garden code already expects, so nothing downstream changes. */
+const CATALOG = [
+  ["🌻","Sunflower",0],["🌷","Tulip",0],["🌿","Herb",0],["🌼","Daisy",0],
+  ["🍀","Clover",2],["🌹","Rose",4],["🌵","Cactus",5],["🌺","Hibiscus",7],
+  ["🌳","Oak",8],["🌲","Pine",10],["🌸","Cherry",12],["🪴","Fern",14],
+  ["🪻","Bluebell",16],["🪷","Lotus",18],["🌾","Wheat",20],["🎋","Bamboo",22],
+  ["🍁","Maple",24],["🌴","Palm",26],["🍄","Toadstool",28],["🌰","Chestnut",30],
+  ["🎄","Spruce",32],["🪵","Log bench",34],["🐝","Beehive",38],["🐔","Chicken",42],
+  ["🐰","Rabbit",46],["🦆","Duck",50],["🐑","Sheep",55],["🐈","Barn cat",60]
 ];
+const SPECIES = CATALOG.map(([emoji, name, need]) => ({
+  id: name.toLowerCase().replace(/ /g, "-"), name, emoji, need,
+  kind: /🐝|🐔|🐰|🦆|🐑|🐈/.test(emoji) ? "animal" : "plant",
+  base: /🐔|🦆/.test(emoji) ? SG_BIRD : /🐰|🐑|🐈/.test(emoji) ? SG_BEAST
+      : /🐝/.test(emoji) ? SG_BEE : SG_PLANT
+}));
 
 const speciesOf   = id => SPECIES.find(s => s.id === id) || SPECIES[0];
 const grownCount  = () => S.garden.plot.length;
@@ -1896,91 +2281,8 @@ function streakDays(){
 }
 
 /* ── the hero: what is growing, right now ──────────────────────────── */
-function renderGarden(){
-  const g = S.garden, n = grownCount(), u = unlocked().length;
-  const rank = rankOf(n), streak = streakDays();
-
-  $("#heroTop").innerHTML =
-    `<span class="chip-stat rank">${rank.emoji} ${esc(rank.name)}</span>` +
-    `<span class="chip-stat fire">\u{1F525} <span class="n">${streak}</span> day${streak === 1 ? "" : "s"} clean</span>` +
-    `<span class="chip-stat">\u{1F33B} <span class="n">${n}</span> grown</span>` +
-    `<span class="chip-stat" style="margin-left:auto">${u} / ${SPECIES.length} unlocked</span>`;
-
-  const stage = $("#stage");
-  if(g.growing){
-    const sp = speciesOf(g.growing.sp), pr = growProgress();
-    const end = g.growing.start + GROW_MS;
-    const at = new Date(end).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
-    const C = 2 * Math.PI * 54;
-    stage.innerHTML =
-      `<div class="ringwrap${pr >= 1 ? " ready" : ""}">
-         <svg viewBox="0 0 120 120" aria-hidden="true">
-           <circle class="bg" cx="60" cy="60" r="54"/>
-           <circle class="fg" cx="60" cy="60" r="54"
-                   stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - pr)).toFixed(1)}"/>
-         </svg>
-         <div class="disc"><em>${growStage(sp, pr)}</em></div>
-         <span class="pct">${Math.round(pr * 100)}%</span>
-       </div>
-       <h3>${esc(sp.name)} on the way</h3>
-       <div class="when">${pr >= 1 ? "ready now"
-          : fmtLeft(end - Date.now()) + " to go \u00b7 ready " + dayLabel(new Date(end)) + " at " + at}</div>`;
-  }else{
-    stage.innerHTML =
-      `<div class="ringwrap">
-         <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="bg" cx="60" cy="60" r="54"/></svg>
-         <div class="disc"><em>\u{1F330}</em></div>
-       </div>
-       <h3>Nothing growing</h3>
-       <div class="when">One clean day grows one thing.</div>
-       <button class="btn primary" id="plantBtn">Plant something</button>`;
-    $("#plantBtn").addEventListener("click", openSeeds);
-  }
-
-  /* the quest strip: what the next unlock is and how close it is */
-  const next = SPECIES.find(s => s.need > n);
-  const q = $("#quest");
-  if(next){
-    const prev = [...SPECIES].filter(s => s.need <= n).pop();
-    const from = prev ? prev.need : 0;
-    const pct = Math.max(4, Math.min(100, ((n - from) / Math.max(1, next.need - from)) * 100));
-    q.innerHTML =
-      `<div class="quest-row">
-         <span>Next up:</span><span class="goal">${next.emoji} ${esc(next.name)}</span>
-         <span class="left">${next.need - n} more to unlock</span>
-       </div>
-       <div class="quest-bar"><i style="width:${pct.toFixed(0)}%"></i></div>`;
-  }else{
-    q.innerHTML = `<div class="quest-row"><span class="goal">\u{1F3C6} Every species unlocked \u2014 the whole farm is yours.</span></div>`;
-  }
-
-  renderCollection();
-  renderWeather();
-}
 
 /* ── the collection: what you have, and what is still behind glass ──── */
-function renderCollection(){
-  const g = S.garden, n = grownCount();
-  const counts = new Map();
-  for(const x of g.plot) counts.set(x.sp, (counts.get(x.sp) || 0) + 1);
-  const owned = [...counts.values()].reduce((a, b) => a + b, 0);
-  $("#collSub").textContent = owned
-    ? counts.size + " species \u00b7 " + owned + " growing" + (g.wilted ? " \u00b7 " + g.wilted + " lost" : "")
-    : "nothing grown yet";
-
-  // everything unlocked, plus the next four still locked, as a tease
-  const showLocked = SPECIES.filter(s => s.need > n).slice(0, 4);
-  const cells = SPECIES.filter(s => s.need <= n).map(s => {
-    const c = counts.get(s.id) || 0;
-    return `<div class="slot${c ? " have" : ""}" title="${esc(s.name)}${c ? " \u00d7" + c : " \u2014 unlocked, not grown yet"}">
-      ${c ? s.emoji : `<span style="opacity:.32">${s.emoji}</span>`}${c > 1 ? `<b>${c}</b>` : ""}</div>`;
-  }).concat(showLocked.map(s =>
-    `<div class="slot locked" title="${esc(s.name)} \u2014 unlocks at ${s.need} grown">
-       <span class="lk">\u{1F512}</span><span class="need">at ${s.need}</span></div>`));
-
-  $("#coll").innerHTML = cells.join("") ||
-    `<div class="empty" style="grid-column:1/-1"><b>Nothing here yet</b>Plant your first one and it lands here.</div>`;
-}
 
 /* ── craving weather ────────────────────────────────────────────────── */
 /* The same numbers as the chart, told the way a forecast is told. */
@@ -1994,39 +2296,6 @@ const WX = [
 ];
 const wxOf = v => WX.filter(w => w.at <= v).pop();
 
-function renderWeather(){
-  const now = new Date(), v = MODEL.at(now), w = wxOf(v);
-  $("#wxIco").textContent = w.ico;
-  $("#wxWord").textContent = w.word;
-
-  const nextWin = WINDOWS.find(x => x.start > Date.now());
-  const inside = WINDOWS.find(x => x.start <= Date.now() && x.end >= Date.now());
-  const when = t => new Date(t).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
-  $("#wxSub").textContent =
-    inside   ? "You're in a rough patch now \u2014 it eases around " + when(inside.end) + "."
-  : nextWin  ? "Calm for " + fmtDur(nextWin.start - Date.now()) + ", then it turns around " + when(nextWin.start) + "."
-  :            "Nothing choppy in the next couple of days.";
-
-  $("#wxNote").textContent =
-    MODEL.source === "baseline" ? "study baseline"
-  : MODEL.source === "blended"  ? Math.round(MODEL.w * 100) + "% your own pattern"
-  :                               "your own pattern";
-
-  const ramp = RAMP();
-  let out = "";
-  for(let i = 0; i < 12; i++){
-    const t = new Date(Date.now() + i * MS_H);
-    const val = MODEL.at(t), ww = wxOf(val);
-    const inWin = WINDOWS.some(x => t.getTime() >= x.start - 30*60000 && t.getTime() <= x.end);
-    out += `<div class="wx-h${i === 0 ? " now" : ""}${inWin ? " peak" : ""}"
-                 title="${when(t)} \u2014 ${ww.word}">
-        <span class="hr">${i === 0 ? "now" : t.toLocaleTimeString([], {hour:"numeric"}).replace(" ", "")}</span>
-        <span class="ico">${ww.ico}</span>
-        <span class="lvl" style="background:${rampColor(val, ramp)}"></span>
-      </div>`;
-  }
-  $("#wxStrip").innerHTML = out;
-}
 
 /* ── a small celebration, when something finally grows ──────────────── */
 function confetti(emoji){
@@ -2078,6 +2347,7 @@ let armed = false, tickTimer = null;
    no such facility, so the in-page timer below stays the mechanism.   */
 const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform &&
                   window.Capacitor.isNativePlatform());
+const PLATFORM = window.Capacitor?.getPlatform?.() || "web";   // "ios" | "android" | "web"
 const LN = () => window.Capacitor?.Plugins?.LocalNotifications;
 const CHANNEL = "cravecast-warnings";
 const MAX_SCHEDULED = 24;          // a week of windows, comfortably
@@ -2157,7 +2427,8 @@ function renderArm(){
       ? "Armed — next warning in " + fmtDur(at - Date.now())
       : "Armed — window opening now";
     $("#armTxt").textContent = NATIVE
-      ? head + (scheduledCount > 0 ? " · " + scheduledCount + " queued with Android"
+      ? head + (scheduledCount > 0 ? " · " + scheduledCount + " queued with "
+                + (PLATFORM === "ios" ? "iOS" : "Android")
               : scheduledCount < 0 ? " · couldn't reach the alarm scheduler" : "")
       : head;
   } else $("#armTxt").textContent = "Armed — nothing flagged in 48h";
@@ -2175,7 +2446,7 @@ function tick(){
   if(!armed) return;
   MODEL = buildModel();
   WINDOWS = findWindows(MODEL, Date.now() - 30*60000, 50);
-  renderGauge(); renderArm();
+  renderRisk(); renderArm();
   // don't yank the chart out from under a hover
   if(!$("#tip").classList.contains("on")) renderForecast();
 
@@ -2258,7 +2529,7 @@ function pushAlert(kind, title, msg, extras, opts){
       if(a.run) a.run();
       else if(a.act === "log"){
         showTab("log"); startFlow();
-        $("#flowBody").scrollIntoView({behavior:"smooth", block:"center"});
+        $("#cravIn").scrollIntoView({behavior:"smooth", block:"center"});
       }
     });
   });
@@ -2705,152 +2976,7 @@ function flowAdvance(){
 }
 function flowBack(){ if(flow.i > 0){ flow.i--; renderFlow(); } }
 
-function flowSave(){
-  const d = flow.d;
-  const log = {
-    id: uid(), habitId: S.activeHabit, ts: d.ts || Date.now(),
-    outcome: d.outcome || "held",
-    intensity: d.intensity || 3,
-    mood: d.mood, activity: d.activity, triggers: [...d.triggers],
-    note: "", coping: ""
-  };
-  S.logs.push(log);
-  flow.saved = log.id;
-  save(); renderAll();
-  lastRisk = MODEL.at(new Date());
-  renderFlow();
-}
 
-function renderFlow(){
-  const host = $("#flowBody"), dots = $("#flowDots"), count = $("#flowCount");
-
-  if(!S.habits.length){
-    dots.innerHTML = ""; count.textContent = "";
-    host.innerHTML = `<div class="empty"><b>Name what you're quitting first</b>
-      Every urge is logged against a habit, so there needs to be one to log it against.</div>
-      <div style="display:flex; justify-content:center; margin-top:14px">
-        <button class="btn primary" id="flowAddHabit">Add a habit</button></div>`;
-    $("#flowAddHabit").addEventListener("click", () => { renderHabits(); $("#habDlg").showModal(); });
-    return;
-  }
-
-  /* ── the confirmation, once it's in ── */
-  if(flow.saved){
-    const log = S.logs.find(l => l.id === flow.saved);
-    dots.innerHTML = ""; count.textContent = "";
-    const bits = [];
-    bits.push(`<span class="outcome ${log.outcome === "slip" ? "slip" : "held"}">${
-      log.outcome === "slip" ? "Gave in" : "Held out"}</span>`);
-    bits.push(`<span class="tag">${esc(INTENSITY_WORDS[log.intensity])}</span>`);
-    if(log.mood) bits.push(`<span class="tag">${esc(log.mood)}</span>`);
-    if(log.activity) bits.push(`<span class="tag">${esc(log.activity)}</span>`);
-    for(const t of log.triggers) bits.push(`<span class="tag">${esc(t)}</span>`);
-    bits.push(`<span class="tag">${new Date(log.ts).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"})}</span>`);
-
-    const n = activeLogs().length;
-    host.innerHTML = `<div class="flow-done">
-      <div class="tick">\u2713</div>
-      <h3>Logged</h3>
-      <div class="hint">${n < MIN_LOGS
-        ? esc((MIN_LOGS - n) + " more and the forecast is properly yours.")
-        : "The forecast has been updated."}</div>
-      <div class="recap">${bits.join("")}</div>
-      <div class="acts">
-        <button class="btn" id="flowNote">Add a note</button>
-        ${log.outcome === "held" ? `<button class="btn" id="flowCope">What got you through it</button>` : ""}
-        <button class="btn primary" id="flowAgain">Log another</button>
-      </div>
-    </div>`;
-    $("#flowNote").addEventListener("click", () => openNote(log.id, "note"));
-    $("#flowCope")?.addEventListener("click", () => openNote(log.id, "cope"));
-    $("#flowAgain").addEventListener("click", () => { flow = newFlow(); renderFlow(); });
-    return;
-  }
-
-  /* ── a question ── */
-  const step = FLOW_STEPS[flow.i], d = flow.d;
-  count.textContent = "Question " + (flow.i + 1) + " of " + FLOW_STEPS.length;
-  dots.innerHTML = FLOW_STEPS.map((_, i) =>
-    `<i class="${i < flow.i ? "on" : i === flow.i ? "at" : ""}"></i>`).join("");
-
-  let body = "";
-  if(step.id === "outcome"){
-    body = `<div class="opts two">
-      <button class="opt" data-pick="held"><span class="emo">\u{1F4AA}</span>I held out</button>
-      <button class="opt" data-pick="slip"><span class="emo">\u{1F327}\u{FE0F}</span>I gave in</button>
-    </div>`;
-  } else if(step.id === "intensity"){
-    body = `<div class="scale">` + [1,2,3,4,5].map(v =>
-      `<button data-pick="${v}"><b>${v}</b><span>${esc(INTENSITY_HINT[v])}</span></button>`).join("") + `</div>`;
-  } else if(step.id === "mood"){
-    body = `<div class="opts">` + MOODS.map(m =>
-      `<button class="opt pill" data-pick="${esc(m)}">${esc(m)}</button>`).join("") + `</div>`;
-  } else if(step.id === "activity"){
-    body = `<div class="opts">` + ACTS.map(m =>
-      `<button class="opt pill" data-pick="${esc(m)}">${esc(m)}</button>`).join("") + `</div>`;
-  } else if(step.id === "triggers"){
-    body = `<div class="opts">` + TRIGS.concat(customTrigs).map(t =>
-      `<button class="opt pill" data-toggle="${esc(t)}" aria-pressed="${d.triggers.has(t)}">${esc(t)}</button>`).join("")
-      + `<button class="opt pill" id="flowOwnTrig" style="border-style:dashed">+ something else</button></div>`;
-  } else if(step.id === "when"){
-    body = `<div class="opts two">
-        <button class="opt" data-now="1"><span class="emo">\u{23F1}\u{FE0F}</span>Just now</button>
-      </div>
-      <div class="field" style="margin-top:14px">
-        <label for="flowWhen">Or pick the time it happened</label>
-        <div class="range-row">
-          <input type="datetime-local" id="flowWhen" value="${toLocalInput(new Date())}">
-          <button class="btn" id="flowWhenGo">Use this</button>
-        </div>
-      </div>`;
-  }
-
-  host.innerHTML = `<div class="flow-body">
-      <div class="flow-q">${esc(step.q)}</div>
-      ${step.hint ? `<div class="flow-hint">${esc(step.hint)}</div>` : ""}
-      ${body}
-      <div class="flow-ft">
-        ${flow.i > 0 ? `<button class="btn ghost" id="flowBack">Back</button>` : ""}
-        <span class="spacer"></span>
-        ${step.id === "triggers" ? `<button class="btn primary" id="flowGo">Continue</button>` : ""}
-        ${flow.i > 0 ? `<button class="btn ghost" id="flowSkip">Skip this</button>` : ""}
-      </div>
-    </div>`;
-
-  $("#flowBack")?.addEventListener("click", flowBack);
-  $("#flowSkip")?.addEventListener("click", flowAdvance);
-  $("#flowGo")?.addEventListener("click", flowAdvance);
-  $("#flowWhenGo")?.addEventListener("click", () => {
-    const v = $("#flowWhen").value;
-    const t = v ? new Date(v) : null;
-    d.ts = (t && !isNaN(t)) ? t.getTime() : Date.now();
-    flowAdvance();
-  });
-
-  for(const b of host.querySelectorAll("[data-pick]")){
-    b.addEventListener("click", () => {
-      const v = b.dataset.pick;
-      d[step.id] = step.id === "intensity" ? +v : v;
-      flowAdvance();
-    });
-  }
-  for(const b of host.querySelectorAll("[data-toggle]")){
-    b.addEventListener("click", () => {
-      const t = b.dataset.toggle;
-      d.triggers.has(t) ? d.triggers.delete(t) : d.triggers.add(t);
-      renderFlow();
-    });
-  }
-  host.querySelector("[data-now]")?.addEventListener("click", () => { d.ts = Date.now(); flowAdvance(); });
-  $("#flowOwnTrig")?.addEventListener("click", () => {
-    const v = prompt("Name the trigger");
-    if(v && v.trim()){
-      const s = v.trim();
-      if(!TRIGS.includes(s) && !customTrigs.includes(s)) customTrigs.push(s);
-      d.triggers.add(s); renderFlow();
-    }
-  });
-}
 
 /* Anything can be started fresh from elsewhere — an alert, a notification. */
 function startFlow(){
@@ -2889,6 +3015,560 @@ function saveNote(){
   $("#noteDlg").close();
 }
 
+/* ══════════════════════════════════════════════════════════════════════
+   RENDER LAYER — rebuilt from design_handoff_cravecast.
+   The model above this line is untouched: buildModel / findWindows /
+   windowDrivers / the ADARP prior all still produce exactly what they did.
+   Everything below only decides how that output is drawn.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* one <use> per mark, resolved against the inline sprite above */
+function ico(id, size, extra){
+  return '<svg class="ico" style="width:' + size + 'px;height:' + size + 'px' +
+         (extra ? ';' + extra : '') + '" aria-hidden="true"><use href="#i-' + id + '"></use></svg>';
+}
+const spIco = sp => "i-" + sp.id;
+
+/* the design's five views */
+let TAB = "home";
+
+function showTab(name){
+  TAB = name;
+  for(const b of document.querySelectorAll("[data-tab]"))
+    b.setAttribute("aria-selected", b.dataset.tab === name ? "true" : "false");
+  for(const pane of document.querySelectorAll(".cc-view"))
+    pane.hidden = pane.id !== "tab-" + name;
+  window.scrollTo({top:0, behavior:"instant"});
+  // anything measured while hidden has zero width and must redraw once shown
+  if(name === "home"){ renderRisk(); renderFcBars(); }
+  if(name === "garden") renderGarden();
+  if(name === "history"){ renderHistoryView(); renderForecast(); renderHeatmap(); renderBaseline(); }
+  if(name === "log") renderFlow();
+  if(name === "result") renderResult();
+}
+
+function renderAll(){
+  MODEL = buildModel();
+  WINDOWS = findWindows(MODEL, Date.now() - 30*60000, 50);
+  gardenTick();
+  ensureGarden();
+  renderHabitSel();
+  renderGreeting();
+  renderPlantCard();
+  renderRisk();
+  renderStats();
+  renderFcBars();
+  renderGarden();
+  renderHistoryView();
+  renderForecast();
+  renderHeatmap();
+  renderBars();
+  renderCoping();
+  renderHistory();
+  renderArm();
+  renderBaseline();
+  $("#tabCount").textContent = activeLogs().length;
+  scheduleSync();
+}
+
+/* ── garden state the design adds on top of what was already stored ── */
+function ensureGarden(){
+  const g = S.garden;
+  if(!g.layouts || !g.layouts[4]) g.layouts = {4:Array(16).fill(""), 5:Array(25).fill(""), 6:Array(36).fill("")};
+  for(const n of [4,5,6]) if(!Array.isArray(g.layouts[n]) || g.layouts[n].length !== n*n)
+    g.layouts[n] = Array(n*n).fill("");
+  if(![4,5,6].includes(g.plotSize)) g.plotSize = 5;
+  if(typeof g.rot !== "number") g.rot = 0;
+  g.layouts = {4:g.layouts[4].map(toId), 5:g.layouts[5].map(toId), 6:g.layouts[6].map(toId)};
+  g.brush = toId(g.brush) || unlocked()[0].id;
+  if(!g.chosen || !SPECIES.some(s => s.id === g.chosen)) g.chosen = unlocked()[0].id;
+}
+
+/* layouts and the brush used to hold emoji; they hold species ids now, so
+   anything saved by an earlier build is converted on load. */
+const EMOJI2ID = (() => { const m = {}; CATALOG.forEach(([e, name]) =>
+  m[e] = name.toLowerCase().replace(/ /g, "-")); m["🪨"] = "stone"; m["🚿"] = "erase"; return m; })();
+const toId = v => !v ? "" : (EMOJI2ID[v] || v);
+
+const catNext  = () => SPECIES.find(s => s.need > grownCount());
+const catPrev  = () => { const u = unlocked(); return u.length ? u[u.length-1].need : 0; };
+const rankName = () => { const n = grownCount();
+  return n >= 40 ? "Master gardener" : n >= 24 ? "Cultivator" : n >= 10 ? "Grower" : "Sprout"; };
+function unlockPct(){
+  const nx = catNext(); if(!nx) return 100;
+  const p = catPrev();
+  return Math.round(100 * (grownCount() - p) / Math.max(1, nx.need - p));
+}
+function unlockLine(){
+  const nx = catNext();
+  if(!nx) return "Every species unlocked. Your garden is complete. 🏆";
+  const left = nx.need - grownCount();
+  return left + " more " + (left === 1 ? "bloom" : "blooms") + " and the " +
+         nx.name.toLowerCase() + " joins your seed tray.";
+}
+
+/* ── greeting ──────────────────────────────────────────────────────── */
+function renderGreeting(){
+  const d = new Date(), h = d.getHours();
+  const part = h < 5 ? "Late" : h < 12 ? "Morning" : h < 17 ? "Afternoon" : h < 22 ? "Evening" : "Late";
+  const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const mons = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  $("#greetEyebrow").textContent = days[d.getDay()] + " · " + mons[d.getMonth()] + " " + d.getDate() + " · " + part;
+  const who = (AUTH && AUTH.email) ? AUTH.email.split("@")[0] : "";
+  $("#greetLine").textContent = (who ? "Hey " + who + " " : "Hey ") +
+    (h < 5 || h >= 22 ? "🌙" : "👋") + " how are you right now?";
+  $("#avatarLetter").textContent = (who ? who[0] : "C").toUpperCase();
+  $("#avatarName").textContent = who || "You";
+}
+
+/* ── the plant card ────────────────────────────────────────────────── */
+function renderPlantCard(){
+  const g = S.garden, growing = g.growing;
+  const chosen = speciesOf(growing ? growing.sp : g.chosen);
+  const pr = growProgress();
+  const stage = growing ? Math.min(3, Math.floor(pr * 4)) : -1;
+
+  $("#plantClock").textContent = !growing ? "not planted yet"
+    : ["just planted","settling in","growing well","in bloom"][stage];
+  const gsz = growing ? [30,38,44,52][stage] : 46;
+  $("#plantGlyph").innerHTML = ico(growing && stage < 3
+    ? ["stage-seed","stage-sprout","stage-potted"][stage] : chosen.id, gsz);
+  $("#plantHeadline").textContent = growing
+    ? (stage >= 3 ? "Your " + chosen.name.toLowerCase() + " is in bloom! 🎉"
+                  : "Your " + chosen.name.toLowerCase() + " is growing")
+    : "Pick what you’ll grow today";
+  $("#plantSub").textContent = growing
+    ? (stage >= 3 ? "Stay clean till it finishes and it joins the garden."
+                  : "Every clean hour nudges it along — " + fmtLeft(growing.start + GROW_MS - Date.now()) + " to go.")
+    : "One plant a day. Ride the day out and it’s yours forever.";
+
+  $("#plantStages").innerHTML = [0,1,2,3].map(i =>
+    `<i style="background:${i <= stage ? (i === 3 ? "#F59E0B" : "#10B981") : "rgba(16,185,129,.18)"}"></i>`).join("");
+
+  $("#speciesRow").innerHTML = unlocked().map(s => {
+    const on = s.id === chosen.id;
+    return `<button class="cc-seed" data-sp="${s.id}" style="background:${on ? "var(--card)" : "rgba(255,255,255,.55)"};
+      border-color:${on ? "#10B981" : "rgba(16,185,129,.2)"};transform:scale(${on ? 1.05 : 1})">
+      <span class="e" style="filter:${on ? "none" : "saturate(.4)"};opacity:${on ? 1 : .7}">${ico(s.id, 23)}</span>
+      <span class="n" style="color:${on ? "var(--green-ink)" : "var(--muted)"}">${esc(s.name)}</span></button>`;
+  }).join("");
+
+  $("#plantBtnLabel").textContent = growing
+    ? (stage >= 3 ? "Blooming 🌸" : "Growing 💧")
+    : "Plant my " + chosen.name.toLowerCase() + " 🌱";
+  $("#plantBtn").disabled = !!growing;
+  $("#plantBtn").style.opacity = growing ? ".72" : "1";
+}
+
+/* ── the risk ring ─────────────────────────────────────────────────── */
+function riskNow(){ return Math.round(MODEL ? MODEL.at(new Date()) : 0); }
+
+function renderRisk(){
+  const v = riskNow(), b = band(v);
+  const trend = (() => {
+    const now = MODEL.at(new Date()), soon = MODEL.at(new Date(Date.now() + 90*60000));
+    return soon - now > 4 ? "rising" : now - soon > 4 ? "falling" : "steady";
+  })();
+  $("#riskArc").style.background = `conic-gradient(${v >= 67 ? "#FB7185" : v >= 34 ? "#F59E0B" : "#10B981"} ${v}%, var(--ring-track) 0)`;
+  $("#riskNum").innerHTML = v + "<span>%</span>";
+  const lab = v >= 67 ? "HIGH" : v >= 34 ? "WATCH" : "CALM";
+  $("#riskLab").textContent = lab;
+  $("#riskLab").style.color = v >= 67 ? "#9F1239" : v >= 34 ? "#B45309" : "#047857";
+
+  const tag = $("#riskTag");
+  tag.className = "cc-tag " + (trend === "rising" ? "amber" : trend === "falling" ? "teal" : "green");
+  tag.textContent = trend === "rising" ? "▲ Rising" : trend === "falling" ? "▼ Falling" : "● Steady";
+  tag.style.marginBottom = "10px";
+
+  const next = WINDOWS.find(w => w.start > Date.now());
+  $("#riskTitle").textContent = v >= 67 ? "A rough stretch, right now"
+    : v >= 34 ? "A bumpy stretch ahead" : "Calm for now";
+  $("#riskBody").textContent = next
+    ? "Your usual " + fmtClock(new Date(next.start).getHours()) + " window starts in about " +
+      fmtDur(next.start - Date.now()) + ". Nothing you haven’t handled."
+    : activeLogs().length < 6
+      ? "Still learning your shape — the baseline below is doing the work for now."
+      : "No window is predicted in the next two days.";
+
+  const drivers = next ? windowDrivers(MODEL, next) : [];
+  const rows = drivers.length ? drivers.slice(0,3).map(d => d.text || String(d))
+    : ["Built from " + activeLogs().length + " of your own logs.",
+       "The ADARP phone-survey baseline is still carrying most of this estimate.",
+       "Log a few more urges and the curve becomes yours."];
+  $("#whyRows").innerHTML = rows.map(t =>
+    `<div class="cc-whyrow"><b>✓</b><span>${esc(String(t))}</span></div>`).join("");
+}
+
+/* ── stat trio ─────────────────────────────────────────────────────── */
+function renderStats(){
+  const st = streakDays();
+  $("#statStreak").textContent = st;
+  $("#statStreakBar").style.width = Math.min(100, st / 30 * 100) + "%";
+  $("#statGrown").textContent = grownCount();
+  $("#statUnlockLine").textContent = unlockLine();
+
+  const wk = activeLogs().filter(l => l.ts > Date.now() - 7*86400000);
+  $("#statLogs").textContent = wk.length;
+  const byDay = Array(7).fill(0);
+  wk.forEach(l => { byDay[6 - Math.floor((Date.now() - l.ts) / 86400000)] += 1; });
+  const mx = Math.max(1, ...byDay);
+  $("#spark").innerHTML = byDay.map(v => {
+    const h = Math.round(v / mx * 100);
+    return `<i style="height:${Math.max(8,h)}%;background:${h >= 80 ? "#F59E0B" : "var(--teal)"}"></i>`;
+  }).join("");
+}
+
+/* ── next 12 hours ─────────────────────────────────────────────────── */
+function renderFcBars(){
+  const now = new Date(), out = [];
+  for(let i = 0; i < 8; i++){
+    const t = new Date(now.getTime() + i * 90*60000);
+    out.push({v: Math.round(MODEL.at(t)), h: t.getHours()});
+  }
+  $("#fcBars").innerHTML = out.map(o =>
+    `<div class="col"><div class="slot"><div class="bar"
+       style="height:${Math.max(10,o.v)}%;background:${o.v >= 70 ? "#F59E0B" : o.v >= 45 ? "var(--teal-pale)" : "#CBD5E1"}"></div></div>
+     <span class="tick">${(o.h % 12 || 12) + (o.h < 12 ? "a" : "p")}</span></div>`).join("");
+}
+
+/* ── the 3D garden ─────────────────────────────────────────────────── */
+function renderGarden(){
+  ensureGarden();
+  const g = S.garden, n = g.plotSize, plan = g.layouts[n];
+  const a = (((g.rot % 90) + 90) % 90) * Math.PI / 180;
+  const fit = (1 / (Math.cos(a) + Math.sin(a))).toFixed(3);
+
+  $("#gRank").innerHTML = ico("sunflower", 17) + " " + esc(rankName()) + " · " +
+                          unlocked().length + " of " + SPECIES.length;
+  $("#gPlaced").textContent = "Your plot · " + plan.filter(Boolean).length + " planted";
+
+  const plane = $("#gPlane");
+  plane.style.gridTemplateColumns = "repeat(" + n + ",1fr)";
+  plane.style.transform = `rotateX(58deg) rotateZ(${g.rot}deg) scale(${fit})`;
+  const upright = `rotateZ(${-g.rot}deg) rotateX(-58deg)`;
+  plane.innerHTML = plan.map((e, i) => {
+    const dk = (Math.floor(i / n) + i % n) % 2 === 0;
+    const erasing = g.brush === "erase";
+    const bg = e ? (dk ? "var(--soil-pa)" : "var(--soil-pb)") : (dk ? "var(--soil-a)" : "var(--soil-b)");
+    const sh = e ? "0 0 0 1.5px rgba(6,95,70,.22),0 7px 0 -1px rgba(6,95,70,.28)"
+                 : (erasing ? "0 0 0 1.5px rgba(244,63,94,.35)" : "0 0 0 1.5px rgba(6,95,70,.12)");
+    return `<button class="cc-tile" data-tile="${i}" style="background:${bg};box-shadow:${sh}">
+      <span class="e" style="transform:translate(-50%,-50%) ${upright} translateY(-11px)">${
+        e ? ico(e, i % 3 === 0 ? 30 : 26) : ""}</span></button>`;
+  }).join("");
+
+  $("#gSizes").innerHTML = [4,5,6].map(v =>
+    `<button data-size="${v}" aria-selected="${v === n}">${v}×${v}</button>`).join("");
+
+  const tray = unlocked().map(s => [s.id, s.name]).concat([["stone","Stone"],["clear","Clear"]]);
+  $("#gTray").innerHTML = tray.map(([e,l]) => {
+    const key = l === "Clear" ? "erase" : e;
+    const on = g.brush === key;
+    return `<button class="cc-trayitem" data-brush="${key}"
+      style="background:${on ? "var(--green-tint)" : "var(--well)"};border-color:${on ? "#10B981" : "var(--hair)"};
+      transform:scale(${on ? 1.06 : 1})"><span class="e">${ico(e, 22)}</span>
+      <span class="l" style="color:${on ? "var(--green-ink)" : "var(--muted)"}">${esc(l)}</span></button>`;
+  }).join("");
+  const brushName = g.brush === "erase" ? "Clear" : (tray.find(t => t[0] === g.brush) || ["","Sunflower"])[1];
+  $("#trayTitle").textContent = g.brush === "erase" ? "Clearing squares" : "Planting: " + brushName;
+  $("#traySub").textContent = g.brush === "erase" ? "Click a square to dig it up."
+                                                 : "Click any square in the plot to place it.";
+
+  const nx = catNext();
+  $("#unlockName").textContent = "Next unlock · " + (nx ? nx.name + " " + nx.emoji : "Everything 🏆");
+  $("#unlockCount").textContent = grownCount() + " / " + (nx ? nx.need : grownCount());
+  $("#unlockFill").style.width = unlockPct() + "%";
+  $("#unlockLine").textContent = unlockLine();
+
+  renderCollection();
+}
+
+function renderCollection(){
+  const n = grownCount();
+  $("#collSub").textContent = unlocked().length + " of " + SPECIES.length;
+  $("#coll").innerHTML = SPECIES.map(s => {
+    const have = n >= s.need;
+    return `<div class="cc-collcell" style="background:${have ? "var(--card)" : "var(--well)"};
+      border-color:${have ? "rgba(16,185,129,.28)" : "var(--hair)"}">
+      <span class="e" style="filter:${have ? "none" : "grayscale(1)"};opacity:${have ? 1 : .38}">${ico(s.id, 26)}</span>
+      <span class="l" style="color:${have ? "var(--green-ink)" : "var(--muted)"}">${have ? esc(s.name) : s.need + " grown"}</span></div>`;
+  }).join("");
+}
+
+/* ── the quick log ─────────────────────────────────────────────────── */
+const CTX = ["Alone","With others","Work","Home","Out","After work","Evening","Late night"];
+const cravFace  = v => "face-" + (v <= 2 ? 1 : v <= 4 ? 3 : v <= 6 ? 5 : v <= 8 ? 7 : 9);
+const cravColor = v => v <= 3 ? "#10B981" : v <= 6 ? "#F59E0B" : "#F43F5E";
+const moodWord  = v => v <= 2 ? "running on empty 🫠" : v <= 4 ? "a bit flat 😐"
+                     : v <= 6 ? "doing okay 🙂" : v <= 8 ? "pretty good 😄" : "great ✨";
+
+function renderFlow(){
+  const d = flow.d;
+  if(d.craving == null) d.craving = 7;
+  if(d.moodScore == null) d.moodScore = 5;
+  if(!d.stress) d.stress = "Medium";
+  if(!d.context) d.context = ["Alone","Home"];
+
+  const cp = (d.craving - 1) / 9 * 100;
+  $("#cravVal").textContent = d.craving;
+  $("#cravVal").style.color = cravColor(d.craving);
+  $("#cravFace").innerHTML = ico(cravFace(d.craving), 46);
+  $("#cravFill").style.width = cp + "%";
+  $("#cravThumb").style.left = cp + "%";
+  $("#cravThumb").style.borderColor = cravColor(d.craving);
+  $("#cravIn").value = d.craving;
+
+  const mp = (d.moodScore - 1) / 9 * 100;
+  $("#moodVal").textContent = d.moodScore;
+  $("#moodWord").textContent = moodWord(d.moodScore);
+  $("#moodFill").style.width = mp + "%";
+  $("#moodThumb").style.left = mp + "%";
+  $("#moodIn").value = d.moodScore;
+
+  $("#stressOpts").innerHTML = ["Low","Medium","High"].map(l => {
+    const on = d.stress === l, tint = {Low:"#10B981",Medium:"#F59E0B",High:"#FB7185"}[l];
+    return `<button class="cc-opt" data-stress="${l}" style="background:${on ? tint : "var(--well)"};
+      color:${on ? "#fff" : "var(--soft)"};border-color:${on ? tint : "var(--hair)"};
+      transform:scale(${on ? 1.03 : 1})">${l}</button>`;
+  }).join("");
+
+  $("#ctxPills").innerHTML = CTX.map(l => {
+    const on = d.context.includes(l);
+    return `<button class="cc-pill" data-ctx="${esc(l)}" style="background:${on ? "var(--teal)" : "var(--well)"};
+      color:${on ? "#fff" : "var(--soft)"};border-color:${on ? "var(--teal)" : "var(--hair)"};
+      transform:scale(${on ? 1.03 : 1})">${esc(l)}</button>`;
+  }).join("");
+
+  $("#outcomeOpts").innerHTML = [["held","held-out","I held out","#10B981"],
+                                 ["slip","gave-in","I gave in","#FB7185"]].map(([k,ic,l,c]) => {
+    const on = d.outcome === k;
+    return `<button class="cc-opt" data-outcome="${k}" style="background:${on ? c : "var(--well)"};
+      color:${on ? "#fff" : "var(--soft)"};border-color:${on ? c : "var(--hair)"};
+      transform:scale(${on ? 1.03 : 1});display:flex;align-items:center;justify-content:center;gap:9px">${
+      ico(ic, 22)}<span>${l}</span></button>`;
+  }).join("");
+
+  const done = [true, true, d.context.length > 0, !!d.outcome].filter(Boolean).length;
+  $("#logRail").style.width = (8 + 92 * (done / 4)) + "%";
+  $("#logStepNote").textContent = d.outcome ? "ready to save" : "5 questions · about a minute";
+  $("#logSubmit").style.opacity = d.outcome ? "1" : ".6";
+}
+
+function flowSave(){
+  const d = flow.d;
+  const log = {
+    id: uid(), habitId: S.activeHabit, ts: d.ts || Date.now(),
+    outcome: d.outcome || "held",
+    /* the model reads a 1–5 intensity; the design collects 1–10, so the
+       coarse value is derived and the raw one kept alongside it */
+    intensity: Math.max(1, Math.min(5, Math.round(d.craving / 2))),
+    craving: d.craving,
+    moodScore: d.moodScore,
+    mood: moodWord(d.moodScore).replace(/ [^ ]+$/, ""),
+    stress: d.stress,
+    activity: d.context[0] || null,
+    context: d.context.slice(),
+    triggers: [d.stress + " stress"].concat(d.context.slice(1)),
+    note: ($("#logNote") && $("#logNote").value.trim()) || "",
+    coping: ""
+  };
+  S.logs.push(log);
+  flow.saved = log.id;
+  save(); renderAll();
+  lastRisk = MODEL.at(new Date());
+  if($("#logNote")) $("#logNote").value = "";
+  showTab("result");
+}
+
+/* ── the reading ───────────────────────────────────────────────────── */
+function renderResult(){
+  const v = riskNow();
+  $("#resTime").textContent = new Date().toLocaleTimeString([], {hour:"numeric", minute:"2-digit"}) + " · logged";
+  $("#resRisk").innerHTML = v + "<span>%</span>";
+  $("#resTag").textContent = v >= 67 ? "High risk window" : v >= 34 ? "Medium-high risk window" : "Low risk window";
+  requestAnimationFrame(() => { $("#resFill").style.width = v + "%"; });
+
+  const next = WINDOWS.find(w => w.start > Date.now());
+  const drivers = next ? windowDrivers(MODEL, next) : [];
+  const rows = drivers.length ? drivers.slice(0,3) : [];
+  const cols = ["#F59E0B","#06B6D4","#67E8F9"];
+  $("#resReasons").innerHTML = (rows.length ? rows : [
+      {text:"Built from " + activeLogs().length + " logs of your own."},
+      {text:"The ADARP phone-survey baseline fills the rest."},
+      {text:"Keep logging and this gets sharper."}
+    ]).map((r, i) => {
+    const w = r.weight != null ? Math.round(r.weight * 100) : [86,72,38][i];
+    return `<div class="cc-reason"><div class="tick">✓</div><div style="min-width:0;flex:1">
+      <div style="font:600 14px/1.45 var(--body);color:var(--soft)">${esc(r.text || String(r))}</div>
+      <div class="trk"><div style="height:100%;border-radius:100px;width:${w}%;background:${cols[i]}"></div></div>
+    </div></div>`;
+  }).join("");
+
+  const ideas = copingIdeas();
+  const tints = ["#ECFEFF","#FFF7ED","#ECFDF5"], icons = ["cope-phone","cope-walk","cope-breathe"];
+  $("#resCopes").innerHTML = (ideas.length ? ideas.slice(0,3) : [
+      {title:"Walk the block", sub:"Changing rooms breaks the loop"},
+      {title:"Call someone", sub:"Pick the person who picks up"},
+      {title:"Drink water and wait", sub:"Most urges crest inside 20 minutes"}
+    ]).map((c, i) =>
+    `<button class="cc-cope"><span class="icon" style="background:${tints[i]}">${ico(icons[i], 21)}</span>
+      <span style="flex:1;min-width:0"><span class="t">${esc(c.title || c.text || String(c))}</span>
+      <span class="s">${esc(c.sub || "From urges you held out on")}</span></span>
+      <span class="cta">Start</span></button>`).join("");
+
+  $("#resFoot").textContent = "Built from your " + activeLogs().length + " logs. " +
+    (AUTH ? "Synced to your account." : "Stays on this device until you sign in.") + " 🔒";
+}
+
+/* ── history, the design's summary layer ───────────────────────────── */
+let RANGE = "Week";
+function renderHistoryView(){
+  $("#hRange").innerHTML = ["Week","Month"].map(l => {
+    const on = RANGE === l;
+    return `<button data-range="${l}" style="border:none;cursor:pointer;border-radius:100px;padding:9px 20px;
+      font:700 13.5px var(--disp);background:${on ? "var(--card)" : "transparent"};
+      color:${on ? "var(--ink)" : "var(--muted)"};box-shadow:${on ? "0 2px 6px rgba(9,24,38,.12)" : "none"};
+      transition:all .2s">${l}</button>`;
+  }).join("");
+
+  const span = RANGE === "Week" ? 7 : 30;
+  const logs = activeLogs().filter(l => l.ts > Date.now() - span*86400000);
+  $("#hWeekIntro").innerHTML = "You logged <b style='color:var(--ink)'>" + logs.length + " times</b> this " +
+    RANGE.toLowerCase() + (logs.length >= 12 ? " — your steadiest stretch yet. Nice one. 🎉" : ".");
+
+  // peak predicted risk per weekday, straight from the model
+  const wd = ["M","T","W","T","F","S","S"], vals = [];
+  for(let i = 0; i < 7; i++){
+    const dow = (i + 1) % 7;
+    let mx = 0;
+    for(let h = 0; h < 24; h++){
+      const t = new Date(); t.setDate(t.getDate() + ((dow - t.getDay()) + 7) % 7);
+      t.setHours(h, 0, 0, 0);
+      mx = Math.max(mx, MODEL.at(t));
+    }
+    vals.push(Math.round(mx));
+  }
+  const mxv = Math.max(1, ...vals);
+  $("#hWeekBars").innerHTML = vals.map((v, i) =>
+    `<div class="col"><span class="v" style="color:${v >= 75 ? "#B45309" : "#0E7490"}">${v}</span>
+      <div class="bar" style="height:${Math.max(4, v / mxv * 100)}%;background:${v >= 75
+        ? "linear-gradient(180deg,#F59E0B,#FBBF24)" : "linear-gradient(180deg,#06B6D4,#67E8F9)"}"></div>
+      <span class="d">${wd[i]}</span></div>`).join("");
+  const pk = vals.indexOf(Math.max(...vals));
+  $("#hPeak").textContent = "Peak · " + ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"][pk] + " · " + vals[pk] + "%";
+
+  // 5 rows (Mon–Fri) × 6 dayparts, coloured on the design's six-step scale
+  const rowL = ["M","T","W","T","F"], colH = [6,10,14,18,20,23], colL = ["6a","10a","2p","6p","8p","11p"];
+  let html = "";
+  rowL.forEach((rl, r) => {
+    html += `<div class="cell" style="background:transparent;color:var(--muted)">${rl}</div>`;
+    colH.forEach(h => {
+      const t = new Date(); t.setDate(t.getDate() + ((r + 1 - t.getDay()) + 7) % 7); t.setHours(h,0,0,0);
+      const v = Math.round(MODEL.at(t)), hc = heatStep(v);
+      html += `<div class="cell" style="background:${hc.c};color:${hc.fg}"></div>`;
+    });
+  });
+  $("#hHeat").innerHTML = html;
+  $("#hHeatCols").innerHTML = "<span></span>" + colL.map(l => `<span>${l}</span>`).join("");
+
+  // insights, written from the real tallies
+  const trig = tally("triggers", true)[0], act = tally("activity", false)[0];
+  const held = logs.filter(l => l.outcome === "held").length;
+  const rate = logs.length ? Math.round(held / logs.length * 100) : 0;
+  $("#hInsights").innerHTML = [
+    ["Timing", "Your highest-risk stretch is around " + fmtClock(peakHour()) + ", most days of the week.",
+     "#ECFEFF","rgba(6,182,212,.25)","#0E7490"],
+    ["Combination", trig ? esc(trig.k) + " shows up in " + Math.round(trig.n / Math.max(1,logs.length) * 100) +
+     "% of your logs" + (act ? ", most often " + esc(act.k).toLowerCase() + "." : ".")
+     : "Log a few more urges and the strongest pairing will show up here.",
+     "#FFF7ED","rgba(245,158,11,.28)","#B45309"],
+    ["What helps", logs.length ? "You held out " + rate + "% of the time this " + RANGE.toLowerCase() + "."
+     : "Nothing logged in this range yet.", "#ECFDF5","rgba(16,185,129,.25)","#047857"]
+  ].map(([k,t,bg,bd,kc]) =>
+    `<div class="cc-insight" style="background:${bg};border-color:${bd}">
+      <div class="k" style="color:${kc}">${k}</div><div class="t">${t}</div></div>`).join("");
+
+  // recent days
+  const byDay = {};
+  activeLogs().forEach(l => {
+    const d = new Date(l.ts); d.setHours(0,0,0,0);
+    (byDay[d.getTime()] = byDay[d.getTime()] || []).push(l);
+  });
+  const days = Object.keys(byDay).map(Number).sort((a,b) => b - a).slice(0,6);
+  $("#hDays").innerHTML = days.length ? days.map(ts => {
+    const ls = byDay[ts], d = new Date(ts);
+    let mx = 0; for(let h = 0; h < 24; h++){ const t = new Date(ts); t.setHours(h); mx = Math.max(mx, MODEL.at(t)); }
+    mx = Math.round(mx);
+    const slips = ls.filter(l => l.outcome === "slip").length;
+    const c = mx >= 67 ? ["#FFE4E6","#9F1239"] : mx >= 34 ? ["#FEF3C7","#92400E"] : ["#ECFDF5","#047857"];
+    return `<div class="cc-day"><div style="min-width:0;flex:1">
+      <div style="font:700 15px var(--disp);color:var(--ink)">${esc(dayLabel(d))}</div>
+      <div style="font:500 13px var(--body);color:var(--muted);margin-top:2px">${ls.length} log${ls.length===1?"":"s"} · ${
+        slips ? slips + " slip" + (slips===1?"":"s") : "rode it out"}</div></div>
+      <div style="font:700 12.5px var(--disp);padding:6px 13px;border-radius:100px;background:${c[0]};color:${c[1]}">${mx}%</div>
+      <span style="color:var(--muted);font-size:17px">›</span></div>`;
+  }).join("") : `<div style="padding:26px;text-align:center;font:500 13.5px var(--body);color:var(--muted)">Nothing logged yet.</div>`;
+}
+
+function heatStep(v){
+  if(v < 18) return {c:"#ECFEFF", fg:"#7C8B95"};
+  if(v < 35) return {c:"#CFF5FB", fg:"#0E5766"};
+  if(v < 52) return {c:"#8CE3F2", fg:"#0B4553"};
+  if(v < 68) return {c:"#FCD9A0", fg:"#7A4409"};
+  if(v < 82) return {c:"#F8B454", fg:"#5C3206"};
+  return {c:"#FB7185", fg:"#4C0519"};
+}
+function peakHour(){
+  let best = 0, bv = -1;
+  for(let h = 0; h < 24; h++){
+    const t = new Date(); t.setHours(h,0,0,0);
+    const v = MODEL.at(t); if(v > bv){ bv = v; best = h; }
+  }
+  return best;
+}
+
+/* ── wiring the new surfaces ───────────────────────────────────────── */
+function wireDesign(){
+  document.addEventListener("click", e => {
+    const t = e.target;
+    const go = t.closest("[data-tab-go]");        if(go){ showTab(go.dataset.tabGo); return; }
+    const sp = t.closest("[data-sp]");            if(sp){ S.garden.chosen = sp.dataset.sp; save(); renderPlantCard(); return; }
+    const tile = t.closest("[data-tile]");        if(tile){
+      const g = S.garden, i = +tile.dataset.tile;
+      g.layouts[g.plotSize][i] = g.brush === "erase" ? "" : g.brush;
+      save(); renderGarden(); return; }
+    const br = t.closest("[data-brush]");         if(br){ S.garden.brush = br.dataset.brush; save(); renderGarden(); return; }
+    const sz = t.closest("[data-size]");          if(sz){ S.garden.plotSize = +sz.dataset.size; save(); renderGarden(); return; }
+    const st = t.closest("[data-stress]");        if(st){ flow.d.stress = st.dataset.stress; renderFlow(); return; }
+    const cx = t.closest("[data-ctx]");           if(cx){
+      const l = cx.dataset.ctx, c = flow.d.context;
+      flow.d.context = c.includes(l) ? c.filter(x => x !== l) : c.concat(l);
+      renderFlow(); return; }
+    const oc = t.closest("[data-outcome]");       if(oc){ flow.d.outcome = oc.dataset.outcome; renderFlow(); return; }
+    const rg = t.closest("[data-range]");         if(rg){ RANGE = rg.dataset.range; renderHistoryView(); return; }
+  });
+
+  $("#gRotL").addEventListener("click", () => { S.garden.rot -= 45; save(); renderGarden(); });
+  $("#gRotR").addEventListener("click", () => { S.garden.rot += 45; save(); renderGarden(); });
+  $("#cravIn").addEventListener("input", e => { flow.d.craving = +e.target.value; renderFlow(); });
+  $("#moodIn").addEventListener("input", e => { flow.d.moodScore = +e.target.value; renderFlow(); });
+  $("#whyBtn").addEventListener("click", () => {
+    const b = $("#whyBody"), open = b.classList.toggle("open");
+    $("#whyBtn").querySelector(".chev").style.transform = open ? "rotate(180deg)" : "rotate(0deg)";
+  });
+  $("#plantBtn").addEventListener("click", () => {
+    if(S.garden.growing) return;
+    if(!S.habits.length){ renderHabits(); $("#habDlg").showModal(); return; }
+    plantSeed(S.garden.chosen);
+  });
+  $("#logSubmit").addEventListener("click", () => {
+    if(!S.habits.length){ renderHabits(); $("#habDlg").showModal(); return; }
+    if(!flow.d.outcome){ $("#outcomeOpts").scrollIntoView({behavior:"smooth", block:"center"}); return; }
+    flowSave();
+    flow = newFlow();
+  });
+}
+
 function wire(){
   $("#ndSave").addEventListener("click", saveNote);
 
@@ -2899,8 +3579,17 @@ function wire(){
     if(b && !b.disabled) plantSeed(b.dataset.sp);
   });
 
-  for(const b of document.querySelectorAll("#tabBar button"))
+  for(const b of document.querySelectorAll("[data-tab]"))
     b.addEventListener("click", () => showTab(b.dataset.tab));
+
+  // the mobile top bar and the habit bar mirror controls that live in the
+  // sidebar; forwarding the click keeps one handler per control.
+  document.addEventListener("click", e => {
+    const go = e.target.closest("[data-tab-go]");
+    if(go){ showTab(go.dataset.tabGo); return; }
+    const px = e.target.closest("[data-proxy]");
+    if(px){ const t = document.getElementById(px.dataset.proxy); if(t) t.click(); }
+  });
 
   $("#armBtn").addEventListener("click", toggleArm);
 
@@ -2959,14 +3648,33 @@ function wire(){
     const cur = S.settings.theme || "auto";
     const next = cur === "auto" ? "light" : cur === "light" ? "dark" : "auto";
     S.settings.theme = next; save(); applyTheme();
-    setTimeout(() => { renderForecast(); renderHeatmap(); renderBars(); renderGauge(); }, 30);
+    setTimeout(() => { renderForecast(); renderHeatmap(); renderBars(); renderRisk(); }, 30);
   });
 
   /* data */
-  $("#exportBtn").addEventListener("click", () => {
-    const blob = new Blob([JSON.stringify(S, null, 2)], {type:"application/json"});
-    const a = el("a", {href: URL.createObjectURL(blob), download: "cravecast-" + new Date().toISOString().slice(0,10) + ".json"});
+  $("#exportBtn").addEventListener("click", async () => {
+    const name = "cravecast-" + new Date().toISOString().slice(0,10) + ".json";
+    const text = JSON.stringify(S, null, 2);
+    // A WKWebView refuses an <a download>, so on a phone the file goes to the
+    // app's cache and out through the OS share sheet instead.
+    if(NATIVE){
+      const fs = window.Capacitor?.Plugins?.Filesystem;
+      const sh = window.Capacitor?.Plugins?.Share;
+      if(fs && sh){
+        try{
+          await fs.writeFile({path:name, data:text, directory:"CACHE", encoding:"utf8"});
+          const {uri} = await fs.getUri({path:name, directory:"CACHE"});
+          await sh.share({title:"CraveCast export", url:uri});
+          return;
+        }catch(e){
+          if(String(e?.message || e).toLowerCase().includes("cancel")) return;
+        }
+      }
+    }
+    const blob = new Blob([text], {type:"application/json"});
+    const a = el("a", {href: URL.createObjectURL(blob), download: name});
     document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
   });
   $("#importBtn").addEventListener("click", () => {
     const inp = el("input", {type:"file", accept:"application/json"});
@@ -3130,11 +3838,18 @@ function seedDemo(){
 function boot(){
   applyTheme();
   if(!S.activeHabit && S.habits.length) S.activeHabit = S.habits[0].id;
-  wire(); resetForm(); renderAll();
+  wire();
+  wireDesign(); resetForm(); renderAll();
   cloudBoot();
 
-  if(NATIVE){
+  // ?native=1 puts the shell's layout on a plain page, so the safe-area padding
+  // and the field sizing can be checked in mobile Safari — same WebKit as the
+  // WKWebView — without a build. It moves no logic: the bridge below still
+  // needs a real Capacitor.
+  if(NATIVE || new URLSearchParams(location.search).has("native"))
     document.documentElement.classList.add("native");
+
+  if(NATIVE){
     // an armed app must come back armed — the OS kept the alarms while it was closed
     if(S.settings.armed){
       armed = true;
@@ -3147,7 +3862,7 @@ function boot(){
     });
     LN()?.addListener("localNotificationActionPerformed", () => {
       showTab("log"); startFlow();
-      $("#flowBody")?.scrollIntoView({behavior:"smooth", block:"center"});
+      $("#cravIn")?.scrollIntoView({behavior:"smooth", block:"center"});
     });
   }
 
@@ -3160,7 +3875,7 @@ function boot(){
       el("button", {class:"btn sm", text:"Add a habit", onclick(){ renderHabits(); $("#habDlg").showModal(); }}));
   }
   // keep the clock honest even when not armed
-  setInterval(() => { if(!armed){ renderGauge(); renderForecast(); } }, 120000);
+  setInterval(() => { if(!armed){ renderRisk(); renderForecast(); } }, 120000);
   // the growth bar creeps forward on its own, and blooms while you watch
   setInterval(() => { gardenTick(); renderGarden(); }, 60000);
   if(document.fonts && document.fonts.ready)
