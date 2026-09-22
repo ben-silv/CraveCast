@@ -1,0 +1,24 @@
+{
+  "appId": "com.cravecast.app",
+  "appName": "CraveCast",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false,
+    "backgroundColor": "#FBF4E3"
+  },
+  "ios": {
+    "backgroundColor": "#FBF4E3",
+    "contentInset": "never",
+    "scrollEnabled": true
+  },
+  "server": {
+    "androidScheme": "https",
+    "iosScheme": "capacitor"
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_cravecast",
+      "iconColor": "#A34C15"
+    }
+  }
+}

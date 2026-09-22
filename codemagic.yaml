@@ -1,0 +1,103 @@
+# CraveCast -- iOS build and App Store delivery.
+#
+# Runs on Codemagic's macOS machines, which is the whole point: this project is
+# developed on Windows, and Xcode exists only on macOS. Nothing here needs a Mac
+# on your side. Signing certificates and provisioning profiles are created by
+# Codemagic through the App Store Connect API at build time, so there is no
+# keychain to export and no .p12 to move around.
+#
+# One-time setup before the first run:
+#   1. Enrol in the Apple Developer Program ($99/yr) and register the App ID
+#      com.cravecast.app.
+#   2. App Store Connect > Users and Access > Integrations > App Store Connect
+#      API > generate a key with the App Manager role. Download the .p8 once;
+#      it cannot be downloaded twice.
+#   3. In Codemagic: Teams/Personal > Integrations > App Store Connect > add the
+#      key under the name referenced below.
+#   4. Create the app record in App Store Connect so TestFlight has somewhere to
+#      put the build.
+#
+# The ios/ directory is deliberately not in the repo. It is regenerated from
+# capacitor.config.json on every build, so there is no Xcode project drifting
+# out of step with the source.
+
+workflows:
+  ios-appstore:
+    name: CraveCast iOS
+    instance_type: mac_mini_m2
+    max_build_duration: 45
+
+    environment:
+      node: 22
+      xcode: latest
+      cocoapods: default
+      vars:
+        BUNDLE_ID: "com.cravecast.app"
+        XCODE_SCHEME: "App"
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.cravecast.app
+
+    integrations:
+      # must match the integration name you gave the key in Codemagic
+      app_store_connect: CraveCast ASC key
+
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: "v*"
+          include: true
+
+    scripts:
+      - name: Web assets
+        script: |
+          # build-native.py writes $APP/www; here the Capacitor project root
+          # and the repo root are the same directory.
+          APP="$CM_BUILD_DIR" TRACKER="$CM_BUILD_DIR" python3 build-native.py
+
+      - name: Dependencies
+        script: npm ci
+
+      - name: App icon
+        script: |
+          if [ -f assets/icon.png ]; then
+            npx --yes @capacitor/assets generate --ios --iconBackgroundColor '#FBF4E3'
+          else
+            echo "no assets/icon.png -- shipping the stock Capacitor icon"
+          fi
+
+      - name: Generate and sync the Xcode project
+        script: |
+          npx cap add ios
+          npx cap sync ios
+
+      - name: Version
+        script: |
+          cd "$CM_BUILD_DIR/ios/App"
+          # CFBundleVersion has to climb with every upload; Codemagic's build
+          # counter is monotonic, so it is the honest source for it.
+          agvtool new-version -all "$PROJECT_BUILD_NUMBER"
+          agvtool new-marketing-version "$(node -p "require('$CM_BUILD_DIR/package.json').version")"
+
+      - name: Apply signing profiles
+        script: xcode-project use-profiles
+
+      - name: Build ipa
+        script: |
+          xcode-project build-ipa \
+            --workspace "$CM_BUILD_DIR/ios/App/App.xcworkspace" \
+            --scheme "$XCODE_SCHEME"
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        # Left off deliberately. Promoting a TestFlight build to App Store
+        # review is a decision, not a build step -- do it in App Store Connect
+        # once you have run the build on a real iPhone.
+        submit_to_app_store: false

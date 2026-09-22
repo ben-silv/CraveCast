@@ -63,8 +63,8 @@ the current forecast.
 
 ## Rebuilding after you edit the app
 
-`index.html` in this folder is the **single source of truth** for all three
-targets — the web page, the published Artifact, and the Android app. It detects
+`index.html` in this folder is the **single source of truth** for all four
+targets — the web page, the published Artifact, the Android app and the iOS app. It detects
 at runtime whether it's inside the Android shell and switches its alerting
 accordingly, so there is only ever one copy of the logic to edit.
 
@@ -90,7 +90,7 @@ python C:\Users\silve\OneDrive\Desktop\Tracker\build-artifact.py
 |---|---|
 | `Desktop\Tracker\index.html` | the app itself — edit this |
 | `Desktop\Tracker\CraveCast.apk` | the installable Android build |
-| `Desktop\Tracker\build-android.py` | index.html → app web assets (+ offline fonts) |
+| `Desktop\Tracker\build-native.py` | index.html → app web assets (+ offline fonts), shared with iOS |
 | `Desktop\Tracker\build-artifact.py` | index.html → Artifact fragment |
 | `Desktop\Tracker\supabase-schema.sql` | database + policies for the optional accounts |
 | `Desktop\Tracker\README-ACCOUNTS.md` | how to switch accounts and cloud sync on |
@@ -111,6 +111,8 @@ re-download them to build again.
 
 - **Debug-signed.** Fine for sideloading onto your own phone. It can't go on
   the Play Store as-is, and `USE_EXACT_ALARM` would need justification there.
+- **iOS is a separate build.** Same `index.html`, same `www`, but Xcode only
+  runs on macOS. See [README-IOS.md](README-IOS.md).
 - **Keep the debug keystore.** It lives at `%USERPROFILE%\.android\debug.keystore`.
   If it's deleted, future builds get a different signature and Android will
   refuse to upgrade over the installed app — you'd have to uninstall first.
