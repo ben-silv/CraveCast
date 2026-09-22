@@ -263,8 +263,15 @@ a:hover{color:var(--teal)}
         border:1.5px solid rgba(16,185,129,.3); cursor:pointer; font:700 17px var(--disp);
         color:#047857; box-shadow:0 3px 0 rgba(4,120,87,.28); transition:transform .12s}
 .cc-rot:active{transform:translateY(2px)}
-.cc-seg{flex:1; min-width:150px; display:flex; background:rgba(255,255,255,.75);
-        border-radius:100px; padding:4px}
+.cc-seg{flex:1; min-width:170px; display:flex; flex-direction:column; gap:5px;
+        background:rgba(255,255,255,.75); border-radius:18px; padding:9px 13px}
+.cc-sizeread{display:flex; align-items:baseline; gap:8px}
+.cc-sizeread b{font:800 15px var(--disp); color:#047857}
+.cc-sizeread span{font:500 11.5px var(--mono); color:#4B7A6E; margin-left:auto}
+.cc-sizebar{height:6px; border-radius:100px; background:rgba(4,120,87,.16); overflow:hidden}
+.cc-sizebar i{display:block; height:100%; border-radius:100px;
+              background:linear-gradient(90deg,#10B981,#F59E0B); transition:width .45s ease}
+.cc-sizehint{font:500 11px var(--body); color:#4B7A6E}
 .cc-seg button{flex:1; border:none; cursor:pointer; border-radius:100px; padding:9px 6px;
                font:700 13px var(--disp); background:transparent; color:#4B7A6E; transition:all .2s}
 .cc-seg button[aria-selected="true"]{background:#10B981; color:#fff; box-shadow:0 2px 6px rgba(4,120,87,.35)}
@@ -3292,16 +3299,73 @@ function renderAll(){
 }
 
 /* ── garden state the design adds on top of what was already stored ── */
+const MIN_PLOT = 4, MAX_PLOT = 8;
+
 function ensureGarden(){
   const g = S.garden;
-  if(!g.layouts || !g.layouts[4]) g.layouts = {4:Array(16).fill(""), 5:Array(25).fill(""), 6:Array(36).fill("")};
-  for(const n of [4,5,6]) if(!Array.isArray(g.layouts[n]) || g.layouts[n].length !== n*n)
-    g.layouts[n] = Array(n*n).fill("");
-  if(![4,5,6].includes(g.plotSize)) g.plotSize = 5;
+
+  /* Up to here the plot was three independent layouts picked from a 4/5/6
+     control. The size is now decided by how full the plot is, so there is one
+     grid. Migrate from whichever old layout held the most, which is lossless
+     for anyone who only ever used one. */
+  if(!Array.isArray(g.grid)){
+    const old = g.layouts && typeof g.layouts === "object" ? g.layouts : null;
+    let from = null, size = MIN_PLOT;
+    if(old) for(const sz of [4,5,6]){
+      const row = Array.isArray(old[sz]) ? old[sz] : null;
+      if(row && (!from || row.filter(Boolean).length > from.filter(Boolean).length)){ from = row; size = sz; }
+    }
+    g.plotSize = size;
+    g.grid = Array(size * size).fill("").map((_, i) => toId(from ? from[i] : ""));
+    delete g.layouts;
+  }
+
+  if(typeof g.plotSize !== "number" || g.plotSize < MIN_PLOT || g.plotSize > MAX_PLOT) g.plotSize = MIN_PLOT;
+  if(g.grid.length !== g.plotSize * g.plotSize){
+    const want = g.plotSize * g.plotSize;
+    g.grid = Array(want).fill("").map((_, i) => toId(g.grid[i] || ""));
+  }
+  g.grid = g.grid.map(toId);
   if(typeof g.rot !== "number") g.rot = 0;
-  g.layouts = {4:g.layouts[4].map(toId), 5:g.layouts[5].map(toId), 6:g.layouts[6].map(toId)};
   g.brush = toId(g.brush) || unlocked()[0].id;
   if(!g.chosen || !SPECIES.some(s => s.id === g.chosen)) g.chosen = unlocked()[0].id;
+  if(typeof g.moveFrom !== "number") g.moveFrom = -1;
+  autoSizePlot();
+}
+
+/* Resizing keeps every plant on its own row and column, so nothing shifts
+   under the user when the plot grows or shrinks. */
+function resizePlot(m){
+  const g = S.garden, n = g.plotSize, next = Array(m * m).fill("");
+  const k = Math.min(n, m);
+  for(let r = 0; r < k; r++)
+    for(let c = 0; c < k; c++) next[r * m + c] = g.grid[r * n + c] || "";
+  g.grid = next; g.plotSize = m;
+}
+
+/* the outer ring is the last row plus the last column: empty means the plot
+   can lose a dimension without anything having to move */
+function outerRingEmpty(){
+  const g = S.garden, n = g.plotSize;
+  for(let i = 0; i < n; i++)
+    if(g.grid[(n - 1) * n + i] || g.grid[i * n + (n - 1)]) return false;
+  return true;
+}
+
+function autoSizePlot(){
+  const g = S.garden;
+  let grew = false, shrank = false;
+  while(g.plotSize < MAX_PLOT && g.grid.every(Boolean)){ resizePlot(g.plotSize + 1); grew = true; }
+  /* Growing leaves the fresh outer ring empty by definition, so a bare
+     "ring is empty" test would shrink straight back and the plot would never
+     grow at all. Only shrink when the smaller plot would still have room --
+     strictly fewer plants than it has squares -- which also stops a plot
+     oscillating between two sizes on every click. */
+  while(g.plotSize > MIN_PLOT && outerRingEmpty() &&
+        g.grid.filter(Boolean).length < (g.plotSize - 1) * (g.plotSize - 1)){
+    resizePlot(g.plotSize - 1); shrank = true;
+  }
+  return grew ? "grew" : shrank ? "shrank" : "";
 }
 
 /* layouts and the brush used to hold emoji; they hold species ids now, so
@@ -3313,11 +3377,9 @@ const toId = v => !v ? "" : (EMOJI2ID[v] || v);
 /* Each clean 24 hours puts one of that species in your hands; placing it in
    the plot spends it, digging it up gives it back. Plot entries are {sp, at};
    older saves may hold a bare id string.
-   Placements count across all three plot sizes, so one stock cannot be spent
-   twice by switching between them. Stone is scenery and never limited. */
+   Stone is scenery and never limited. */
 const grownOf  = id => S.garden.plot.filter(e => (e && e.sp ? e.sp : e) === id).length;
-const placedOf = id => [4,5,6].reduce((t, sz) =>
-  t + (S.garden.layouts[sz] || []).filter(v => v === id).length, 0);
+const placedOf = id => (S.garden.grid || []).filter(v => v === id).length;
 const availOf  = id => id === "stone" ? Infinity : Math.max(0, grownOf(id) - placedOf(id));
 
 const catNext  = () => SPECIES.find(s => s.need > grownCount());
@@ -3464,7 +3526,7 @@ function renderFcBars(){
 /* ── the 3D garden ─────────────────────────────────────────────────── */
 function renderGarden(){
   ensureGarden();
-  const g = S.garden, n = g.plotSize, plan = g.layouts[n];
+  const g = S.garden, n = g.plotSize, plan = g.grid;
   const a = (((g.rot % 90) + 90) % 90) * Math.PI / 180;
   const fit = (1 / (Math.cos(a) + Math.sin(a))).toFixed(3);
 
@@ -3478,22 +3540,36 @@ function renderGarden(){
   const upright = `rotateZ(${-g.rot}deg) rotateX(-58deg)`;
   plane.innerHTML = plan.map((e, i) => {
     const dk = (Math.floor(i / n) + i % n) % 2 === 0;
-    const erasing = g.brush === "erase";
+    const erasing = g.brush === "erase", moving = g.brush === "move";
+    const picked = moving && g.moveFrom === i;
+    const target = moving && g.moveFrom >= 0 && !picked;
     const bg = e ? (dk ? "var(--soil-pa)" : "var(--soil-pb)") : (dk ? "var(--soil-a)" : "var(--soil-b)");
-    const sh = e ? "0 0 0 1.5px rgba(6,95,70,.22),0 7px 0 -1px rgba(6,95,70,.28)"
-                 : (erasing ? "0 0 0 1.5px rgba(244,63,94,.35)" : "0 0 0 1.5px rgba(6,95,70,.12)");
+    const ring = picked  ? "0 0 0 3px #06B6D4, 0 10px 0 -1px rgba(6,95,70,.28)"
+               : target  ? "0 0 0 1.5px rgba(6,182,212,.45)"
+               : erasing && e ? "0 0 0 1.5px rgba(244,63,94,.55)"
+               : erasing ? "0 0 0 1.5px rgba(244,63,94,.35)"
+               : e ? "0 0 0 1.5px rgba(6,95,70,.22),0 7px 0 -1px rgba(6,95,70,.28)"
+               : "0 0 0 1.5px rgba(6,95,70,.12)";
+    const sh = ring;
     return `<button class="cc-tile" data-tile="${i}" style="background:${bg};box-shadow:${sh}">
       <span class="e" style="transform:translate(-50%,-50%) ${upright} translateY(-11px)">${
         e ? ico(e, i % 3 === 0 ? 30 : 26) : ""}</span></button>`;
   }).join("");
 
-  $("#gSizes").innerHTML = [4,5,6].map(v =>
-    `<button data-size="${v}" aria-selected="${v === n}">${v}×${v}</button>`).join("");
+  const filled = plan.filter(Boolean).length, cap = n * n;
+  $("#gSizes").innerHTML =
+    `<div class="cc-sizeread"><b>${n}×${n}</b><span>${filled} of ${cap} planted</span></div>` +
+    `<div class="cc-sizebar"><i style="width:${Math.round(filled / cap * 100)}%"></i></div>` +
+    `<span class="cc-sizehint">${
+      n >= MAX_PLOT ? "Biggest plot there is."
+      : filled === cap ? "Full — the plot is about to grow."
+      : "Fill it and the plot grows to " + (n + 1) + "×" + (n + 1) + "."}</span>`;
 
-  const tray = unlocked().map(s => [s.id, s.name]).concat([["stone","Stone"],["clear","Clear"]]);
+  const tray = unlocked().map(s => [s.id, s.name])
+    .concat([["stone","Stone"],["move","Move"],["clear","Remove"]]);
   $("#gTray").innerHTML = tray.map(([e,l]) => {
-    const key = l === "Clear" ? "erase" : e;
-    const on = g.brush === key, tool = key === "erase" || key === "stone";
+    const key = l === "Remove" ? "erase" : e;
+    const on = g.brush === key, tool = key === "erase" || key === "stone" || key === "move";
     const stock = tool ? null : availOf(e);
     const out = stock === 0 && !on;
     return `<button class="cc-trayitem" data-brush="${key}" ${out ? "disabled" : ""}
@@ -3504,10 +3580,16 @@ function renderGarden(){
       <span class="l" style="color:${on ? "var(--green-ink)" : "var(--muted)"}">${esc(l)}</span>
       ${stock === null ? "" : `<b class="stock">${stock}</b>`}</button>`;
   }).join("");
-  const brushName = g.brush === "erase" ? "Clear" : (tray.find(t => t[0] === g.brush) || ["","Sunflower"])[1];
-  $("#trayTitle").textContent = g.brush === "erase" ? "Clearing squares" : "Planting: " + brushName;
+  const brushName = g.brush === "erase" ? "Remove"
+                  : (tray.find(t => t[0] === g.brush) || ["","Sunflower"])[1];
+  $("#trayTitle").textContent = g.brush === "erase" ? "Removing plants"
+                              : g.brush === "move"  ? (g.moveFrom >= 0 ? "Moving — pick a square" : "Moving plants")
+                              : "Planting: " + brushName;
   $("#traySub").textContent = g.brush === "erase"
     ? "Click a square to dig it up — it goes back into your stock."
+    : g.brush === "move"
+      ? (g.moveFrom >= 0 ? "Now click where it should go. Click it again to put it back."
+                         : "Click a plant to pick it up, then click where it should go.")
     : g.brush === "stone"
       ? "Scenery, and never in short supply."
       : availOf(g.brush) > 0
@@ -3533,6 +3615,16 @@ function outOfStock(id){
   plane.style.animation = "nudge .32s ease";
   clearTimeout(stockNudge);
   stockNudge = setTimeout(() => { sub.style.color = ""; renderGarden(); }, 2200);
+}
+
+function plotResized(kind){
+  const n = S.garden.plotSize;
+  pushAlert(kind === "grew" ? "grow" : "watch",
+    kind === "grew" ? "Your plot grew to " + n + "×" + n : "Your plot settled to " + n + "×" + n,
+    kind === "grew"
+      ? "You filled every square, so there is more ground now. Everything you planted stayed exactly where it was."
+      : "The outside edge came free, so the plot tightened up. Nothing moved.",
+    [], {ico: kind === "grew" ? "🌱" : "🍂", acts:[{label:"Nice", ghost:true}]});
 }
 
 function renderCollection(){
@@ -3790,20 +3882,36 @@ function wireDesign(){
     const go = t.closest("[data-tab-go]");        if(go){ showTab(go.dataset.tabGo); return; }
     const sp = t.closest("[data-sp]");            if(sp){ S.garden.chosen = sp.dataset.sp; save(); renderPlantCard(); return; }
     const tile = t.closest("[data-tile]");        if(tile){
-      const g = S.garden, i = +tile.dataset.tile, cur = g.layouts[g.plotSize][i];
-      if(g.brush === "erase"){
+      const g = S.garden, i = +tile.dataset.tile, cur = g.grid[i];
+
+      if(g.brush === "move"){
+        if(g.moveFrom < 0){
+          if(!cur) return;                             // nothing to pick up
+          g.moveFrom = i;
+        } else if(g.moveFrom === i){
+          g.moveFrom = -1;                             // put it back down
+        } else {
+          const from = g.moveFrom;                     // swap, so a move never destroys
+          g.grid[i] = g.grid[from]; g.grid[from] = cur;
+          g.moveFrom = -1;
+        }
+      } else if(g.brush === "erase"){
         if(!cur) return;
-        g.layouts[g.plotSize][i] = "";                 // back into stock
+        g.grid[i] = "";                                // back into stock
       } else if(cur === g.brush){
         return;                                        // already that, nothing to spend
       } else if(availOf(g.brush) <= 0){
         outOfStock(g.brush); return;                   // nothing left to plant
       } else {
-        g.layouts[g.plotSize][i] = g.brush;            // spends one
+        g.grid[i] = g.brush;                           // spends one
       }
-      save(); renderGarden(); return; }
-    const br = t.closest("[data-brush]");         if(br){ S.garden.brush = br.dataset.brush; save(); renderGarden(); return; }
-    const sz = t.closest("[data-size]");          if(sz){ S.garden.plotSize = +sz.dataset.size; save(); renderGarden(); return; }
+
+      const change = autoSizePlot();
+      save(); renderGarden();
+      if(change) plotResized(change);
+      return; }
+    const br = t.closest("[data-brush]");         if(br){
+      S.garden.brush = br.dataset.brush; S.garden.moveFrom = -1; save(); renderGarden(); return; }
     const st = t.closest("[data-stress]");        if(st){ flow.d.stress = st.dataset.stress; renderFlow(); return; }
     const cx = t.closest("[data-ctx]");           if(cx){
       const l = cx.dataset.ctx, c = flow.d.context;
