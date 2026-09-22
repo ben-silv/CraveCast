@@ -110,7 +110,13 @@ a:hover{color:var(--teal)}
 :root[data-theme="dark"] .cc-avatar{background:linear-gradient(145deg,#22D3EE,#0E7490); color:#06232B}
 .cc-main{max-width:1240px; margin:0 auto; padding:26px 24px 72px}
 .cc-habit{border:1px solid var(--hair); background:var(--card); color:var(--ink);
-          border-radius:100px; padding:9px 14px; font:700 13px var(--disp); cursor:pointer}
+          border-radius:100px; padding:9px 14px; font:700 13px var(--disp); cursor:pointer;
+          width:auto; max-width:180px; text-overflow:ellipsis}
+.cc-topright{gap:8px}
+@media (max-width:1180px){
+  .cc-topright .cc-pillbtn.lbl-long{font-size:0; padding:9px 12px}
+  .cc-topright .cc-pillbtn.lbl-long::after{content:"F514"; font-size:14px}
+}
 
 /* ── generic pieces ────────────────────────────────────────────────── */
 .cc-card{background:var(--card); border:1px solid var(--hair); border-radius:28px;
@@ -572,6 +578,19 @@ input:focus-visible, textarea:focus-visible, select:focus-visible{
 @media (prefers-reduced-motion:reduce){
   .cc-view, .cc-view > *, dialog[open]{ animation:none }
 }
+
+.cc-trayitem{ position:relative }
+.cc-trayitem .stock{
+  position:absolute; top:-5px; right:-5px; min-width:18px; height:18px; padding:0 5px;
+  display:grid; place-items:center; border-radius:100px;
+  background:var(--green); color:#fff; font:800 10px var(--disp);
+  box-shadow:0 2px 5px -1px rgba(4,120,87,.5);
+}
+.cc-trayitem[disabled] .stock{ background:var(--muted); box-shadow:none }
+:root[data-theme="dark"] .cc-trayitem .stock{ background:var(--green-light); color:#06231A }
+/* the plane's transform belongs to the rotation logic, so the refusal
+   pulses opacity instead of fighting it for the same property */
+@keyframes nudge{ 0%,100%{opacity:1} 45%{opacity:.55} }
 
 /* ══ how many of each you have grown ══════════════════════════════════ */
 .cc-collcell{ position:relative }
@@ -1190,7 +1209,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible{
   <div class="cc-topright">
     <select class="cc-habit" id="habitSel" aria-label="Tracked habit"></select>
     <button class="cc-pillbtn" id="manageBtn" title="Add or remove tracked habits">Habits</button>
-    <button class="cc-pillbtn" id="armBtn">Early warnings</button>
+    <button class="cc-pillbtn lbl-long" id="armBtn">Early warnings</button>
     <button class="cc-pillbtn" id="setBtn" title="Alert settings"><svg class="ico" style="width:15px;height:15px" aria-hidden="true"><use href="#i-gear"></use></svg></button>
     <button class="cc-pillbtn" id="acctBtn" title="Account and sync" hidden>Account</button>
     <button class="cc-pillbtn" id="themeBtn" title="Switch light / dark" aria-label="Switch theme">🌙 Dark</button>
@@ -3282,8 +3301,15 @@ const EMOJI2ID = (() => { const m = {}; CATALOG.forEach(([e, name]) =>
   m[e] = name.toLowerCase().replace(/ /g, "-")); m["🪨"] = "stone"; m["🚿"] = "erase"; return m; })();
 const toId = v => !v ? "" : (EMOJI2ID[v] || v);
 
-/* plot entries are {sp, at}; older saves may hold a bare id string */
-const qtyOf = id => S.garden.plot.filter(e => (e && e.sp ? e.sp : e) === id).length;
+/* Each clean 24 hours puts one of that species in your hands; placing it in
+   the plot spends it, digging it up gives it back. Plot entries are {sp, at};
+   older saves may hold a bare id string.
+   Placements count across all three plot sizes, so one stock cannot be spent
+   twice by switching between them. Stone is scenery and never limited. */
+const grownOf  = id => S.garden.plot.filter(e => (e && e.sp ? e.sp : e) === id).length;
+const placedOf = id => [4,5,6].reduce((t, sz) =>
+  t + (S.garden.layouts[sz] || []).filter(v => v === id).length, 0);
+const availOf  = id => id === "stone" ? Infinity : Math.max(0, grownOf(id) - placedOf(id));
 
 const catNext  = () => SPECIES.find(s => s.need > grownCount());
 const catPrev  = () => { const u = unlocked(); return u.length ? u[u.length-1].need : 0; };
@@ -3458,16 +3484,26 @@ function renderGarden(){
   const tray = unlocked().map(s => [s.id, s.name]).concat([["stone","Stone"],["clear","Clear"]]);
   $("#gTray").innerHTML = tray.map(([e,l]) => {
     const key = l === "Clear" ? "erase" : e;
-    const on = g.brush === key;
-    return `<button class="cc-trayitem" data-brush="${key}"
+    const on = g.brush === key, tool = key === "erase" || key === "stone";
+    const stock = tool ? null : availOf(e);
+    const out = stock === 0 && !on;
+    return `<button class="cc-trayitem" data-brush="${key}" ${out ? "disabled" : ""}
+      title="${tool ? esc(l) : esc(l) + " — " + stock + " to plant, " + grownOf(e) + " grown"}"
       style="background:${on ? "var(--green-tint)" : "var(--well)"};border-color:${on ? "#10B981" : "var(--hair)"};
-      transform:scale(${on ? 1.06 : 1})"><span class="e">${ico(e, 22)}</span>
-      <span class="l" style="color:${on ? "var(--green-ink)" : "var(--muted)"}">${esc(l)}</span></button>`;
+      transform:scale(${on ? 1.06 : 1});opacity:${out ? .4 : 1};cursor:${out ? "not-allowed" : "pointer"}">
+      <span class="e" style="filter:${out ? "grayscale(1)" : "none"}">${ico(e, 22)}</span>
+      <span class="l" style="color:${on ? "var(--green-ink)" : "var(--muted)"}">${esc(l)}</span>
+      ${stock === null ? "" : `<b class="stock">${stock}</b>`}</button>`;
   }).join("");
   const brushName = g.brush === "erase" ? "Clear" : (tray.find(t => t[0] === g.brush) || ["","Sunflower"])[1];
   $("#trayTitle").textContent = g.brush === "erase" ? "Clearing squares" : "Planting: " + brushName;
-  $("#traySub").textContent = g.brush === "erase" ? "Click a square to dig it up."
-                                                 : "Click any square in the plot to place it.";
+  $("#traySub").textContent = g.brush === "erase"
+    ? "Click a square to dig it up — it goes back into your stock."
+    : g.brush === "stone"
+      ? "Scenery, and never in short supply."
+      : availOf(g.brush) > 0
+        ? "You have " + availOf(g.brush) + " to plant. Click any square in the plot."
+        : "None left. Ride out another clean day to grow one.";
 
   const nx = catNext();
   $("#unlockName").textContent = "Next unlock · " + (nx ? nx.name + " " + nx.emoji : "Everything 🏆");
@@ -3478,16 +3514,29 @@ function renderGarden(){
   renderCollection();
 }
 
+let stockNudge = 0;
+function outOfStock(id){
+  const sub = $("#traySub"), sp = speciesOf(id);
+  sub.textContent = "No " + sp.name.toLowerCase() + " left to plant — ride out another clean day to grow one.";
+  sub.style.color = "var(--rose-deep)";
+  const plane = $("#gPlane");
+  plane.style.animation = "none"; void plane.offsetWidth;
+  plane.style.animation = "nudge .32s ease";
+  clearTimeout(stockNudge);
+  stockNudge = setTimeout(() => { sub.style.color = ""; renderGarden(); }, 2200);
+}
+
 function renderCollection(){
   const n = grownCount();
   $("#collSub").textContent = unlocked().length + " of " + SPECIES.length +
     (n ? " · " + n + " grown" : "");
   $("#coll").innerHTML = SPECIES.map(s => {
-    const have = n >= s.need, q = qtyOf(s.id);
-    return `<div class="cc-collcell" title="${have ? esc(s.name) + (q ? " × " + q : " — none grown yet") : "Unlocks at " + s.need + " grown"}"
+    const have = n >= s.need, q = availOf(s.id), got = grownOf(s.id);
+    return `<div class="cc-collcell" title="${have ? esc(s.name) + (got ? " — " + q + " to plant, " + got + " grown" : " — none grown yet")
+              : "Unlocks at " + s.need + " grown"}"
       style="background:${have ? "var(--card)" : "var(--well)"};
       border-color:${q ? "var(--green)" : have ? "rgba(16,185,129,.28)" : "var(--hair)"}">
-      <span class="e" style="filter:${have ? "none" : "grayscale(1)"};opacity:${have ? (q ? 1 : .55) : .38}">${ico(s.id, 26)}</span>
+      <span class="e" style="filter:${have ? "none" : "grayscale(1)"};opacity:${have ? (got ? 1 : .55) : .38}">${ico(s.id, 26)}</span>
       <span class="l" style="color:${have ? "var(--green-ink)" : "var(--muted)"}">${have ? esc(s.name) : s.need + " grown"}</span>
       ${q ? `<b class="qty">${q}</b>` : ""}</div>`;
   }).join("");
@@ -3732,8 +3781,17 @@ function wireDesign(){
     const go = t.closest("[data-tab-go]");        if(go){ showTab(go.dataset.tabGo); return; }
     const sp = t.closest("[data-sp]");            if(sp){ S.garden.chosen = sp.dataset.sp; save(); renderPlantCard(); return; }
     const tile = t.closest("[data-tile]");        if(tile){
-      const g = S.garden, i = +tile.dataset.tile;
-      g.layouts[g.plotSize][i] = g.brush === "erase" ? "" : g.brush;
+      const g = S.garden, i = +tile.dataset.tile, cur = g.layouts[g.plotSize][i];
+      if(g.brush === "erase"){
+        if(!cur) return;
+        g.layouts[g.plotSize][i] = "";                 // back into stock
+      } else if(cur === g.brush){
+        return;                                        // already that, nothing to spend
+      } else if(availOf(g.brush) <= 0){
+        outOfStock(g.brush); return;                   // nothing left to plant
+      } else {
+        g.layouts[g.plotSize][i] = g.brush;            // spends one
+      }
       save(); renderGarden(); return; }
     const br = t.closest("[data-brush]");         if(br){ S.garden.brush = br.dataset.brush; save(); renderGarden(); return; }
     const sz = t.closest("[data-size]");          if(sz){ S.garden.plotSize = +sz.dataset.size; save(); renderGarden(); return; }
