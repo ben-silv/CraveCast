@@ -1,8 +1,6 @@
 # CraveCast
 
-A craving forecasting app. Predicts when an urge is likely to hit, warns you before it, and turns every day you stay clean into something growing in a garden.
-
-No sign-up. No tracking. Everything stays in your browser.
+A forecasting app to help you fight your addiction. Unlike other addiction apps, CraveCast is meant to be fun and help you stay on track. The gamification and reward aspect makes logging your cravings and staying clean something to look forward to, not another chore.
 
 ## If you're in crisis
 
@@ -10,34 +8,28 @@ No sign-up. No tracking. Everything stays in your browser.
 - Crisis Text Line: text HOME to 741741
 - 988 Suicide & Crisis Lifeline: call or text 988
 
-CraveCast is a tool to help you notice patterns. It's not therapy.
+CraveCast is a tool to help you notice patterns and attempt to support you during tough times.
 
 ## How it works
 
-**The forecast.** Logs when you get cravings, learns when you're most at risk, shows it as a weather report. Clear skies or stormy — you see what's coming. By your third log it's half your own pattern.
+**The forecast.** Log when you get cravings -> the model learns when you're most at risk -> shows it to you as a weather report. Clear skies or stormy — you see what's coming.
 
-**The garden.** Pick something to grow. Stay clean 24 hours and it's yours to plant. Slip and that one's lost, but nothing already grown ever disappears. 28 species unlock as your garden fills, and the plot itself grows a dimension each time you fill it.
+**The garden.** Pick something to grow. Stay clean 24 hours and it's yours to plant. Slip and that one's lost, but nothing already grown ever disappears. 28 species unlock as your garden fills, rewarding you for staying strong.
 
-**Logging.** One short scroll: how strong it is, your mood and stress, where you are, and how it went. The last one is what the forecast learns from. A note is optional and goes in after, so you're not stuck filling forms mid-urge.
+**Logging.** When you feel a craving click a few buttons and we log it for you. Tell us how strong it is, your mood and stress, where you are, and how it went. The last one is what the model learns from. A note is optional and can go in after, saving you that mid-craving annoyance.
 
 ## Try it
 
 Live: https://ben-silv.github.io/CraveCast/index.html
 
-Local: 
-```bash
-git clone https://github.com/ben-silv/CraveCast
-open CraveCast/index.html
-```
-
 ## Important stuff
 
-This is beta. Built by a student, based on real research.
+This is beta. Based on real research but still built by a student. It is not meant to get you clean, but to provide an extra tool.
 
-**The forecast:**
+**The Model:**
 - Learns from your logs, gets smarter over time
 - Starts with a population baseline, personalizes as you log
-- By log 16 it's ~84% you
+- By log 16 it's ~84% based on your data
 
 **Your data:**
 - Stays in your browser. No servers, no account needed
@@ -49,24 +41,7 @@ This is beta. Built by a student, based on real research.
 - Replace therapy or a support group
 - It's awareness, not a cure
 
-## Running it locally
-
-```bash
-python -m http.server 8000
-# then open http://127.0.0.1:8000/index.html
-```
-
-Or just open `index.html` directly in your browser.
-
-## Deploying
-
-GitHub Pages (free, public):
-1. Settings → Pages
-2. Source: main branch, root directory
-3. Wait a minute
-4. Live at `https://username.github.io/CraveCast/index.html`
-
-## The forecast
+## The Model
 
 Kernel density estimate over time-of-day and day-of-week, weighted by recency (21-day half-life), intensity, and whether it was a slip or held urge.
 
@@ -79,32 +54,7 @@ Honest limits:
 
 ## Data
 
-Stays in your browser by default. Optional: enable a Supabase account for cross-device sync. See `README-ACCOUNTS.md`.
-
-## What's in the repo
-
-| Path | What |
-|---|---|
-| `index.html` | the whole app — edit this |
-| `artifact.html` | generated; the fragment published as a Claude Artifact |
-| `build-artifact.py` | `index.html` → Artifact fragment |
-| `build-native.py` | `index.html` → shared native web assets, with fonts bundled offline |
-| `codemagic.yaml` | the iOS build, on a hosted Mac — signs and ships to TestFlight |
-| `rebuild-ios.sh` | the same build by hand, if you have a Mac in front of you |
-| `capacitor.config.json`, `package.json` | the Capacitor project; CI clones this repo and reads them |
-| `make-icon.py` | renders `assets/icon.png`, the 1024px app icon |
-| `fit-prior.py` | fits the cold-start baseline from the phone-survey workbook |
-| `prior.js` | its output — the `PRIOR` block embedded in `index.html` |
-| `fit-weekday.py` | tests whether the drink calendars support a weekday term |
-| `supabase-schema.sql` | tables and row-level-security policies for optional accounts |
-| `design_handoff_cravecast/` | the design this UI was built from, and the icon sprite |
-| `README-ACCOUNTS.md` | how to switch accounts and cloud sync on |
-| `README-ANDROID.md` | installing and rebuilding the Android app |
-| `README-IOS.md` | building the iOS app and submitting it to the App Store |
-
-One self-contained `index.html` — no framework, no build step, no dependencies.
-The same file is the source for four targets: the web page, a published Claude
-Artifact, an Android app and an iOS app.
+Stays in your browser by default.
 
 ## Sources
 
