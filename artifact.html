@@ -253,7 +253,8 @@ a:hover{color:var(--teal)}
 .cc-weekbars .col{flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;
                   height:100%; justify-content:flex-end}
 .cc-weekbars .v{font:700 11px var(--mono)}
-.cc-weekbars .bar{width:100%; border-radius:100px; transition:height .5s ease}
+.cc-weekbars .bar{width:100%; max-width:52px; margin:0 auto; border-radius:100px;
+                  transition:height .5s ease}
 .cc-weekbars .d{font:500 11px var(--mono); color:var(--muted)}
 
 /* ── heatmap ───────────────────────────────────────────────────────── */
@@ -399,6 +400,16 @@ a:hover{color:var(--teal)}
         border-bottom:1px solid var(--hair); cursor:pointer; transition:background .15s}
 .cc-day:last-child{border-bottom:none}
 .cc-day:hover{background:var(--well)}
+.cc-histrow{grid-template-columns:minmax(240px,0.85fr) minmax(320px,1.15fr);
+            align-items:stretch}
+/* the heatmap is seven rows tall; let the three cards share that height
+   rather than leaving the column half empty under them */
+.cc-histrow > .cc-col{height:100%}
+.cc-histrow .cc-insight{flex:1; display:flex; flex-direction:column; justify-content:center}
+@media (max-width:820px){
+  .cc-histrow{grid-template-columns:1fr}
+  .cc-histrow .cc-insight{flex:0 0 auto}
+}
 .cc-insight{border-radius:26px; padding:20px 22px; animation:rise .5s ease both;
             background:var(--ins-bg); border:1px solid var(--ins-bd)}
 .cc-insight .k{font:500 11px var(--mono); letter-spacing:.1em; text-transform:uppercase;
@@ -1544,12 +1555,14 @@ input:focus-visible, textarea:focus-visible, select:focus-visible{
       <div style="display:flex;background:var(--seg);border-radius:100px;padding:4px" id="hRange"></div>
     </div>
 
-    <div class="cc-grid a330">
-      <section class="cc-card r30">
-        <div class="cc-sub" id="hWeekIntro"></div>
-        <div class="cc-weekbars" id="hWeekBars"></div>
-        <div class="cc-tag amber" style="margin-top:16px;padding:7px 14px;font-size:12.5px" id="hPeak"></div>
-      </section>
+    <section class="cc-card r30">
+      <div class="cc-sub" id="hWeekIntro"></div>
+      <div class="cc-weekbars" id="hWeekBars"></div>
+      <div class="cc-tag amber" style="margin-top:16px;padding:7px 14px;font-size:12.5px" id="hPeak"></div>
+    </section>
+
+    <div class="cc-grid cc-histrow" style="margin-top:18px">
+      <div class="cc-col" id="hInsights"></div>
 
       <section class="cc-card r30">
         <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px">
@@ -1559,8 +1572,6 @@ input:focus-visible, textarea:focus-visible, select:focus-visible{
         <div class="cc-heatcols" id="hHeatCols"></div>
       </section>
     </div>
-
-    <div class="cc-grid a260" style="margin-top:18px" id="hInsights"></div>
 
     <div class="cc-h" style="font-size:18px;margin:26px 0 12px">Recent days 📅</div>
     <div class="cc-days" id="hDays"></div>
@@ -3877,13 +3888,18 @@ function renderHistoryView(){
   $("#hHeatCols").innerHTML = "<span></span>" + colL.map(l => `<span>${l}</span>`).join("");
 
   // insights, written from the real tallies
+  /* tally() spans every log for this habit, so the share is against that
+     same population rather than the range-filtered slice */
   const trig = tally("triggers", true)[0], act = tally("activity", false)[0];
+  const allN = activeLogs().length;
   const held = logs.filter(l => l.outcome === "held").length;
   const rate = logs.length ? Math.round(held / logs.length * 100) : 0;
   $("#hInsights").innerHTML = [
     ["Timing", "Your highest-risk stretch is around " + fmtClock(peakHour()) + ", most days of the week.", "teal"],
-    ["Combination", trig ? esc(trig.k) + " shows up in " + Math.round(trig.n / Math.max(1,logs.length) * 100) +
-     "% of your logs" + (act ? ", most often " + esc(act.k).toLowerCase() + "." : ".")
+    ["Combination", trig
+     ? esc(trig.name) + " shows up in " +
+       Math.min(100, Math.round(trig.n / Math.max(1, allN) * 100)) + "% of your logs" +
+       (act ? ", most often " + esc(act.name).toLowerCase() + "." : ".")
      : "Log a few more urges and the strongest pairing will show up here.", "amber"],
     ["What helps", logs.length ? "You held out " + rate + "% of the time this " + RANGE.toLowerCase() + "."
      : "Nothing logged in this range yet.", "green"]
