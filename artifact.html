@@ -30,6 +30,11 @@
   --plot-ctl:#fff; --plot-ctl-bd:rgba(16,185,129,.3);
   --plot-ctl-sh:rgba(4,120,87,.28); --plot-seg:rgba(255,255,255,.75);
   --plot-stars:0;
+  /* insight cards carry their own tint, so they need a night set too */
+  --ins-teal-bg:#ECFEFF;  --ins-teal-bd:rgba(6,182,212,.25);  --ins-teal-k:#0E7490;
+  --ins-amber-bg:#FFF7ED; --ins-amber-bd:rgba(245,158,11,.28); --ins-amber-k:#B45309;
+  --ins-green-bg:#ECFDF5; --ins-green-bd:rgba(16,185,129,.25); --ins-green-k:#047857;
+  --ins-ink:#1F2937;
 
   --disp:'Baloo 2',system-ui,sans-serif;
   --body:'Plus Jakarta Sans',system-ui,sans-serif;
@@ -63,6 +68,10 @@
   --plot-ctl:rgba(255,255,255,.07); --plot-ctl-bd:rgba(110,231,183,.28);
   --plot-ctl-sh:rgba(0,0,0,.45); --plot-seg:rgba(255,255,255,.06);
   --plot-stars:1;
+  --ins-teal-bg:rgba(6,182,212,.13);  --ins-teal-bd:rgba(34,211,238,.32);  --ins-teal-k:#67E8F9;
+  --ins-amber-bg:rgba(245,158,11,.13); --ins-amber-bd:rgba(251,191,36,.32); --ins-amber-k:#FBBF24;
+  --ins-green-bg:rgba(16,185,129,.13); --ins-green-bd:rgba(52,211,153,.32); --ins-green-k:#6EE7B7;
+  --ins-ink:#E8EDF3;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]):not([data-theme="dark"]){
@@ -82,6 +91,10 @@
   --plot-ctl:rgba(255,255,255,.07); --plot-ctl-bd:rgba(110,231,183,.28);
   --plot-ctl-sh:rgba(0,0,0,.45); --plot-seg:rgba(255,255,255,.06);
   --plot-stars:1;
+  --ins-teal-bg:rgba(6,182,212,.13);  --ins-teal-bd:rgba(34,211,238,.32);  --ins-teal-k:#67E8F9;
+  --ins-amber-bg:rgba(245,158,11,.13); --ins-amber-bd:rgba(251,191,36,.32); --ins-amber-k:#FBBF24;
+  --ins-green-bg:rgba(16,185,129,.13); --ins-green-bd:rgba(52,211,153,.32); --ins-green-k:#6EE7B7;
+  --ins-ink:#E8EDF3;
   }
 }
 
@@ -386,10 +399,14 @@ a:hover{color:var(--teal)}
         border-bottom:1px solid var(--hair); cursor:pointer; transition:background .15s}
 .cc-day:last-child{border-bottom:none}
 .cc-day:hover{background:var(--well)}
-.cc-insight{border-radius:26px; padding:20px 22px; border:1px solid; animation:rise .5s ease both}
-.cc-insight .k{font:500 11px var(--mono); letter-spacing:.1em; text-transform:uppercase; margin-bottom:9px}
-.cc-insight .t{font:600 15px/1.5 var(--body); color:#1F2937}
-:root[data-theme="dark"] .cc-insight .t{color:#E5E7EB}
+.cc-insight{border-radius:26px; padding:20px 22px; animation:rise .5s ease both;
+            background:var(--ins-bg); border:1px solid var(--ins-bd)}
+.cc-insight .k{font:500 11px var(--mono); letter-spacing:.1em; text-transform:uppercase;
+               margin-bottom:9px; color:var(--ins-k)}
+.cc-insight .t{font:600 15px/1.5 var(--body); color:var(--ins-ink)}
+.cc-insight.teal { --ins-bg:var(--ins-teal-bg);  --ins-bd:var(--ins-teal-bd);  --ins-k:var(--ins-teal-k) }
+.cc-insight.amber{ --ins-bg:var(--ins-amber-bg); --ins-bd:var(--ins-amber-bd); --ins-k:var(--ins-amber-k) }
+.cc-insight.green{ --ins-bg:var(--ins-green-bg); --ins-bd:var(--ins-green-bd); --ins-k:var(--ins-green-k) }
 
 .cc-view[hidden]{display:none!important}
 
@@ -3844,12 +3861,14 @@ function renderHistoryView(){
   $("#hPeak").textContent = "Peak · " + ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"][pk] + " · " + vals[pk] + "%";
 
   // 5 rows (Mon–Fri) × 6 dayparts, coloured on the design's six-step scale
-  const rowL = ["M","T","W","T","F"], colH = [6,10,14,18,20,23], colL = ["6a","10a","2p","6p","8p","11p"];
+  const rowL = ["M","T","W","T","F","S","S"], colH = [6,10,14,18,20,23],
+        colL = ["6a","10a","2p","6p","8p","11p"];
   let html = "";
   rowL.forEach((rl, r) => {
     html += `<div class="cell" style="background:transparent;color:var(--muted)">${rl}</div>`;
     colH.forEach(h => {
-      const t = new Date(); t.setDate(t.getDate() + ((r + 1 - t.getDay()) + 7) % 7); t.setHours(h,0,0,0);
+      const dow = (r + 1) % 7;   // row 0 is Monday, row 6 wraps to Sunday
+      const t = new Date(); t.setDate(t.getDate() + ((dow - t.getDay()) + 7) % 7); t.setHours(h,0,0,0);
       const v = Math.round(MODEL.at(t)), hc = heatStep(v);
       html += `<div class="cell" style="background:${hc.c};color:${hc.fg}"></div>`;
     });
@@ -3862,17 +3881,14 @@ function renderHistoryView(){
   const held = logs.filter(l => l.outcome === "held").length;
   const rate = logs.length ? Math.round(held / logs.length * 100) : 0;
   $("#hInsights").innerHTML = [
-    ["Timing", "Your highest-risk stretch is around " + fmtClock(peakHour()) + ", most days of the week.",
-     "#ECFEFF","rgba(6,182,212,.25)","#0E7490"],
+    ["Timing", "Your highest-risk stretch is around " + fmtClock(peakHour()) + ", most days of the week.", "teal"],
     ["Combination", trig ? esc(trig.k) + " shows up in " + Math.round(trig.n / Math.max(1,logs.length) * 100) +
      "% of your logs" + (act ? ", most often " + esc(act.k).toLowerCase() + "." : ".")
-     : "Log a few more urges and the strongest pairing will show up here.",
-     "#FFF7ED","rgba(245,158,11,.28)","#B45309"],
+     : "Log a few more urges and the strongest pairing will show up here.", "amber"],
     ["What helps", logs.length ? "You held out " + rate + "% of the time this " + RANGE.toLowerCase() + "."
-     : "Nothing logged in this range yet.", "#ECFDF5","rgba(16,185,129,.25)","#047857"]
-  ].map(([k,t,bg,bd,kc]) =>
-    `<div class="cc-insight" style="background:${bg};border-color:${bd}">
-      <div class="k" style="color:${kc}">${k}</div><div class="t">${t}</div></div>`).join("");
+     : "Nothing logged in this range yet.", "green"]
+  ].map(([k,t,tone]) =>
+    `<div class="cc-insight ${tone}"><div class="k">${k}</div><div class="t">${t}</div></div>`).join("");
 
   // recent days
   const byDay = {};
