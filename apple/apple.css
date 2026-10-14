@@ -1,0 +1,293 @@
+/* ══ CraveCast — Apple layer ═══════════════════════════════════════════
+   Loaded after the base stylesheet by build-apple.py. It restyles; it does
+   not restructure. Principles from the apple-design skill:
+     · system type, size-specific tracking, weight-led hierarchy
+     · grouped surfaces instead of outlined boxes; hairlines only where needed
+     · translucent chrome that only materialises once content scrolls under it
+     · no idle loops (sheen, halos, swaying logo) — motion answers input
+     · springs for anything you can touch (see apple.js) */
+
+:root{
+  --disp:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+  --body:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",Menlo,Consolas,monospace;
+
+  --page:#F2F2F7; --card:#FFFFFF; --bar:rgba(242,242,247,.74);
+  --hair:rgba(60,60,67,.13); --hair-card:transparent;
+  --ink:#1D1D1F; --soft:#515154; --muted:#86868B;
+  --well:#F2F2F7; --track:rgba(120,120,128,.16); --ring-track:rgba(120,120,128,.14);
+  --seg:rgba(118,118,128,.12); --seg-thumb:#FFFFFF;
+  --seg-thumb-sh:0 3px 8px rgba(0,0,0,.12), 0 3px 1px rgba(0,0,0,.04);
+  --fill:rgba(118,118,128,.12); --fill-hover:rgba(118,118,128,.2);
+  --tint:#0891B2;
+  --lift:0 1px 2px rgba(0,0,0,.04), 0 10px 28px -16px rgba(0,0,0,.16);
+  --scrim:rgba(0,0,0,.28);
+}
+:root[data-theme="dark"]{
+  --page:#000000; --card:#1C1C1E; --bar:rgba(28,28,30,.72);
+  --hair:rgba(84,84,88,.5); --hair-card:transparent;
+  --ink:#F5F5F7; --soft:#C7C7CC; --muted:#8E8E93;
+  --well:#2C2C2E; --track:rgba(120,120,128,.32); --ring-track:rgba(120,120,128,.28);
+  --seg:rgba(118,118,128,.24); --seg-thumb:#636366;
+  --seg-thumb-sh:0 3px 8px rgba(0,0,0,.3);
+  --fill:rgba(118,118,128,.24); --fill-hover:rgba(118,118,128,.34);
+  --tint:#22D3EE;
+  --lift:none;
+  --scrim:rgba(0,0,0,.5);
+  --plant-card:linear-gradient(160deg,rgba(16,185,129,.16),#1C1C1E 70%);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]):not([data-theme="dark"]){
+    --page:#000000; --card:#1C1C1E; --bar:rgba(28,28,30,.72);
+    --hair:rgba(84,84,88,.5); --hair-card:transparent;
+    --ink:#F5F5F7; --soft:#C7C7CC; --muted:#8E8E93;
+    --well:#2C2C2E; --track:rgba(120,120,128,.32); --ring-track:rgba(120,120,128,.28);
+    --seg:rgba(118,118,128,.24); --seg-thumb:#636366;
+    --seg-thumb-sh:0 3px 8px rgba(0,0,0,.3);
+    --fill:rgba(118,118,128,.24); --fill-hover:rgba(118,118,128,.34);
+    --tint:#22D3EE;
+    --lift:none;
+    --scrim:rgba(0,0,0,.5);
+    --plant-card:linear-gradient(160deg,rgba(16,185,129,.16),#1C1C1E 70%);
+  }
+}
+
+/* ── type ──────────────────────────────────────────────────────────── */
+body{font:400 15px/1.47 var(--body); letter-spacing:-.01em;
+     transition:background-color .35s ease; -webkit-tap-highlight-color:transparent}
+/* the base inline styles ask for 800; system faces read heavy there, so
+   hierarchy comes from size + tracking instead */
+[style*="font:800"]{font-weight:700!important}
+.cc-h{font:600 17px/1.3 var(--body); letter-spacing:-.022em}
+.cc-h.lg{font:700 34px/1.12 var(--disp); letter-spacing:-.024em}
+.cc-sub{font:400 15px/1.5 var(--body); letter-spacing:-.012em}
+.cc-eyebrow,.cc-plot .eyebrow,.flabel,.cc-insight .k{
+  font:600 12px var(--body); letter-spacing:.02em; text-transform:uppercase}
+.cc-mono{font:400 13px var(--body); letter-spacing:-.005em; color:var(--muted)}
+#greetLine{font-size:34px!important; line-height:1.12!important; letter-spacing:-.024em!important}
+.cc-ring .num,.cc-hero .big,#statStreak,#statGrown,#statLogs,#cravVal,#moodVal{
+  font-variant-numeric:tabular-nums}
+
+/* ── chrome: the bar is clear until content scrolls under it ───────── */
+.cc-top{background:transparent; backdrop-filter:none; -webkit-backdrop-filter:none;
+        border-bottom:none; padding:12px 28px;
+        transition:background-color .25s ease, box-shadow .25s ease}
+.cc-top.scrolled{background:var(--bar);
+                 backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%);
+                 box-shadow:0 .5px 0 var(--hair)}
+.cc-logo{font:700 20px var(--disp); letter-spacing:-.02em}
+.cc-logo .leaf{animation:none}
+.cc-logo em{margin-left:-9px}   /* the flex gap was splitting the wordmark */
+.cc-logo:hover,.cc-logo:active{transform:none}
+
+/* segmented control with a spring-driven thumb (apple.js) */
+.cc-nav{position:relative; flex-wrap:nowrap; gap:0; padding:3px; margin-left:18px;
+        border-radius:10px; background:var(--seg)}
+.cc-nav .ind{position:absolute; top:3px; bottom:3px; left:0; width:0; border-radius:8px;
+             background:var(--seg-thumb); box-shadow:var(--seg-thumb-sh);
+             pointer-events:none; will-change:transform,width; transition:opacity .2s}
+.cc-navbtn{position:relative; z-index:1; border-radius:8px; padding:6px 16px; gap:6px;
+           font:500 13.5px var(--body); letter-spacing:-.01em; color:var(--ink);
+           background:transparent!important; transition:color .2s}
+.cc-navbtn[aria-selected="true"]{color:var(--ink); font-weight:600}
+.cc-navbtn .ico{opacity:.85}
+#tabCount{background:var(--fill)!important; color:var(--soft)!important; font:600 11px var(--body)!important}
+
+.cc-pillbtn,.cc-habit{border:none; background:var(--fill); color:var(--ink);
+                      border-radius:100px; padding:7px 14px; font:500 13px var(--body);
+                      letter-spacing:-.01em; transition:background-color .15s}
+.cc-pillbtn:hover,.cc-habit:hover{transform:none; background:var(--fill-hover)}
+/* the base swaps this label for content:"F514" (a broken escape) when narrow */
+.cc-topright .cc-pillbtn.lbl-long::after{content:"\1F514"}
+.cc-pillbtn.primary{background:var(--tint); color:#fff}
+.cc-chip-user{border:none; background:var(--fill); padding:4px 13px 4px 4px}
+.cc-chip-user span:last-child{font:500 13px var(--body)!important}
+.cc-avatar{width:28px; height:28px; font:600 12px var(--body)}
+
+/* ── surfaces: grouped, borderless, soft lift ──────────────────────── */
+.cc-main{padding-top:18px}
+.cc-card,.cc-risk,.cc-step,.cc-days,.cc-plantcard,.cc-unlock,.cc-plot,.alarm{
+  border:none; border-radius:22px; box-shadow:var(--lift);
+  transition:background-color .35s ease}
+.cc-card[style*="border-radius:26px"]{border-radius:20px!important}
+.cc-grid{gap:16px}
+.cc-risk .irid,.cc-plantcard .orb,.cc-hero .orb{opacity:.6}
+
+/* idle loops removed: motion should answer something the person did */
+.cc-halo,.cc-sheen{display:none}
+.cc-well .glyph{animation:none}
+.cc-plot .sun{animation:none}
+
+/* the base script hard-codes two light-only colours; dark mode needs both */
+.cc-seed[style*="rgba(255,255,255,.55)"]{background:var(--fill)!important}
+:root[data-theme="dark"] #riskLab{filter:brightness(2.4) saturate(.8)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) #riskLab{filter:brightness(2.4) saturate(.8)}
+}
+
+/* ── buttons: flat fills; feedback is a press-scale (apple.js) ─────── */
+.cc-chunk{border-radius:14px; padding:15px 20px; box-shadow:none!important;
+          font:600 17px var(--body); letter-spacing:-.022em;
+          transition:filter .15s, opacity .2s, background-color .2s}
+.cc-chunk:active{transform:none}
+.cc-chunk:hover{filter:brightness(1.06)}
+.cc-chunk.teal{background:#0891B2}
+.cc-chunk.green{background:#059669}
+.cc-chunk.amber{background:#FF9F0A; color:#2B1700; border-radius:100px; padding:12px 20px;
+                font:600 15px var(--body)}
+.cc-chunk:disabled{cursor:default; filter:none}
+
+.btn{border:none; background:var(--fill); border-radius:100px; padding:9px 17px;
+     font:600 15px var(--body); letter-spacing:-.015em}
+.btn:hover{background:var(--fill-hover)}
+.btn:active{transform:none}
+.btn.sm{padding:6px 13px; font-size:13.5px}
+.btn.ghost{background:transparent; color:var(--tint)}
+.btn.ghost:hover{background:var(--fill); color:var(--tint)}
+.btn.primary{background:var(--tint); color:#fff; box-shadow:none}
+:root[data-theme="dark"] .btn.primary{color:#002A33}
+.btn.primary:hover{background:var(--tint); filter:brightness(1.08)}
+.btn.primary:active{transform:none; box-shadow:none}
+
+.cc-tag{font:600 12px var(--body); letter-spacing:-.005em}
+
+/* ── home ──────────────────────────────────────────────────────────── */
+.cc-ring{width:128px; height:128px}
+.cc-ring .hub{inset:13px}
+.cc-ring .num{font:700 38px/1 var(--disp); letter-spacing:-.035em}
+.cc-ring .num span{font-size:18px; font-weight:600}
+.cc-ring .lab{font:600 10.5px var(--body); letter-spacing:.06em}
+.cc-why{border:none; background:var(--well); border-radius:12px; padding:12px 15px;
+        font:500 15px var(--body); letter-spacing:-.015em; color:var(--tint)}
+.cc-whyrow{font:400 14px/1.5 var(--body)}
+.cc-seed{border-width:1px; border-radius:14px}
+.cc-seed .n,.cc-trayitem .l,.cc-collcell .l{font:500 10.5px var(--body); letter-spacing:0}
+.cc-bars .tick,.cc-weekbars .d,.cc-weekbars .v,.cc-heatcols span,.cc-heat .cell{
+  font-family:var(--body); letter-spacing:0}
+.armstate{font:400 13px var(--body)}
+
+/* ── log flow: 1:1 tracking, no easing on input-driven parts ───────── */
+.cc-rail{height:4px}
+.cc-step{padding:26px}
+.cc-q{font:600 22px/1.25 var(--body); letter-spacing:-.024em}
+.cc-ends{font:400 12px var(--body)}
+.cc-slider .trk,.cc-slider .fill{height:6px!important; top:20px!important}
+.cc-slider .fill{transition:none}
+.cc-slider .thumb{top:9px!important; width:28px!important; height:28px!important;
+                  margin-left:-14px!important; border:none; background:#fff;
+                  box-shadow:0 .5px 4px rgba(0,0,0,.12), 0 6px 13px rgba(0,0,0,.12), 0 0 0 .5px rgba(0,0,0,.04);
+                  transition:scale .12s ease-out}
+.cc-slider:active .thumb{scale:1.12}
+.cc-opt,.cc-pill{border-width:1px; font:600 15px var(--body); letter-spacing:-.015em;
+                 transition:background-color .15s, color .15s, border-color .15s}
+.cc-opt{border-radius:14px}
+.cc-note,textarea,input[type="text"],input[type="email"],input[type="password"],
+input[type="number"],input[type="datetime-local"],select{
+  border:1px solid transparent; border-radius:12px; font:400 15px var(--body); letter-spacing:-.012em}
+input:focus-visible,textarea:focus-visible,select:focus-visible{
+  border-color:var(--teal); box-shadow:0 0 0 3.5px rgba(6,182,212,.22)}
+
+/* ── result ────────────────────────────────────────────────────────── */
+.cc-hero{border-radius:26px; box-shadow:0 20px 40px -24px rgba(14,116,144,.7)}
+.cc-hero .big{font:700 92px/1 var(--disp); letter-spacing:-.045em}
+.cc-cope{border:none; border-radius:16px; box-shadow:var(--lift); transition:background-color .15s}
+.cc-cope:hover{background:var(--well)}
+.cc-cope .t{font:600 15.5px var(--body); letter-spacing:-.015em}
+.cc-cope .s{font:400 13px var(--body)}
+.cc-cope .cta{font:600 14px var(--body); color:var(--tint)}
+.cc-reason .tick{border-radius:8px}
+
+/* ── garden: the plot is grabbed and spun (apple.js) ───────────────── */
+.cc-stage3d{touch-action:pan-y; cursor:grab; user-select:none; -webkit-user-select:none}
+.cc-stage3d.grabbing{cursor:grabbing}
+.cc-plane,.cc-tile .e{transition:none}
+.cc-rot{border:none; border-radius:50%; width:42px; height:42px;
+        box-shadow:0 1px 3px rgba(0,0,0,.12), 0 0 0 .5px var(--plot-ctl-bd)}
+.cc-rot:active{transform:none}
+.cc-seg{border-radius:14px}
+.cc-sizeread b{font:600 15px var(--body)}
+.cc-sizeread span,.cc-sizehint{font-family:var(--body)}
+.cc-trayitem{border-width:1px; border-radius:14px}
+.cc-collcell{border-width:1px; border-radius:18px}
+
+/* ── history ───────────────────────────────────────────────────────── */
+.cc-day{border-bottom:.5px solid var(--hair); padding:15px 20px}
+.cc-insight{border:none; border-radius:20px}
+.cc-insight .t{font:500 15px/1.5 var(--body); letter-spacing:-.012em}
+#deepFold > summary{font:600 16px var(--body)!important; color:var(--tint)!important}
+.log-ttl{font:600 15px var(--body)}
+.log-time,.tag{font-family:var(--body)}
+
+/* ── switches: Apple proportions ───────────────────────────────────── */
+.sw-toggle{width:51px; height:31px}
+.sw-toggle span{background:var(--track)}
+.sw-toggle span::before{top:2px; left:2px; width:27px; height:27px;
+  box-shadow:0 3px 8px rgba(0,0,0,.15), 0 3px 1px rgba(0,0,0,.06);
+  transition:transform .3s cubic-bezier(.3,1.3,.5,1)}
+.sw-toggle input:checked + span{background:#34C759}
+.sw-toggle input:checked + span::before{transform:translateX(20px)}
+
+/* ── dialogs → cards on desktop, sheets on phones (apple.js drives both) */
+dialog{border-radius:20px; animation:none!important;
+       box-shadow:0 30px 70px -24px rgba(0,0,0,.38), 0 0 0 .5px var(--hair)}
+dialog::backdrop{background:transparent; backdrop-filter:none}
+.dlg-hd{border-bottom:none; border-radius:20px 20px 0 0; padding:20px 22px 10px}
+.dlg-hd h2{font:700 20px var(--body); letter-spacing:-.022em}
+.dlg-ft{border-top:none; border-radius:0 0 20px 20px; padding:12px 22px 20px}
+.field > label{font:600 14px var(--body); letter-spacing:-.012em}
+.hint{font:400 13px/1.5 var(--body)}
+.range-val{font:600 12.5px var(--body); font-variant-numeric:tabular-nums}
+.sheet-grab{display:none}
+.ap-scrim{position:fixed; inset:0; z-index:40; background:var(--scrim); opacity:0;
+          visibility:hidden; pointer-events:none}
+.cc-main{transform-origin:50% 0}
+
+/* ── phones: tab bar at the bottom, sheets from the bottom ─────────── */
+@media (max-width:700px){
+  .cc-top{padding:10px 16px; padding-top:calc(10px + env(safe-area-inset-top,0px))}
+  .cc-h.lg,#greetLine{font-size:30px!important}
+  .cc-main{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
+
+  .cc-nav.tabbar{position:fixed; left:0; right:0; bottom:0; z-index:30; margin:0; width:auto;
+    order:0; border-radius:0; display:flex; padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));
+    background:var(--bar); backdrop-filter:blur(20px) saturate(180%);
+    -webkit-backdrop-filter:blur(20px) saturate(180%); box-shadow:0 -.5px 0 var(--hair)}
+  .cc-nav.tabbar .ind{display:none}
+  .cc-nav.tabbar .cc-navbtn{flex:1; flex-direction:column; gap:3px; padding:5px 2px;
+    font:500 10.5px var(--body); letter-spacing:0; color:var(--muted); font-weight:500}
+  .cc-nav.tabbar .cc-navbtn .ico{width:24px!important; height:24px!important; opacity:1}
+  .cc-nav.tabbar .cc-navbtn[aria-selected="true"]{color:var(--tint)}
+  .cc-nav.tabbar #tabCount{position:absolute; top:1px; left:calc(50% + 7px); margin:0!important;
+    padding:1px 6px!important; font-size:10px!important}
+
+  dialog{margin:auto 0 0 0; width:100%; max-width:100%; max-height:92vh;
+         border-radius:14px 14px 0 0; padding-bottom:env(safe-area-inset-bottom,0px)}
+  .dlg-hd{border-radius:14px 14px 0 0; padding-top:24px; touch-action:none}
+  .dlg-ft{border-radius:0}
+  .sheet-grab{display:block; position:absolute; top:7px; left:50%; width:36px; height:5px;
+              margin-left:-18px; border-radius:3px; background:rgba(120,120,128,.42)}
+}
+
+/* ── moving between views: lateral, in the direction of the tab ────── */
+.cc-view{animation:apIn .42s cubic-bezier(.22,.9,.28,1) both}
+.cc-view > *{animation:none}
+@keyframes apIn{
+  from{opacity:0; transform:translate3d(var(--dx,0px),var(--dy,8px),0)}
+  to{opacity:1; transform:none}
+}
+@keyframes apFade{from{opacity:0} to{opacity:1}}
+
+/* ── accessibility signals ─────────────────────────────────────────── */
+@media (prefers-reduced-motion:reduce){
+  .cc-view{animation:apFade .2s ease both!important}
+}
+@media (prefers-reduced-transparency:reduce){
+  .cc-top.scrolled,.cc-nav.tabbar{background:var(--card)!important;
+    backdrop-filter:none!important; -webkit-backdrop-filter:none!important}
+}
+@media (prefers-contrast:more){
+  :root{--hair:rgba(0,0,0,.45); --muted:#5E5E63}
+  .cc-card,.cc-risk,.cc-step,.cc-days,.cc-plantcard,.cc-unlock,.cc-plot,.cc-cope,.cc-insight{
+    border:1px solid var(--hair)}
+  .cc-top.scrolled,.cc-nav.tabbar{background:var(--card)}
+}
