@@ -1,7 +1,7 @@
 # CraveCast — iOS app
 
 The source is already an iOS app in everything but the build. Capacitor keeps
-one `www` directory for every platform, so `index.html` is as much the iOS app
+one `www` directory for every platform, so `app.html` is as much the iOS app
 as it is the Android one, and `npx cap sync ios` copies the same output the
 Android build uses.
 
@@ -114,7 +114,7 @@ Then Product → Archive → Distribute App → App Store Connect.
 ## What changed in the source to make this work
 
 All of it is shared with Android and the web page — there is still exactly one
-`index.html`.
+`app.html`.
 
 - `viewport-fit=cover` on the viewport meta. The `.native` rules already padded
   for `env(safe-area-inset-*)`, but without this iOS reports those insets as

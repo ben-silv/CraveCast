@@ -19,7 +19,7 @@ one viewer from another. Multi-user means a real backend, which means the app
 has to be served from ordinary web hosting.
 
 The Artifact and the Android APK keep working as the single-device version.
-`index.html` is still the one source of truth for all of them.
+`app.html` is still the one source of truth for all of them.
 
 ---
 
@@ -55,7 +55,7 @@ In Supabase, go to **Project Settings → API** and copy:
 - the **Project URL** (`https://<something>.supabase.co`)
 - the **anon / public** key
 
-Open `index.html`, find the `CLOUD` block near the top of the `<script>`, and
+Open `app.html`, find the `CLOUD` block near the top of the `<script>`, and
 fill both in:
 
 ```js
@@ -72,7 +72,8 @@ bypasses all of them and must never leave a server.
 
 ### 4. Put it on the web
 
-`index.html` is self-contained — no build step, no dependencies. Drag the file
+Run `python build-apple.py` to regenerate `index.html` from `app.html`. The result is
+self-contained — no dependencies. Drag the file
 onto [Netlify Drop](https://app.netlify.com/drop), or push the folder to a
 GitHub repo and switch on GitHub Pages, or use Vercel. Any static host works.
 

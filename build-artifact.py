@@ -1,4 +1,4 @@
-"""Build the Artifact fragment from index.html.
+"""Build the Artifact fragment from app.html.
 
 The Artifact host wraps the file in its own <!doctype>/<html>/<head>/<body>,
 so strip our document wrapper and the head tags it already provides
@@ -11,7 +11,7 @@ prints a warning and then ships the file anyway.
 import re, sys, pathlib
 
 HERE = pathlib.Path(__file__).resolve().parent
-src = HERE / "index.html"
+src = HERE / "app.html"
 out = HERE / "artifact.html"
 
 
@@ -31,9 +31,9 @@ html = src.read_text(encoding="utf-8")
 m_head = re.search(r"<head>(.*?)</head>", html, re.S)
 m_body = re.search(r"<body>(.*)</body>", html, re.S)
 if not m_head:
-    die("no <head>...</head> in index.html -- the document wrapper is malformed")
+    die("no <head>...</head> in app.html -- the document wrapper is malformed")
 if not m_body:
-    die("no <body>...</body> in index.html -- the document wrapper is malformed")
+    die("no <body>...</body> in app.html -- the document wrapper is malformed")
 
 # head is matched non-greedily, so an early </head> would cut it short and
 # drop whatever followed. Nothing but whitespace may sit between the two.

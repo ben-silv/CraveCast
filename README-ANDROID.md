@@ -63,8 +63,9 @@ the current forecast.
 
 ## Rebuilding after you edit the app
 
-`index.html` in this folder is the **single source of truth** for all four
-targets — the web page, the published Artifact, the Android app and the iOS app. It detects
+`app.html` in this folder is the **single source of truth** for all four
+targets — the web page (`build-apple.py` adds the Apple layer in `apple\` and
+writes it out as `index.html`), the published Artifact, the Android app and the iOS app. It detects
 at runtime whether it's inside the Android shell and switches its alerting
 accordingly, so there is only ever one copy of the logic to edit.
 
@@ -72,14 +73,15 @@ accordingly, so there is only ever one copy of the logic to edit.
 powershell -ExecutionPolicy Bypass -File C:\Users\silve\CraveCastApp\rebuild.ps1
 ```
 
-That copies `index.html` into the app (swapping the Google Fonts link for the
+That copies `app.html` into the app (swapping the Google Fonts link for the
 bundled offline fonts), syncs Capacitor, builds, and drops a fresh
 `CraveCast.apk` back into this folder. Takes a few seconds once warm.
 
-To refresh the published web version instead:
+To refresh the published web versions instead:
 
 ```powershell
-python C:\Users\silve\OneDrive\Desktop\Tracker\build-artifact.py
+python C:\Users\silve\OneDrive\Desktop\Tracker\build-apple.py      # the GitHub Pages site
+python C:\Users\silve\OneDrive\Desktop\Tracker\build-artifact.py   # the Artifact
 ```
 
 ---
@@ -88,14 +90,17 @@ python C:\Users\silve\OneDrive\Desktop\Tracker\build-artifact.py
 
 | Path | What |
 |---|---|
-| `Desktop\Tracker\index.html` | the app itself — edit this |
+| `Desktop\Tracker\app.html` | the app itself — edit this |
+| `Desktop\Tracker\index.html` | the GitHub Pages site — generated, don't edit |
+| `Desktop\Tracker\apple\` | the Apple layer (styles + motion) that build-apple.py adds |
 | `Desktop\Tracker\CraveCast.apk` | the installable Android build |
-| `Desktop\Tracker\build-native.py` | index.html → app web assets (+ offline fonts), shared with iOS |
-| `Desktop\Tracker\build-artifact.py` | index.html → Artifact fragment |
+| `Desktop\Tracker\build-apple.py` | app.html + apple\ → index.html |
+| `Desktop\Tracker\build-native.py` | app.html → app web assets (+ offline fonts), shared with iOS |
+| `Desktop\Tracker\build-artifact.py` | app.html → Artifact fragment |
 | `Desktop\Tracker\supabase-schema.sql` | database + policies for the optional accounts |
 | `Desktop\Tracker\README-ACCOUNTS.md` | how to switch accounts and cloud sync on |
 | `Desktop\Tracker\fit-prior.py` | refits the cold-start baseline from the survey workbook |
-| `Desktop\Tracker\prior.js` | its output — the `PRIOR` block pasted into index.html |
+| `Desktop\Tracker\prior.js` | its output — the `PRIOR` block pasted into app.html |
 | `C:\Users\silve\CraveCastApp` | Capacitor + Android project (kept out of OneDrive) |
 | `%LOCALAPPDATA%\cravecast-build` | portable Node 24 / JDK 21 / Android SDK |
 
@@ -111,7 +116,7 @@ re-download them to build again.
 
 - **Debug-signed.** Fine for sideloading onto your own phone. It can't go on
   the Play Store as-is, and `USE_EXACT_ALARM` would need justification there.
-- **iOS is a separate build.** Same `index.html`, same `www`, but Xcode only
+- **iOS is a separate build.** Same `app.html`, same `www`, but Xcode only
   runs on macOS. See [README-IOS.md](README-IOS.md).
 - **Keep the debug keystore.** It lives at `%USERPROFILE%\.android\debug.keystore`.
   If it's deleted, future builds get a different signature and Android will

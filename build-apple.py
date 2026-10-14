@@ -1,7 +1,7 @@
-"""Build index-apple.html: index.html with the Apple layer on top.
+"""Build index.html -- the published web page -- from app.html plus the Apple layer.
 
 The layer lives in apple/ -- apple.css after the base stylesheet, apple.js
-after the base script -- so the Apple version always tracks the real app
+after the base script -- so the web page always tracks the real app
 instead of being a fork that drifts. The Google Fonts request is dropped,
 since the layer sets type in the system face.
 
@@ -10,10 +10,10 @@ Every check below either passes silently or exits non-zero.
 import re, sys, pathlib
 
 HERE = pathlib.Path(__file__).resolve().parent
-src = HERE / "index.html"
+src = HERE / "app.html"
 css = HERE / "apple" / "apple.css"
 js = HERE / "apple" / "apple.js"
-out = HERE / "index-apple.html"
+out = HERE / "index.html"
 
 
 def die(msg):
@@ -30,7 +30,7 @@ html = src.read_text(encoding="utf-8")
 for tag in ("</style>", "</head>", "</body>"):
     n = html.count(tag)
     if n != 1:
-        die(f"expected one {tag} in index.html, found {n}")
+        die(f"expected one {tag} in app.html, found {n}")
 
 fonts = r'\s*<link rel="preconnect" href="https://fonts\.g[^>]*>|\s*<link rel="stylesheet" href="https://fonts\.googleapis\.com[^>]*>'
 html, dropped = re.subn(fonts, "", html)

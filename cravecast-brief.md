@@ -11,13 +11,13 @@ A craving-forecasting app for someone trying to quit something. It predicts
 when an urge is likely to hit, warns ahead of it, and turns each day the user
 rides one out into a plant or animal growing in a garden.
 
-**One self-contained `index.html`.** No framework, no build step, no runtime
+**One self-contained `app.html`.** No framework, no build step, no runtime
 dependencies. Roughly 3,000 lines: CSS, markup and JS in a single file. That
 file is the source for three targets:
 
 | Target | How it is produced | Notes |
 |---|---|---|
-| Web page | `index.html` opened directly | works over `file://` |
+| Web page | `python build-apple.py` → `index.html` | adds the Apple layer in `apple/`; works over `file://` |
 | Claude Artifact | `python build-artifact.py` → `artifact.html` | strips the doc wrapper |
 | Android app | `python build-android.py` → Capacitor project | swaps Google Fonts for bundled woff2 |
 
@@ -58,7 +58,7 @@ human-subjects data, deliberately gitignored. The scripts that fit them are
 committed, so the results are reproducible by anyone holding the data.
 
 ### Phone survey stress events → the hourly prior
-`fit-prior.py` → `prior.js` (the `PRIOR` block embedded in `index.html`).
+`fit-prior.py` → `prior.js` (the `PRIOR` block embedded in `app.html`).
 
 99 stress events, 10 participants, four phone surveys a day, Apr 2019 – Feb
 2020. Smoothed circularly into a 24-point hourly curve.
@@ -171,7 +171,8 @@ See `README-ACCOUNTS.md`.
 
 | Path | What |
 |---|---|
-| `index.html` | the whole app — edit this |
+| `app.html` | the whole app — edit this |
+| `index.html` | generated web page: app.html + the Apple layer (`build-apple.py`) |
 | `artifact.html` | generated fragment for the Artifact |
 | `build-artifact.py` / `build-android.py` | the two builds |
 | `fit-prior.py` → `prior.js` | fits the hourly cold-start baseline |

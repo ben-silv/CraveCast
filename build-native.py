@@ -1,6 +1,6 @@
-"""Build the shared native web assets from index.html.
+"""Build the shared native web assets from app.html.
 
-index.html is the single source of truth for every target (web page, Artifact,
+app.html is the single source of truth for every target (web page, Artifact,
 iOS app, Android app). Capacitor keeps one webDir for all platforms, so this
 script writes that directory once and `cap sync ios` / `cap sync android` each
 copy the same output.
@@ -10,7 +10,7 @@ no network, so the Google Fonts <link> is swapped for locally bundled woff2
 files. Everything else -- including the Capacitor detection that switches
 alerting from an in-page timer to the OS scheduler -- is already in the source.
 
-The font families are read out of index.html's own <link>, not hard-coded here,
+The font families are read out of app.html's own <link>, not hard-coded here,
 so changing a typeface in the source cannot leave the bundle behind.
 
 Run:  python build-native.py          (add --fonts to re-download the fonts)
@@ -20,7 +20,7 @@ import os, re, sys, pathlib, urllib.request
 # The iOS half of this project is built on a Mac, so neither path is hard-coded.
 # Defaults match the layout on this machine; override with TRACKER= / APP=.
 HERE = pathlib.Path(__file__).resolve().parent
-SRC = pathlib.Path(os.environ.get("TRACKER", HERE)) / "index.html"
+SRC = pathlib.Path(os.environ.get("TRACKER", HERE)) / "app.html"
 APP = pathlib.Path(os.environ.get("APP", pathlib.Path.home() / "CraveCastApp"))
 WWW = APP / "www"
 FONTDIR = WWW / "fonts"
@@ -43,7 +43,7 @@ def fetch(url, binary=False):
 def gf_url(html):
     m = GF_LINK.search(html)
     if not m:
-        raise SystemExit("no Google Fonts <link> in index.html")
+        raise SystemExit("no Google Fonts <link> in app.html")
     return m.group(1).replace("&amp;", "&")
 
 
